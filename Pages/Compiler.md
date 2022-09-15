@@ -2,4 +2,7 @@ I have a surface level understanding of how compilers work. For my own scripting
 
 I will be following: https://compilers.iecc.com/crenshaw/
 
-I begin with a basic program that can read a file, apply a transformation and write the output.
+I begin with a basic program that can read a file, apply a transformation and write the output by reading arguments from a command line.
+
+![SimpleStringTransformation.png](./Resources/SimpleStringTransformation.png)
+
