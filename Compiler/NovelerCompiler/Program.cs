@@ -1,6 +1,7 @@
-﻿using Noveler;
+﻿using Noveler.Compiler;
 using System.CommandLine;
 using System.Runtime.InteropServices;
+using System.Text;
 
 public class Program
 {
@@ -76,9 +77,20 @@ public class Program
 
             var scriptString = File.ReadAllText(inputFile.FullName);
 
-            var resultCode = Compiler.Compile(scriptString, out string compileResult);
+            var compileIsSuccesful = Compiler.Compile(scriptString, out string compileResult, out var messages);
 
-            if (resultCode != Compiler.Result.Succes)
+            if (messages.Count != 0)
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (var message in messages)
+                {
+                    sb.AppendLine($"Code: {message.Code:d} ({message.Code})\t{message.Code.GetMessageTypeFromCode()}: {message.Content}\tSource: \"{message.Source}\"");
+                }
+
+                Console.WriteLine(sb.ToString());
+            }
+
+            if (compileIsSuccesful)
                 return Task.FromResult(ReturnCode.CompilerError);
 
             string destination = outputFile.Extension == CompiledNovelExtension ?
@@ -97,7 +109,7 @@ public class Program
                 return Task.FromResult(ReturnCode.OutputFailure);
             }
 
-            return Task.FromResult(resultCode);
+            return Task.FromResult(ReturnCode.Succes);
         },
             fileOption, outputOption);
 

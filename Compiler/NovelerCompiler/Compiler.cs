@@ -1,29 +1,69 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
-namespace Noveler
+namespace Noveler.Compiler
 {
     public class Compiler
     {
-        public static Result Compile(string script, out string result)
+        // TODO use TextReader to use streams instead in the future?
+        public static bool Compile(ReadOnlySpan<char> script, out List<byte> result, out IReadOnlyList<CompilerMessage> messages)
         {
+            var outMessages = new List<CompilerMessage>();
+            messages = outMessages;
             StringBuilder stringBuilder = new StringBuilder();
+            bool isValid = true;
 
-            // as example reverse the input
-            foreach (var c in script.Reverse())
+            ReadOnlySpan<char> untokenizedInput = script;
+
+            List<Token> tokens = new List<Token>();
+
+            // tokenize the script
+            while (!untokenizedInput.IsWhiteSpace())
             {
-                stringBuilder.Append(c);
+                var token = ReadToken(ref untokenizedInput);
+
+                // if the token is an end of file, wrap up tokenizing. 
+                if (token.Type == TokenType.EndOfFile)
+                    break;
+
+                if (token.Type == TokenType.InvalidToken)
+                {
+                    isValid = false;
+                    outMessages.Add(new CompilerMessage($"Found invalid token: {token.ValueString}", CompilerMessage.MessageCode.InvalidToken, "idk")); // TODO add sauce
+                    break;
+                }
+
+                tokens.Add(token);
             }
 
-            result = stringBuilder.ToString();
-            return Result.Succes;
+            if (!isValid)
+            {
+                result = new List<byte>(0);
+                return false;
+            }
+
+            result = new List<byte>(2048);
+
+
+
+            return isValid;
         }
 
-        /// <summary>
-        /// A list of possible result codes from compiling a script.
-        /// </summary>
-        public enum Result
+
+        private static Token ReadToken(ref ReadOnlySpan<char> input)
         {
-            Succes
+            Utilities.SkipSpace(ref input);
+
+            // for now only parse a single character as a token. TODO change this
+            Token token = input[0] switch
+            {
+                >= '0' and <= '9' => new Token(TokenType.IntLiteral, input[0].ToString()),
+                '+' => new Token(TokenType.Plus),
+                '-' => new Token(TokenType.Minus),
+                _ => new Token(TokenType.InvalidToken, input[0].ToString())
+            };
+
+            return token;
         }
     }
 }

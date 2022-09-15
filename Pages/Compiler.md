@@ -6,3 +6,6 @@ I begin with a basic program that can read a file, apply a transformation and wr
 
 ![SimpleStringTransformation.png](./Resources/SimpleStringTransformation.png)
 
+Now that I can emit output to a file I can start with the process of translating input to a set of instructions as output, these instructions will be a set of codes that my runtime consumes to change the current state.
+
+For now I have defined a set of instructions used for basic math operations
