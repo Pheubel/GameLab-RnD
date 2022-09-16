@@ -66,4 +66,42 @@ namespace Noveler.Compiler
             return token;
         }
     }
+
+    internal class SynaxTree
+    {
+        public TreeNode Root { get; }
+
+        public SynaxTree(TreeNode root)
+        {
+            Root = root;
+        }
+    }
+
+    internal class TreeNode
+    {
+        public Token Token { get; set; }
+        public List<TreeNode> Children { get; }
+        public TreeNode? Parent { get; private set; }
+
+        public TreeNode(Token token, List<TreeNode> children)
+        {
+            Token = token;
+            Children = children;
+        }
+
+        /// <summary>
+        /// Insert a node as the rightmost child.
+        /// </summary>
+        /// <param name="childNode"></param>
+        public void AddChild(TreeNode childNode)
+        {
+            childNode.Parent = this;
+            Children.Add(childNode);
+        }
+
+        public abstract void PlungeChildren()
+        {
+
+        }
+    }
 }
