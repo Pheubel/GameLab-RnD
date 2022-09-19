@@ -13,6 +13,13 @@
             Source = source;
         }
 
+        internal CompilerMessage(string content, MessageCode code, ReadingContext context)
+        {
+            Content=content;
+            Code = code;
+            Source = $"{(context.CurrentFile is null ? string.Empty : context.CurrentFile + ": ")} Line: {context.LineNumber} Column: {context.CharacterOnLine}";
+        }
+
         public enum MessageCode
         {
             // messages

@@ -19,3 +19,6 @@ Smart compilers can analyze a syntax tree to come up with techniques to reduce t
 Now that the tree has been simplified, it allows the compiler to emit just the storing of `11` into the `a` variable.
 
 For now I won't be using any tricks to generate optimized code, due to the early stage of development.
+
+I am able to calculate the expression `1 + 2 - 3 + 4 + 5`, problems arrise when the formula has parts wrapped in parentheses. With the current way of handling tokens the generated tree will look the same as without. In order to branch the syntax tree I need to be able to make small trees that I can stich together later. To do this I make use of temporary nodes. With each open parentesis I create a temporary node and push my current node onto a stack, when the compiler gets to a closing parenthesis it pops the stack to stitch the tree. With the formula `((1 + 2) - (3 + 4)) + 5` the tree gets created as followed:
+![SyntaxTreeStich]()
