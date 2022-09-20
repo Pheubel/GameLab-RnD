@@ -55,6 +55,11 @@ namespace Noveler.Compiler
             return IsAlpha(c) || IsNumeric(c);
         }
 
+        public static InternalType GetTargetType(InternalType leftHandSide, InternalType rightHandSide)
+        {
+            return (InternalType)Math.Max((int)leftHandSide, (int)rightHandSide);
+        }
+
         public static bool IsValueToken(this TokenType token)
         {
             return ValueTokens.Contains(token);

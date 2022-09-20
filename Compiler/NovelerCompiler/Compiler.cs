@@ -108,6 +108,7 @@ namespace Noveler.Compiler
                         {
                             currentNode.InsertParent(poppedNode);
                         }
+                        poppedNode.Token.ValueType = Utilities.GetTargetType(currentNode.Token.ValueType, poppedNode.Token.ValueType);
                     }
                     else
                     {
@@ -132,11 +133,13 @@ namespace Noveler.Compiler
                     var value = ReadToken(untokenizedInput, ref context, outMessages);
                     if (value.Type.IsValueToken())
                     {
+                        token.ValueType = Utilities.GetTargetType(currentNode.Token.ValueType, value.ValueType);
                         node.AddChild(new TreeNode(value));
                         currentNode = node;
                     }
                     else if (value.Type == TokenType.OpenEvaluationScope)
                     {
+                        node.Token.ValueType = currentNode.Token.ValueType;
                         context.NodeStack.Push(node);
 
                         currentNode = TreeNode.CreateInvalidNode();
@@ -346,11 +349,11 @@ namespace Noveler.Compiler
 
             if (int.TryParse(bufferSpan, numberStyles, null, out var intResult) && intResult >= 0)
             {
-                token = new Token(TokenType.IntLiteral, intResult.ToString());
+                token = new Token(TokenType.IntLiteral, intResult.ToString()) { ValueType = InternalType.Int32 };
             }
             else if (long.TryParse(bufferSpan, numberStyles, null, out var longResult) && longResult >= 0)
             {
-                token = new Token(TokenType.LongLiteral, longResult.ToString());
+                token = new Token(TokenType.LongLiteral, longResult.ToString()) { ValueType = InternalType.Int64 };
             }
             else
             {
@@ -392,14 +395,6 @@ namespace Noveler.Compiler
             switch (node.Token.Type)
             {
                 case TokenType.InvalidToken:
-                    break;
-                case TokenType.Int:
-                    break;
-                case TokenType.Long:
-                    break;
-                case TokenType.Float:
-                    break;
-                case TokenType.Double:
                     break;
                 case TokenType.IntLiteral:
                     Console.WriteLine($"LoadConst32 R0 {node.Token.ValueString:X}");
@@ -453,10 +448,6 @@ namespace Noveler.Compiler
                     break;
                 case TokenType.CloseFunction:
                     break;
-                case TokenType.OpenEvaluationScope:
-                    break;
-                case TokenType.CloseEvaluationScope:
-                    break;
                 case TokenType.SemiColon:
                     break;
                 case TokenType.ClosingCurlyBracket:
@@ -471,10 +462,13 @@ namespace Noveler.Compiler
                 case TokenType.EndOfFile:
                     break;
                 case TokenType.Negate:
+                    Console.WriteLine("NEGATE R1");
                     break;
                 default:
                     break;
             }
+
+            Console.WriteLine(node.Token.ValueType);
 
             return default;
         }
