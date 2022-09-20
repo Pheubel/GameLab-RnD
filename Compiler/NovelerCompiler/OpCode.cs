@@ -53,6 +53,19 @@
         Cast32To64,
         Cast64To32,
 
+        // converting
+
+        ConvertInt32ToFloat32,
+        ConvertInt32ToFloat64,
+
+        ConvertFloat32ToFloat64,
+        ConvertFloat32ToInt32,
+        ConvertFloat32ToInt64,
+
+        ConvertFloat64ToFloat32,
+        ConvertFloat64ToInt32,
+        ConvertFloat64ToInt64,
+
         // memory management
 
         Load32,

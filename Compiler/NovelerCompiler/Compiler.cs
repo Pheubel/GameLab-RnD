@@ -102,7 +102,7 @@ namespace Noveler.Compiler
                     {
                         if (currentNode.Parent != null)
                         {
-                            currentNode.Parent.ReplaceParent(poppedNode);
+                            currentNode.ReplaceParent(poppedNode);
                         }
                         else
                         {
@@ -382,27 +382,14 @@ namespace Noveler.Compiler
 
             result = new List<byte>(2048);
 
-            EmitInOrder(tree.Root, 0);
+            EmitCode(tree.Root);
 
             return result;
         }
 
-        private static void EmitInOrder(TreeNode node, int childId)
+        private static byte EmitCode(TreeNode node)
         {
-            if (node != null)
-            {
-                for (int i = 0; i < node.Children.Count; i++)
-                {
-                    EmitInOrder(node.Children[i], i);
-                }
-
-                EmitCode(node.Token, childId);
-            }
-        }
-
-        private static byte EmitCode(Token token, int childId)
-        {
-            switch (token.Type)
+            switch (node.Token.Type)
             {
                 case TokenType.InvalidToken:
                     break;
@@ -415,22 +402,36 @@ namespace Noveler.Compiler
                 case TokenType.Double:
                     break;
                 case TokenType.IntLiteral:
-                    Console.WriteLine($"LoadConst32 {token.ValueString:X} R{childId + 1}");
+                    Console.WriteLine($"LoadConst32 R0 {node.Token.ValueString:X}");
                     break;
                 case TokenType.LongLiteral:
-                    Console.WriteLine($"LoadConst64 {token.ValueString:X} R{childId + 1}");
+                    Console.WriteLine($"LoadConst64 R0 {node.Token.ValueString:X}");
                     break;
                 case TokenType.FloatLiteral:
                     break;
                 case TokenType.DoubleLiteral:
                     break;
                 case TokenType.Add:
+                    EmitCode(node.Children[0]);
+                    Console.WriteLine("PUSH R1");
+                    EmitCode(node.Children[1]);
+                    Console.WriteLine("POP R2");
+
                     Console.WriteLine("ADD R1 R2");
                     break;
                 case TokenType.Subtract:
+                    EmitCode(node.Children[0]);
+                    Console.WriteLine("PUSH R1");
+                    EmitCode(node.Children[1]);
+                    Console.WriteLine("MOVE R2 R1");
+                    Console.WriteLine("POP R1");
                     Console.WriteLine("SUBTRACT R1 R2");
                     break;
                 case TokenType.Multiply:
+                    EmitCode(node.Children[0]);
+                    Console.WriteLine("PUSH R1");
+                    EmitCode(node.Children[2]);
+                    Console.WriteLine("MULTIPLY R1 R2");
                     break;
                 case TokenType.Divide:
                     break;
@@ -463,13 +464,13 @@ namespace Noveler.Compiler
                 case TokenType.ValueVariable:
                     break;
                 case TokenType.Root:
+                    EmitCode(node.Children[0]);
                     break;
                 case TokenType.EndOfLine:
                     break;
                 case TokenType.EndOfFile:
                     break;
                 case TokenType.Negate:
-                    Console.WriteLine("NEGATE R1");
                     break;
                 default:
                     break;
