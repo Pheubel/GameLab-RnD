@@ -6,8 +6,9 @@
         public int CharacterOnLine;
         public string? CurrentFile;
         public int ScopeLevel;
-        public Stack<Token> TokenStack;
+        public Stack<TreeNode> NodeStack;
         public Dictionary<string, VariableTableEntry> VariableTable;
+        public ReadState ReadState;
 
         public ReadingContext(Dictionary<string, VariableTableEntry> table, int lineNumber, int characterOnLine, string? currentFile, int scopeLevel) : this()
         {
@@ -16,7 +17,8 @@
             CharacterOnLine = characterOnLine;
             CurrentFile = currentFile;
             ScopeLevel = scopeLevel;
-            TokenStack = new Stack<Token>();
+            NodeStack = new Stack<TreeNode>();
+            ReadState = ReadState.Story;
         }
     }
 }

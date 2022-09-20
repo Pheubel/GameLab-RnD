@@ -17,12 +17,18 @@
         DoubleLiteral,
 
         // operation
-        Plus,
-        Minus,
+        Add,
+        Subtract,
         Multiply,
         Divide,
+
         Assign,
+        AssignAdd,
+        AssignSubtract,
+
         Compare,
+        Increment,
+        Decrement,
 
         // function
         FunctionName,
@@ -43,6 +49,8 @@
         // special
         Root,
         EndOfLine,
-        EndOfFile
+        EndOfFile,
+
+        //unsorted
     }
 }

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "NovelerCompiler": {
+      "commandName": "Project",
+      "commandLineArgs": "-i \"C:\\Users\\vratelier\\Documents\\GitHub\\GameLab-RnD\\Compiler\\Testing\\HelloWorld.nvl\" -o \"C:\\Users\\vratelier\\Documents\\GitHub\\GameLab-RnD\\Compiler\\Testing\\HelloWorld.cnvl\""
+    }
+  }
+}

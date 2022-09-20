@@ -9,12 +9,16 @@
         Int32Multiply,
         Int32DivRem,
         Int32Negate,
+        Int32Increment,
+        Int32Decrement,
 
         Int64Add,
         Int64Subtract,
         Int64Multiply,
         Int64DivRem,
         Int64Negate,
+        Int64Increment,
+        Int64Decrement,
 
         Float32Add,
         Float32Subtract,

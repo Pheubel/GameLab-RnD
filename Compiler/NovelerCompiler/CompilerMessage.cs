@@ -13,9 +13,9 @@
             Source = source;
         }
 
-        internal CompilerMessage(string content, MessageCode code, ReadingContext context)
+        internal CompilerMessage(string content, MessageCode code, ref ReadingContext context)
         {
-            Content=content;
+            Content = content;
             Code = code;
             Source = $"{(context.CurrentFile is null ? string.Empty : context.CurrentFile + ": ")} Line: {context.LineNumber} Column: {context.CharacterOnLine}";
         }
@@ -29,7 +29,8 @@
             Foo,
 
             // errors
-            InvalidToken
+            InvalidToken,
+            InvalidLiteral
         }
 
         public enum MessageType

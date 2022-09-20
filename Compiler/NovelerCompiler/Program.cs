@@ -77,7 +77,13 @@ public class Program
 
             var scriptString = File.ReadAllText(inputFile.FullName);
 
-            var compileIsSuccesful = Compiler.Compile(scriptString, out string compileResult, out var messages);
+            IReadOnlyList<CompilerMessage> messages;
+            List<byte> compileResult;
+            bool compileIsSuccesful;
+            using (var textReader = new StringReader(scriptString))
+            {
+                compileIsSuccesful = Compiler.Compile(textReader, out compileResult, out messages);
+            }
 
             if (messages.Count != 0)
             {
@@ -101,7 +107,8 @@ public class Program
             {
                 using var output = File.OpenWrite(destination);
 
-                output.Write(MemoryMarshal.AsBytes(compileResult.AsSpan()));
+                var rs = CollectionsMarshal.AsSpan(compileResult);
+                output.Write(rs);
             }
             catch (Exception)
             {

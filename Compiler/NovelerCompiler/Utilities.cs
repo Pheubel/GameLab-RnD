@@ -4,24 +4,54 @@ namespace Noveler.Compiler
 {
     internal static class Utilities
     {
-        /// <summary>
-        /// Moves the start of the span over to the first non-space character.
-        /// </summary>
-        /// <param name="input"> The span holding characters to check.</param>
-        /// <returns> The number of characters skipped.</returns>
-        public static int SkipSpace(ref ReadOnlySpan<char> input)
+        public static int SkipSpace(TextReader input)
         {
-            int cursor;
-            for (cursor = 0; cursor < input.Length; cursor++)
+            int skipped = default;
+            while (input.Peek() == ' ')
             {
-                if (input[cursor] != ' ')
-                {
-                    break;
-                }
+                input.Read();
+                skipped++;
             }
 
-            input = input[cursor..];
-            return cursor;
+            return skipped;
+        }
+
+        public static bool MatchCharacter(this TextReader reader, char character)
+        {
+            if (reader.Peek() == character)
+            {
+                reader.Read();
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool MatchDigit(this TextReader reader, out char digit)
+        {
+            digit = (char)reader.Peek();
+            if (digit >= '0' && digit <= '9')
+            {
+                reader.Read();
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsAlpha(char c)
+        {
+            return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+        }
+
+        public static bool IsNumeric(char c)
+        {
+            return c >= '0' && c <= '9';
+        }
+
+        public static bool IsAplhaNumeric(char c)
+        {
+            return IsAlpha(c) || IsNumeric(c);
         }
 
         public static bool IsValueToken(this TokenType token)
@@ -45,8 +75,8 @@ namespace Noveler.Compiler
 
         readonly static TokenType[] OperationTokens =
         {
-            TokenType.Plus,
-            TokenType.Minus,
+            TokenType.Add,
+            TokenType.Subtract,
             TokenType.Multiply,
             TokenType.Divide
         };

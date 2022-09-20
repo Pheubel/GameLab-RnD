@@ -1,24 +1,25 @@
-﻿using System.ComponentModel;
+﻿using System.Buffers;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using System.Globalization;
 
 namespace Noveler.Compiler
 {
     public class Compiler
     {
         // TODO use TextReader to use streams instead in the future?
-        public static bool Compile(ReadOnlySpan<char> script, out List<byte> result, out IReadOnlyList<CompilerMessage> messages)
+        public static bool Compile(TextReader script, out List<byte> result, out IReadOnlyList<CompilerMessage> messages)
         {
             var outMessages = new List<CompilerMessage>();
             messages = outMessages;
-            StringBuilder stringBuilder = new StringBuilder();
-            bool isValid = true;
 
             var tree = Lex(script, outMessages);
 
-            var emitedBytes = Emit(tree, outMessages);
+            result = Emit(tree, outMessages);
 
-            return isValid;
+            return true;
         }
 
         /// <summary>
@@ -27,7 +28,7 @@ namespace Noveler.Compiler
         /// <param name="untokenizedInput"></param>
         /// <param name="outMessages"></param>
         /// <returns></returns>
-        private static SyntaxTree Lex(ReadOnlySpan<char> untokenizedInput, List<CompilerMessage> outMessages)
+        private static SyntaxTree Lex(TextReader untokenizedInput, List<CompilerMessage> outMessages)
         {
             SyntaxTree tree = new SyntaxTree(
                 new TreeNode(new Token(TokenType.Root))
@@ -37,10 +38,11 @@ namespace Noveler.Compiler
             Dictionary<string, VariableTableEntry> variableTable = new Dictionary<string, VariableTableEntry>();
             ReadingContext context = new ReadingContext(variableTable, 1, 1, null, 0);
 
+
             // tokenize the script
-            while (!untokenizedInput.IsWhiteSpace())
+            while (true)
             {
-                var token = ReadToken(ref untokenizedInput, context, out var tokenLength);
+                var token = ReadToken(untokenizedInput, ref context, outMessages);
 
                 // if the token is an end of file, wrap up tokenizing. 
                 if (token.Type == TokenType.EndOfFile)
@@ -48,43 +50,61 @@ namespace Noveler.Compiler
 
                 if (token.Type == TokenType.InvalidToken)
                 {
-                    outMessages.Add(new CompilerMessage($"Found invalid token: {token.ValueString}", CompilerMessage.MessageCode.InvalidToken, context));
+                    outMessages.Add(new CompilerMessage($"Found invalid token: {token.ValueString}", CompilerMessage.MessageCode.InvalidToken, ref context));
                     continue;
                 }
 
                 var node = new TreeNode(token);
 
-                if(token.Type == TokenType.OpenEvaluationScope)
+                if (token.Type == TokenType.OpenEvaluationScope)
                 {
+                    context.NodeStack.Push(currentNode);
 
+                    currentNode = TreeNode.CreateInvalidNode();
+                }
+
+                else if (token.Type == TokenType.CloseEvaluationScope)
+                {
+                    if (context.NodeStack.TryPop(out var poppedNode))
+                    {
+                        if (currentNode.Parent != null)
+                        {
+                            currentNode.ReplaceBy(poppedNode);
+                        }
+                        else
+                        {
+                            currentNode.InsertParent(poppedNode);
+                        }
+                    }
+                    else
+                    {
+                        outMessages.Add(new CompilerMessage($"Unbalanced parentheses, extra \')\' found.", CompilerMessage.MessageCode.InvalidToken, ref context));
+                    }
                 }
 
                 else if (token.Type.IsValueToken())
                 {
-                    currentNode.AddChild(node);
+                    currentNode.InsertChild(node);
 
                     currentNode = node;
                 }
 
 
 
-
-
-
                 if (token.Type.IsOperationToken())
                 {
-                    currentNode.AddParent(node);
+                    currentNode.InsertParent(node);
 
                     // read next token to make sure the operation is in order
-                    var value = ReadToken(ref untokenizedInput, context, out var valueTokenLength);
+                    var value = ReadToken(untokenizedInput, ref context, outMessages);
                     if (value.Type.IsValueToken())
                     {
-                        node.AddChild(new TreeNode(value));
+                        node.InsertChild(new TreeNode(value));
                         currentNode = node;
                     }
                     else
                     {
-                        outMessages.Add(new CompilerMessage($"Expected value, found: {value.ValueString}", CompilerMessage.MessageCode.InvalidToken, context));
+                        outMessages.Add(new CompilerMessage($"Expected value, found: {value.ValueString}", CompilerMessage.MessageCode.InvalidToken, ref context));
                     }
 
                     // TODO constant folding here?
@@ -100,7 +120,7 @@ namespace Noveler.Compiler
             return tree;
         }
 
-        private static IReadOnlyList<byte> Emit(SyntaxTree tree, List<CompilerMessage> outMessages)
+        private static List<byte> Emit(SyntaxTree tree, List<CompilerMessage> outMessages)
         {
             List<byte> result;
 
@@ -119,82 +139,221 @@ namespace Noveler.Compiler
 
 
 
-        private static Token ReadToken(ref ReadOnlySpan<char> input, ReadingContext context, out int tokenLength)
+        private static Token ReadToken(TextReader input, ref ReadingContext context, List<CompilerMessage> outMessages)
         {
-            context.LineNumber += Utilities.SkipSpace(ref input);
+            context.CharacterOnLine += Utilities.SkipSpace(input);
 
-            // for now only parse a single character as a token. TODO change this
-            Token token = input[0] switch
-            {
-                >= '0' and <= '9' => new Token(TokenType.IntLiteral, input[0].ToString()),
-                '+' => new Token(TokenType.Plus),
-                '-' => new Token(TokenType.Minus),
-                _ => new Token(TokenType.InvalidToken, input[0].ToString())
-            };
+            //// for now only parse a single character as a token. TODO change this
+            //Token token = input[0] switch
+            //{
+            //    >= '0' and <= '9' => new Token(TokenType.IntLiteral, input[0].ToString()),
+            //    '+' => new Token(TokenType.Plus),
+            //    '-' => new Token(TokenType.Minus),
+            //    _ => new Token(TokenType.InvalidToken, input[0].ToString())
+            //};
 
-            //todo get correct token length
-            tokenLength = 1;
+
+
+            ////todo get correct token length
+            //tokenLength = 1;
+
+            LexIntoToken(input, ref context, outMessages, out Token token);
 
             return token;
         }
-    }
 
-    internal class SyntaxTree
-    {
-        public TreeNode Root { get; }
-
-        public SyntaxTree(TreeNode root)
+        private static void LexIntoToken(TextReader input, ref ReadingContext context, List<CompilerMessage> outMessages, [NotNull] out Token? token)
         {
-            Root = root;
-        }
-
-        public bool IsValid()
-        {
-            // TODO validate
-            return true;
-        }
-    }
-
-    internal class TreeNode
-    {
-        public Token Token { get; set; }
-        public List<TreeNode> Children { get; }
-        public TreeNode? Parent { get; private set; }
-
-        public TreeNode(Token token)
-        {
-            Token = token;
-            Children = new List<TreeNode>();
-        }
-
-        public static TreeNode InvalidNode() =>
-            new TreeNode(new Token(TokenType.InvalidToken));
-
-        /// <summary>
-        /// Insert a node as the rightmost child.
-        /// </summary>
-        /// <param name="childNode"></param>
-        public void AddChild(TreeNode childNode)
-        {
-            childNode.Parent = this;
-            Children.Add(childNode);
-        }
-
-        public void AddParent(TreeNode parentNode)
-        {
-            var oldParent = this.Parent;
-            if (oldParent != null)
+            token = default;
+            char firstChar = (char)input.Peek();
+            switch (firstChar)
             {
-                oldParent.Children.Remove(this);
-                oldParent.AddChild(parentNode);
+                // determine if we are dealing with a number
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    if (TryHandleNumber(input, ref context, outMessages, out var numberToken))
+                    {
+                        token = numberToken;
+                        return;
+                    };
+                    break;
+
+                case '+':
+                    input.Read();
+                    if (input.MatchCharacter('+'))
+                    {
+                        context.CharacterOnLine += 2;
+                        token = new Token(TokenType.Increment);
+                    }
+                    else if (input.MatchCharacter('='))
+                    {
+                        context.CharacterOnLine += 2;
+                        token = new Token(TokenType.AssignAdd);
+                    }
+                    else
+                    {
+                        context.CharacterOnLine += 1;
+                        token = new Token(TokenType.Add);
+                    }
+                    return;
+
+                case '-':
+                    input.Read();
+                    if (input.MatchCharacter('-'))
+                    {
+                        context.CharacterOnLine += 2;
+                        token = new Token(TokenType.Decrement);
+                    }
+                    else if (input.MatchCharacter('='))
+                    {
+                        context.CharacterOnLine += 2;
+                        token = new Token(TokenType.AssignSubtract);
+                    }
+                    else
+                    {
+                        context.CharacterOnLine += 1;
+                        token = new Token(TokenType.Subtract);
+                    }
+                    return;
+
+                case unchecked((char)-1):
+                    token = new Token(TokenType.EndOfFile);
+                    return;
+
+                default:
+                    break;
             }
 
-            parentNode.AddChild(this);
+            // handle symbols and keywords
+            if (Utilities.IsAlpha(firstChar))
+            {
+
+            }
+
+            // handle unmatched tokens
+            token ??= Token.InvalidToken;
         }
 
-        public void PlungeChildren()
+        private static bool TryHandleNumber(TextReader input, ref ReadingContext context, List<CompilerMessage> outMessages, [NotNullWhen(true)] out Token? token)
         {
+            using var charBuffer = PooledList<char>.Rent(512);
 
+            int numberBase = 10;
+            int digitCount = 0;
+
+            // check if the literal is hexadecimal
+            if (input.MatchCharacter('0'))
+            {
+                charBuffer.Add('0');
+
+                if (input.MatchCharacter('x'))
+                {
+                    numberBase = 16;
+                    charBuffer.Add('x');
+                }
+                else
+                    digitCount = 1;
+            }
+
+            while (true)
+            {
+                char c = (char)input.Peek();
+
+                // if character is possibly valid, continue reading
+                if ((c >= '0' && c <= '9') ||
+                    (c >= 'a' && c <= 'f') ||
+                    (c >= 'A' && c <= 'F'))
+                {
+                    charBuffer.Add(c);
+                }
+                else
+                {
+                    break;
+                }
+
+                input.Read();
+                digitCount++;
+            }
+
+            // If the was no number to lex
+            if (numberBase == 10 && digitCount == 0)
+            {
+                token = null;
+                context.CharacterOnLine += charBuffer.Count;
+                return false;
+            }
+
+            if (Utilities.IsAplhaNumeric((char)input.Peek()))
+            {
+                outMessages.Add(new CompilerMessage($"Invalid literal structure, contains invalid character.", CompilerMessage.MessageCode.InvalidLiteral, ref context));
+            }
+
+            // there number was missing after defining a different base
+            if (digitCount == 0)
+            {
+                outMessages.Add(new CompilerMessage($"Invalid literal structure, missing digits.", CompilerMessage.MessageCode.InvalidLiteral, ref context));
+            }
+
+            // switch to floating point number handling when dealing with decimal
+            if (numberBase == 10 && input.MatchCharacter('.'))
+            {
+                return TryHandleFloatingPoint(charBuffer, input, ref context, outMessages, out token);
+            }
+
+            Span<char> bufferSpan;
+            NumberStyles numberStyles;
+
+            if (numberBase == 10)
+            {
+                numberStyles = default;
+                bufferSpan = charBuffer.AsSpan();
+            }
+            else
+            {
+                numberStyles = NumberStyles.AllowHexSpecifier;
+                bufferSpan = charBuffer.AsSpan()[2..];
+            }
+
+            if (int.TryParse(bufferSpan, numberStyles, null, out var intResult) && intResult >= 0)
+            {
+                token = new Token(TokenType.IntLiteral, intResult.ToString());
+            }
+            else if (long.TryParse(bufferSpan, numberStyles, null, out var longResult) && longResult >= 0)
+            {
+                token = new Token(TokenType.LongLiteral, longResult.ToString());
+            }
+            else
+            {
+                outMessages.Add(new CompilerMessage($"Invalid literal \"{bufferSpan}\", outside of valid range.", CompilerMessage.MessageCode.InvalidLiteral, ref context));
+                context.CharacterOnLine += charBuffer.Count;
+                token = null;
+                return false;
+            }
+
+            context.CharacterOnLine += charBuffer.Count;
+            return true;
         }
+
+        private static bool TryHandleFloatingPoint(PooledList<char> charBuffer, TextReader input, ref ReadingContext context, List<CompilerMessage> outMessages, out Token? token)
+        {
+            // TODO: implement
+            token = null;
+            return false;
+        }
+    }
+
+    enum ReadState
+    {
+        Story,
+        Code,
+        EmbeddedCode
     }
 }
