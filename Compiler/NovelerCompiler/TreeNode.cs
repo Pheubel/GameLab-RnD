@@ -19,7 +19,7 @@
         /// Insert a node as the rightmost child.
         /// </summary>
         /// <param name="childNode"></param>
-        public void InsertChild(TreeNode childNode)
+        public void AddChild(TreeNode childNode)
         {
             childNode.Parent = this;
             Children.Add(childNode);
@@ -30,11 +30,13 @@
             var oldParent = this.Parent;
             if (oldParent != null)
             {
-                oldParent.Children.Remove(this);
-                oldParent.InsertChild(parentNode);
+                int index = oldParent.Children.IndexOf(this);
+
+                oldParent.Children[index] = parentNode;
+                parentNode.Parent = oldParent;
             }
 
-            parentNode.InsertChild(this);
+            parentNode.AddChild(this);
         }
 
         public void ReplaceBy(TreeNode replacement)
@@ -48,8 +50,15 @@
             foreach (var child in Children)
             {
                 child.Parent = replacement;
-                replacement.Children = this.Children;
             }
+
+            replacement.Children = this.Children;
+        }
+
+        public void ReplaceParent(TreeNode replacement)
+        {
+            this.Parent?.Children.Remove(this);
+            replacement.AddChild(this);
         }
     }
 }

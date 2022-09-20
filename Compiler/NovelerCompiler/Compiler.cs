@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Globalization;
+using NovelerCompiler;
 
 namespace Noveler.Compiler
 {
@@ -12,12 +13,14 @@ namespace Noveler.Compiler
         // TODO use TextReader to use streams instead in the future?
         public static bool Compile(TextReader script, out List<byte> result, out IReadOnlyList<CompilerMessage> messages)
         {
+            var reader = new ReaderWrapper(script);
+
             var outMessages = new List<CompilerMessage>();
             messages = outMessages;
 
-            var tree = Lex(script, outMessages);
+            var tree = Lex(reader, outMessages);
 
-            result = Emit(tree, outMessages);
+            result = EmitTree(tree, outMessages);
 
             return true;
         }
@@ -28,7 +31,7 @@ namespace Noveler.Compiler
         /// <param name="untokenizedInput"></param>
         /// <param name="outMessages"></param>
         /// <returns></returns>
-        private static SyntaxTree Lex(TextReader untokenizedInput, List<CompilerMessage> outMessages)
+        private static SyntaxTree Lex(ReaderWrapper untokenizedInput, List<CompilerMessage> outMessages)
         {
             SyntaxTree tree = new SyntaxTree(
                 new TreeNode(new Token(TokenType.Root))
@@ -56,6 +59,36 @@ namespace Noveler.Compiler
 
                 var node = new TreeNode(token);
 
+                // check if the +/- token should be transformed
+                if (!currentNode.Token.Type.IsValueToken() && !currentNode.Token.Type.IsOperationToken())
+                {
+                    // the token can be skipped as it does not cause a transform
+                    if (token.Type == TokenType.Add)
+                        continue;
+                    if (token.Type == TokenType.Subtract)
+                    {
+                        token.Type = TokenType.Negate;
+
+                        // read next token to make sure the operation is in order
+                        var value = ReadToken(untokenizedInput, ref context, outMessages);
+                        if (value.Type.IsValueToken())
+                        {
+                            node.AddChild(new TreeNode(value));
+                            currentNode = node;
+                        }
+                        else if (value.Type == TokenType.OpenEvaluationScope)
+                        {
+                            context.NodeStack.Push(node);
+
+                            currentNode = TreeNode.CreateInvalidNode();
+                        }
+                        else
+                        {
+                            outMessages.Add(new CompilerMessage($"Cannot negate value, found: {value.ValueString}", CompilerMessage.MessageCode.InvalidToken, ref context));
+                        }
+                    }
+                }
+
                 if (token.Type == TokenType.OpenEvaluationScope)
                 {
                     context.NodeStack.Push(currentNode);
@@ -69,7 +102,7 @@ namespace Noveler.Compiler
                     {
                         if (currentNode.Parent != null)
                         {
-                            currentNode.ReplaceBy(poppedNode);
+                            currentNode.Parent.ReplaceParent(poppedNode);
                         }
                         else
                         {
@@ -84,7 +117,7 @@ namespace Noveler.Compiler
 
                 else if (token.Type.IsValueToken())
                 {
-                    currentNode.InsertChild(node);
+                    currentNode.AddChild(node);
 
                     currentNode = node;
                 }
@@ -99,8 +132,14 @@ namespace Noveler.Compiler
                     var value = ReadToken(untokenizedInput, ref context, outMessages);
                     if (value.Type.IsValueToken())
                     {
-                        node.InsertChild(new TreeNode(value));
+                        node.AddChild(new TreeNode(value));
                         currentNode = node;
+                    }
+                    else if (value.Type == TokenType.OpenEvaluationScope)
+                    {
+                        context.NodeStack.Push(node);
+
+                        currentNode = TreeNode.CreateInvalidNode();
                     }
                     else
                     {
@@ -120,49 +159,20 @@ namespace Noveler.Compiler
             return tree;
         }
 
-        private static List<byte> Emit(SyntaxTree tree, List<CompilerMessage> outMessages)
-        {
-            List<byte> result;
-
-            if (!tree.IsValid())
-            {
-                return new List<byte>(0);
-            }
-
-            result = new List<byte>(2048);
-
-            // plunge the tree until the end has been reached.
-
-
-            return result;
-        }
 
 
 
-        private static Token ReadToken(TextReader input, ref ReadingContext context, List<CompilerMessage> outMessages)
+
+        private static Token ReadToken(ReaderWrapper input, ref ReadingContext context, List<CompilerMessage> outMessages)
         {
             context.CharacterOnLine += Utilities.SkipSpace(input);
-
-            //// for now only parse a single character as a token. TODO change this
-            //Token token = input[0] switch
-            //{
-            //    >= '0' and <= '9' => new Token(TokenType.IntLiteral, input[0].ToString()),
-            //    '+' => new Token(TokenType.Plus),
-            //    '-' => new Token(TokenType.Minus),
-            //    _ => new Token(TokenType.InvalidToken, input[0].ToString())
-            //};
-
-
-
-            ////todo get correct token length
-            //tokenLength = 1;
 
             LexIntoToken(input, ref context, outMessages, out Token token);
 
             return token;
         }
 
-        private static void LexIntoToken(TextReader input, ref ReadingContext context, List<CompilerMessage> outMessages, [NotNull] out Token? token)
+        private static void LexIntoToken(ReaderWrapper input, ref ReadingContext context, List<CompilerMessage> outMessages, [NotNull] out Token? token)
         {
             token = default;
             char firstChar = (char)input.Peek();
@@ -224,6 +234,18 @@ namespace Noveler.Compiler
                     }
                     return;
 
+                case '(':
+                    input.Read();
+                    context.CharacterOnLine++;
+                    token = new Token(TokenType.OpenEvaluationScope);
+                    return;
+
+                case ')':
+                    input.Read();
+                    context.CharacterOnLine++;
+                    token = new Token(TokenType.CloseEvaluationScope);
+                    return;
+
                 case unchecked((char)-1):
                     token = new Token(TokenType.EndOfFile);
                     return;
@@ -242,7 +264,7 @@ namespace Noveler.Compiler
             token ??= Token.InvalidToken;
         }
 
-        private static bool TryHandleNumber(TextReader input, ref ReadingContext context, List<CompilerMessage> outMessages, [NotNullWhen(true)] out Token? token)
+        private static bool TryHandleNumber(ReaderWrapper input, ref ReadingContext context, List<CompilerMessage> outMessages, [NotNullWhen(true)] out Token? token)
         {
             using var charBuffer = PooledList<char>.Rent(512);
 
@@ -342,11 +364,118 @@ namespace Noveler.Compiler
             return true;
         }
 
-        private static bool TryHandleFloatingPoint(PooledList<char> charBuffer, TextReader input, ref ReadingContext context, List<CompilerMessage> outMessages, out Token? token)
+        private static bool TryHandleFloatingPoint(PooledList<char> charBuffer, ReaderWrapper input, ref ReadingContext context, List<CompilerMessage> outMessages, out Token? token)
         {
             // TODO: implement
             token = null;
             return false;
+        }
+
+        private static List<byte> EmitTree(SyntaxTree tree, List<CompilerMessage> outMessages)
+        {
+            List<byte> result;
+
+            if (!tree.IsValid())
+            {
+                return new List<byte>(0);
+            }
+
+            result = new List<byte>(2048);
+
+            EmitInOrder(tree.Root, 0);
+
+            return result;
+        }
+
+        private static void EmitInOrder(TreeNode node, int childId)
+        {
+            if (node != null)
+            {
+                for (int i = 0; i < node.Children.Count; i++)
+                {
+                    EmitInOrder(node.Children[i], i);
+                }
+
+                EmitCode(node.Token, childId);
+            }
+        }
+
+        private static byte EmitCode(Token token, int childId)
+        {
+            switch (token.Type)
+            {
+                case TokenType.InvalidToken:
+                    break;
+                case TokenType.Int:
+                    break;
+                case TokenType.Long:
+                    break;
+                case TokenType.Float:
+                    break;
+                case TokenType.Double:
+                    break;
+                case TokenType.IntLiteral:
+                    Console.WriteLine($"LoadConst32 {token.ValueString:X} R{childId + 1}");
+                    break;
+                case TokenType.LongLiteral:
+                    Console.WriteLine($"LoadConst64 {token.ValueString:X} R{childId + 1}");
+                    break;
+                case TokenType.FloatLiteral:
+                    break;
+                case TokenType.DoubleLiteral:
+                    break;
+                case TokenType.Add:
+                    Console.WriteLine("ADD R1 R2");
+                    break;
+                case TokenType.Subtract:
+                    Console.WriteLine("SUBTRACT R1 R2");
+                    break;
+                case TokenType.Multiply:
+                    break;
+                case TokenType.Divide:
+                    break;
+                case TokenType.Assign:
+                    break;
+                case TokenType.AssignAdd:
+                    break;
+                case TokenType.AssignSubtract:
+                    break;
+                case TokenType.Compare:
+                    break;
+                case TokenType.Increment:
+                    break;
+                case TokenType.Decrement:
+                    break;
+                case TokenType.FunctionName:
+                    break;
+                case TokenType.OpenFunction:
+                    break;
+                case TokenType.CloseFunction:
+                    break;
+                case TokenType.OpenEvaluationScope:
+                    break;
+                case TokenType.CloseEvaluationScope:
+                    break;
+                case TokenType.SemiColon:
+                    break;
+                case TokenType.ClosingCurlyBracket:
+                    break;
+                case TokenType.ValueVariable:
+                    break;
+                case TokenType.Root:
+                    break;
+                case TokenType.EndOfLine:
+                    break;
+                case TokenType.EndOfFile:
+                    break;
+                case TokenType.Negate:
+                    Console.WriteLine("NEGATE R1");
+                    break;
+                default:
+                    break;
+            }
+
+            return default;
         }
     }
 

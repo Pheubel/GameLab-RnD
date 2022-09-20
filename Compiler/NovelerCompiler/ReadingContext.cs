@@ -20,5 +20,11 @@
             NodeStack = new Stack<TreeNode>();
             ReadState = ReadState.Story;
         }
+
+        public void AdvanceLine()
+        {
+            LineNumber++;
+            CharacterOnLine = 1;
+        }
     }
 }

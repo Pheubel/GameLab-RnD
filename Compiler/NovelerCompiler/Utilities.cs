@@ -1,10 +1,11 @@
-﻿using System.Runtime.CompilerServices;
+﻿using NovelerCompiler;
+using System.Runtime.CompilerServices;
 
 namespace Noveler.Compiler
 {
     internal static class Utilities
     {
-        public static int SkipSpace(TextReader input)
+        public static int SkipSpace(ReaderWrapper input)
         {
             int skipped = default;
             while (input.Peek() == ' ')
@@ -16,7 +17,7 @@ namespace Noveler.Compiler
             return skipped;
         }
 
-        public static bool MatchCharacter(this TextReader reader, char character)
+        public static bool MatchCharacter(this ReaderWrapper reader, char character)
         {
             if (reader.Peek() == character)
             {
@@ -27,7 +28,7 @@ namespace Noveler.Compiler
             return false;
         }
 
-        public static bool MatchDigit(this TextReader reader, out char digit)
+        public static bool MatchDigit(this ReaderWrapper reader, out char digit)
         {
             digit = (char)reader.Peek();
             if (digit >= '0' && digit <= '9')

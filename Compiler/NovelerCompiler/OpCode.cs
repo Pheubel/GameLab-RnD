@@ -94,5 +94,12 @@
 
 
         // intrinsics
+
+        // special
+
+        /// <summary>
+        /// Terminates the script.
+        /// </summary>
+        EndProgram
     }
 }

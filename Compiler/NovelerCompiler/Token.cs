@@ -1,5 +1,8 @@
-﻿namespace Noveler.Compiler
+﻿using System.Diagnostics;
+
+namespace Noveler.Compiler
 {
+    [DebuggerDisplay("Token ({Type})")]
     class Token
     {
         public TokenType Type;
