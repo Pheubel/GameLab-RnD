@@ -96,7 +96,7 @@ public class Program
                 Console.WriteLine(sb.ToString());
             }
 
-            if (compileIsSuccesful)
+            if (!compileIsSuccesful)
                 return Task.FromResult(ReturnCode.CompilerError);
 
             string destination = outputFile.Extension == CompiledNovelExtension ?
@@ -105,10 +105,11 @@ public class Program
 
             try
             {
-                using var output = File.OpenWrite(destination);
-
-                var rs = CollectionsMarshal.AsSpan(compileResult);
-                output.Write(rs);
+                using (FileStream fs = new FileStream(destination, FileMode.CreateNew))
+                using (StreamWriter sw = new StreamWriter(fs))
+                {
+                    sw.BaseStream.Write(CollectionsMarshal.AsSpan(compileResult));
+                }
             }
             catch (Exception)
             {
