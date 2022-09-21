@@ -123,9 +123,7 @@ namespace Noveler.Compiler
                     currentNode = node;
                 }
 
-
-
-                if (token.Type.IsOperationToken())
+                if (token.Type.IsExpressionToken())
                 {
                     currentNode.InsertParent(node);
 
@@ -148,10 +146,40 @@ namespace Noveler.Compiler
                     {
                         outMessages.Add(new CompilerMessage($"Expected value, found: {value.ValueString}", CompilerMessage.MessageCode.InvalidToken, ref context));
                     }
+                }
 
-                    // TODO constant folding here?
+                if (token.Type.IsFactorToken())
+                {
+                    // todo test this
+                    if (currentNode.Token.Type.IsExpressionToken())
+                    {
+                        currentNode.ReplaceInParent(node);
+                        node.AddChild(currentNode);
+                    }
+                    else
+                    {
+                        currentNode.InsertParent(node);
+                    }
 
+                    // read next token to make sure the operation is in order
+                    var value = ReadToken(untokenizedInput, ref context, outMessages);
+                    if (value.Type.IsValueToken())
+                    {
+                        token.ValueType = Utilities.GetTargetType(currentNode.Token.ValueType, value.ValueType);
+                        node.AddChild(new TreeNode(value));
+                        currentNode = node;
+                    }
+                    else if (value.Type == TokenType.OpenEvaluationScope)
+                    {
+                        node.Token.ValueType = currentNode.Token.ValueType;
+                        context.NodeStack.Push(node);
 
+                        currentNode = TreeNode.CreateInvalidNode();
+                    }
+                    else
+                    {
+                        outMessages.Add(new CompilerMessage($"Expected value, found: {value.ValueString}", CompilerMessage.MessageCode.InvalidToken, ref context));
+                    }
                 }
 
 
@@ -234,6 +262,34 @@ namespace Noveler.Compiler
                     {
                         context.CharacterOnLine += 1;
                         token = new Token(TokenType.Subtract);
+                    }
+                    return;
+
+                case '*':
+                    input.Read();
+                    if (input.MatchCharacter('='))
+                    {
+                        context.CharacterOnLine += 2;
+                        token = new Token(TokenType.MultiplyAssign);
+                    }
+                    else
+                    {
+                        context.CharacterOnLine += 1;
+                        token = new Token(TokenType.Multiply);
+                    }
+                    return;
+
+                case '/':
+                    input.Read();
+                    if (input.MatchCharacter('='))
+                    {
+                        context.CharacterOnLine += 2;
+                        token = new Token(TokenType.DivideAssign);
+                    }
+                    else
+                    {
+                        context.CharacterOnLine += 1;
+                        token = new Token(TokenType.Divide);
                     }
                     return;
 
@@ -406,14 +462,16 @@ namespace Noveler.Compiler
                     break;
                 case TokenType.DoubleLiteral:
                     break;
+
                 case TokenType.Add:
                     EmitCode(node.Children[0]);
                     Console.WriteLine("PUSH R1");
                     EmitCode(node.Children[1]);
-                    Console.WriteLine("POP R2");
-
+                    Console.WriteLine("MOVE R2 R1");
+                    Console.WriteLine("POP R1");
                     Console.WriteLine("ADD R1 R2");
                     break;
+
                 case TokenType.Subtract:
                     EmitCode(node.Children[0]);
                     Console.WriteLine("PUSH R1");
@@ -422,14 +480,21 @@ namespace Noveler.Compiler
                     Console.WriteLine("POP R1");
                     Console.WriteLine("SUBTRACT R1 R2");
                     break;
+
                 case TokenType.Multiply:
                     EmitCode(node.Children[0]);
                     Console.WriteLine("PUSH R1");
                     EmitCode(node.Children[2]);
                     Console.WriteLine("MULTIPLY R1 R2");
                     break;
+
                 case TokenType.Divide:
+                    EmitCode(node.Children[0]);
+                    Console.WriteLine("PUSH R1");
+                    EmitCode(node.Children[2]);
+                    Console.WriteLine("DIVREM R1 R2");
                     break;
+
                 case TokenType.Assign:
                     break;
                 case TokenType.AssignAdd:

@@ -70,6 +70,16 @@ namespace Noveler.Compiler
             return OperationTokens.Contains(token);
         }
 
+        public static bool IsExpressionToken(this TokenType token)
+        {
+            return ExpressionTokens.Contains(token);
+        }
+
+        public static bool IsFactorToken(this TokenType token)
+        {
+            return FactorTokens.Contains(token);
+        }
+
         readonly static TokenType[] ValueTokens =
         {
             TokenType.IntLiteral,
@@ -83,6 +93,18 @@ namespace Noveler.Compiler
         {
             TokenType.Add,
             TokenType.Subtract,
+            TokenType.Multiply,
+            TokenType.Divide
+        };
+
+        readonly static TokenType[] ExpressionTokens =
+        {
+            TokenType.Add,
+            TokenType.Subtract
+        };
+
+        readonly static TokenType[] FactorTokens =
+        {
             TokenType.Multiply,
             TokenType.Divide
         };

@@ -25,6 +25,12 @@
             Children.Add(childNode);
         }
 
+        public void AddChildLeft(TreeNode childNode)
+        {
+            childNode.Parent = this;
+            Children.Insert(0,childNode);
+        }
+
         public void InsertParent(TreeNode parentNode)
         {
             var oldParent = this.Parent;
@@ -39,20 +45,15 @@
             parentNode.AddChild(this);
         }
 
-        public void ReplaceBy(TreeNode replacement)
+        public void ReplaceInParent(TreeNode replacement)
         {
-            if (this.Parent != null)
+            if(this.Parent != null)
             {
                 var index = this.Parent.Children.IndexOf(this);
                 this.Parent.Children[index] = replacement;
+                replacement.Parent = this.Parent;
+                this.Parent = null;
             }
-
-            foreach (var child in Children)
-            {
-                child.Parent = replacement;
-            }
-
-            replacement.Children = this.Children;
         }
 
         public void ReplaceParent(TreeNode replacement)

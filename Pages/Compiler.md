@@ -2,11 +2,15 @@ I have a surface level understanding of how compilers work. For my own scripting
 
 I will be following: https://compilers.iecc.com/crenshaw/
 
+### Getting started
+
 I begin with a basic program that can read a file, apply a transformation and write the output by reading arguments from a command line.
 
 ![SimpleStringTransformation.png](./Resources/SimpleStringTransformation.png)
 
 Now that I can emit output to a file I can start with the process of translating input to a set of instructions as output, these instructions will be a set of codes that my runtime consumes to change the current state.
+
+### Simple Math
 
 For now I have defined a set of instructions used for basic math operations. In order to generate those instructions I will have to strucure the code in the script to make it easy for my compiler to place the instructions sequentially. To do this, I make use of Abstract syntax tree. An abstract syntax tree is a tree with nodes containing the relevant tokens for instructions, like variables and instruction codes. By traversing the tree it is possible correctly formulate the instructions in the right order.
 
@@ -21,4 +25,17 @@ Now that the tree has been simplified, it allows the compiler to emit just the s
 For now I won't be using any tricks to generate optimized code, due to the early stage of development.
 
 I am able to calculate the expression `1 + 2 - 3 + 4 + 5`, problems arrise when the formula has parts wrapped in parentheses. With the current way of handling tokens the generated tree will look the same as without. In order to branch the syntax tree I need to be able to make small trees that I can stich together later. To do this I make use of temporary nodes. With each open parentesis I create a temporary node and push my current node onto a stack, when the compiler gets to a closing parenthesis it pops the stack to stitch the tree. With the formula `((1 + 2) - (3 + 4)) + 5` the tree gets created as followed:
-![SyntaxTreeStich]()
+![SyntaxTreeStichAnimation]()
+
+For factor evaluation, such as `*` and `/` the rules are slightly different, in a formula they take precedence over `+` and `-` and will have to occur earlier when traversing the syntax tree.
+
+A syntax tree for the equation `5 + 6 * 7` would look like:
+![SyntaxTreeMultiplication]()
+
+### Logic
+
+### Introducing Story
+
+# Runtime V1
+
+# First Round of Testing

@@ -53,5 +53,7 @@
 
         //unsorted
         Negate,
+        MultiplyAssign,
+        DivideAssign,
     }
 }

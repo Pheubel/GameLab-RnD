@@ -78,6 +78,8 @@
         Load32ConstantToStack,
         Load64ConstantToStack,
 
+        Duplicate,
+
         Store32,
         Store64,
         Store32FromStack,
@@ -88,6 +90,9 @@
 
         Pop32,
         Pop64,
+
+        Peek32,
+        Peek64,
 
         Move32,
         Move64,
