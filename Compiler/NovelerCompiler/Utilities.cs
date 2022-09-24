@@ -1,10 +1,54 @@
 ﻿using NovelerCompiler;
+using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace Noveler.Compiler
 {
     internal static class Utilities
     {
+        public static readonly IReadOnlyDictionary<string, TokenType> Keywords = new Dictionary<string, TokenType>()
+        {
+            {"and", TokenType.And },
+            {"or", TokenType.Or },
+            {"not", TokenType.Not },
+            {"is", TokenType.Is },
+            {"xor", TokenType.Xor },
+            {"lesser", TokenType.Lesser },
+            {"greater", TokenType.Greater },
+            {"than", TokenType.Than },
+            {"big", TokenType.Big },
+            {"whole", TokenType.Whole },
+            {"number", TokenType.Number },
+            {"flag", TokenType.Flag },
+            {"set", TokenType.Set },
+            {"int", TokenType.Int },
+            {"long", TokenType.Long },
+            {"float", TokenType.Float },
+            {"double", TokenType.Double },
+            {"include", TokenType.Include },
+            {"true", TokenType.True },
+            {"false", TokenType.False }
+        };
+
+        public static readonly IReadOnlySet<string> ReservedKeywords = new HashSet<string>()
+        {
+            "signed",
+            "unsigned",
+            "tiny",
+            "small",
+            "byte",
+            "sbyte",
+            "short",
+            "ushort",
+            "uint",
+            "ulong",
+            "text",
+            "string",
+            "null",
+            "none"
+        };
+
         public static int SkipSpace(ReaderWrapper input)
         {
             int skipped = default;
