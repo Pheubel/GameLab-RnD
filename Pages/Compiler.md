@@ -38,7 +38,9 @@ TODO: create tree
 
 ### Logic
 
+Inside of the language it is possible to include logic for branching. To handle this I need to choose a method of branching. After referencing Assembly instructions, a common way to handle branching is to test for `0` to decide if the code execution should jump over a block of code.
 
+TODO: animation for jump logic
 
 ### Variables
 
@@ -46,7 +48,7 @@ Variables require special attention in order to use within the language. their v
 
 TODO: image/code of example table
 
-WHenever a variable gets encountered, an entry will be stored in the table, or an existing record will have a reference to the location in the tree added. After the syntax tree has been generated, I will be able to replace the references with a properly structured node with correct typing.
+Whenever a variable gets encountered, an entry will be stored in the table, or an existing record will have a reference to the location in the tree added. After the syntax tree has been generated, I will be able to replace the references with a properly structured node with correct typing.
 
 ### Introducing Story
 
