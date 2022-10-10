@@ -44,7 +44,7 @@ TODO: animation for jump logic
 
 ### Variables
 
-Variables require special attention in order to use within the language. their value or type might not be immediately known when compiling, requiring an extra step in order to use right. In order to keep trak of variables, I will be using a symbol table, with this I can keep track of which variables exist inside of the script. I will also be able to store additional data, like the type of the variable's value.
+Variables require special attention in order to use within the language. their value or type might not be immediately known when compiling, requiring an extra step in order to use right. In order to keep track of variables, I will be using a symbol table, with this I can keep track of which variables exist inside of the script. I will also be able to store additional data, like the type of the variable's value.
 
 TODO: image/code of example table
 
