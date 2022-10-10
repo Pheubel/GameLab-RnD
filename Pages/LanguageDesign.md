@@ -8,6 +8,8 @@ For the scope of this research I focus on the story writers.
 
 When determining the language structure, there are some parts that do not require much research to my target group, as these parts are universal, such as arithmetics, they have a set way of interacting.
 
+## Research
+
 For the scope of this research I focussed on 3 parts that together form the fiber of my language: Choices, Jumps and Variables.
 
 I also want to find out what tool(s) they currently use for writing their stories and how experienced they are with programming.

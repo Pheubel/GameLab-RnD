@@ -1,4 +1,4 @@
-# Compiler
+## Compiler
 
 I have a surface level understanding of how compilers work. For my own scripting language I will have to make make my own in order to turn a script into instructions.
 
@@ -52,6 +52,8 @@ Whenever a variable gets encountered, an entry will be stored in the table, or a
 
 ### Introducing Story
 
-# Runtime V1
 
-# First Round of Testing
+
+## Runtime V1
+
+## First Round of Testing
