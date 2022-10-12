@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Globalization;
 using NovelerCompiler;
+using System.CommandLine.Parsing;
 
 namespace Noveler.Compiler
 {
@@ -39,13 +40,13 @@ namespace Noveler.Compiler
 
             TreeNode currentNode = tree.Root;
             Dictionary<string, VariableTableEntry> variableTable = new Dictionary<string, VariableTableEntry>();
-            ReadingContext context = new ReadingContext(variableTable, 1, 1, null, 0);
+            ReadingContext context = new ReadingContext(variableTable, 1, 1, null, 0, outMessages);
 
 
             // tokenize the script
             while (true)
             {
-                var token = ReadToken(untokenizedInput, ref context, outMessages);
+                var token = ReadToken(untokenizedInput, ref context);
 
                 // if the token is an end of file, wrap up tokenizing. 
                 if (token.Type == TokenType.EndOfFile)
@@ -53,7 +54,8 @@ namespace Noveler.Compiler
 
                 if (token.Type == TokenType.InvalidToken)
                 {
-                    outMessages.Add(new CompilerMessage($"Found invalid token: {token.ValueString}", CompilerMessage.MessageCode.InvalidToken, ref context));
+
+                    context.AddErrorMessage(new CompilerMessage($"Found invalid token: {token.ValueString}", CompilerMessage.MessageCode.InvalidToken, ref context));
                     continue;
                 }
 
@@ -70,7 +72,7 @@ namespace Noveler.Compiler
                         token.Type = TokenType.Negate;
 
                         // read next token to make sure the operation is in order
-                        var value = ReadToken(untokenizedInput, ref context, outMessages);
+                        var value = ReadToken(untokenizedInput, ref context);
                         if (value.Type.IsValueToken())
                         {
                             node.AddChild(new TreeNode(value));
@@ -84,7 +86,7 @@ namespace Noveler.Compiler
                         }
                         else
                         {
-                            outMessages.Add(new CompilerMessage($"Cannot negate value, found: {value.ValueString}", CompilerMessage.MessageCode.InvalidToken, ref context));
+                            context.AddErrorMessage(new CompilerMessage($"Cannot negate value, found: {value.ValueString}", CompilerMessage.MessageCode.InvalidToken, ref context));
                         }
                     }
                 }
@@ -112,7 +114,7 @@ namespace Noveler.Compiler
                     }
                     else
                     {
-                        outMessages.Add(new CompilerMessage($"Unbalanced parentheses, extra \')\' found.", CompilerMessage.MessageCode.InvalidToken, ref context));
+                        context.AddErrorMessage(new CompilerMessage($"Unbalanced parentheses, extra \')\' found.", CompilerMessage.MessageCode.InvalidToken, ref context));
                     }
                 }
 
@@ -128,7 +130,7 @@ namespace Noveler.Compiler
                     currentNode.InsertParent(node);
 
                     // read next token to make sure the operation is in order
-                    var value = ReadToken(untokenizedInput, ref context, outMessages);
+                    var value = ReadToken(untokenizedInput, ref context);
                     if (value.Type.IsValueToken())
                     {
                         token.ValueType = Utilities.GetTargetType(currentNode.Token.ValueType, value.ValueType);
@@ -144,7 +146,7 @@ namespace Noveler.Compiler
                     }
                     else
                     {
-                        outMessages.Add(new CompilerMessage($"Expected value, found: {value.ValueString}", CompilerMessage.MessageCode.InvalidToken, ref context));
+                        context.AddErrorMessage(new CompilerMessage($"Expected value, found: {value.ValueString}", CompilerMessage.MessageCode.InvalidToken, ref context));
                     }
                 }
 
@@ -162,7 +164,7 @@ namespace Noveler.Compiler
                     }
 
                     // read next token to make sure the operation is in order
-                    var value = ReadToken(untokenizedInput, ref context, outMessages);
+                    var value = ReadToken(untokenizedInput, ref context);
                     if (value.Type.IsValueToken())
                     {
                         token.ValueType = Utilities.GetTargetType(currentNode.Token.ValueType, value.ValueType);
@@ -178,7 +180,7 @@ namespace Noveler.Compiler
                     }
                     else
                     {
-                        outMessages.Add(new CompilerMessage($"Expected value, found: {value.ValueString}", CompilerMessage.MessageCode.InvalidToken, ref context));
+                        context.AddErrorMessage(new CompilerMessage($"Expected value, found: {value.ValueString}", CompilerMessage.MessageCode.InvalidToken, ref context));
                     }
                 }
 
@@ -194,19 +196,19 @@ namespace Noveler.Compiler
 
 
 
-        private static Token ReadToken(ReaderWrapper input, ref ReadingContext context, List<CompilerMessage> outMessages)
+        private static Token ReadToken(ReaderWrapper input, ref ReadingContext context)
         {
             context.CharacterOnLine += Utilities.SkipSpace(input);
 
-            LexIntoToken(input, ref context, outMessages, out Token token);
+            LexIntoToken(input, ref context, out Token token);
 
             return token;
         }
 
-        private static void LexIntoToken(ReaderWrapper input, ref ReadingContext context, List<CompilerMessage> outMessages, [NotNull] out Token? token)
+        private static void LexIntoToken(ReaderWrapper input, ref ReadingContext context, [NotNull] out Token? token)
         {
             token = default;
-            char firstChar = (char)input.Peek();
+            char firstChar = input.PeekChar();
             switch (firstChar)
             {
                 // determine if we are dealing with a number
@@ -220,7 +222,7 @@ namespace Noveler.Compiler
                 case '7':
                 case '8':
                 case '9':
-                    if (TryHandleNumber(input, ref context, outMessages, out var numberToken))
+                    if (TryHandleNumber(input, ref context, out var numberToken))
                     {
                         token = numberToken;
                         return;
@@ -316,14 +318,86 @@ namespace Noveler.Compiler
             // handle symbols and keywords
             if (Utilities.IsAlpha(firstChar))
             {
-
+                if (TryHandleSymbolOrKeyword(input, ref context, out token))
+                {
+                    return;
+                }
             }
 
             // handle unmatched tokens
             token ??= Token.InvalidToken;
         }
 
-        private static bool TryHandleNumber(ReaderWrapper input, ref ReadingContext context, List<CompilerMessage> outMessages, [NotNullWhen(true)] out Token? token)
+        private static bool TryHandleSymbolOrKeyword(ReaderWrapper input, ref ReadingContext context, [NotNullWhen(true)] out Token? token)
+        {
+            using var charBuffer = PooledList<char>.Rent(512);
+
+            charBuffer.Add(input.ReadChar());
+
+            while (true)
+            {
+                char c = input.PeekChar();
+
+                if (Utilities.IsAlphaNumeric(c))
+                {
+                    input.Read();
+
+                    charBuffer.Add(c);
+                }
+
+                break;
+            }
+
+            context.CharacterOnLine += charBuffer.Count;
+            string symbolString = charBuffer.AsString();
+
+            // determine if this is a function declaration
+            if (input.MatchCharacter('('))
+            {
+                context.CharacterOnLine++;
+                //TODO: handle function start declaration
+                token = new Token(TokenType.FunctionDeclaration, symbolString);
+                return false;
+            }
+
+            // handle keywords
+            if (TryHandleKeyword(symbolString, out token))
+                return true;
+
+            // TODO: allow multiple forward declaration?
+            if (TryHandleSymbols(input, ref context, symbolString, out token))
+                return true;
+
+            //context.AddErrorMessage(new CompilerMessage("Cannot "));
+            token = new Token(TokenType.UndefinedVariable, symbolString);
+            return false;
+        }
+
+        private static bool TryHandleKeyword(string symbolString, [NotNullWhen(true)] out Token? token)
+        {
+            bool result = Utilities.Keywords.TryGetValue(symbolString, out var keywordToken);
+            token = result ? new Token(keywordToken, symbolString) : Token.InvalidToken;
+            return result;
+        }
+
+        private static bool TryHandleSymbols(ReaderWrapper input, ref ReadingContext context, string symbolString, [NotNullWhen(true)] out Token? token)
+        {
+            context.VariableTable.TryGetValue(symbolString, out VariableTableEntry? tableEntry);
+
+            context.CharacterOnLine += Utilities.SkipSpace(input);
+
+            // determine if the variable should be declared
+            if (Utilities.MatchCharacter(input, ':'))
+            {
+                context.CharacterOnLine++;
+
+                context.CharacterOnLine += Utilities.SkipSpace(input);
+
+
+            }
+        }
+
+        private static bool TryHandleNumber(ReaderWrapper input, ref ReadingContext context, [NotNullWhen(true)] out Token? token)
         {
             using var charBuffer = PooledList<char>.Rent(512);
 
@@ -372,21 +446,21 @@ namespace Noveler.Compiler
                 return false;
             }
 
-            if (Utilities.IsAplhaNumeric((char)input.Peek()))
+            if (Utilities.IsAlphaNumeric((char)input.Peek()))
             {
-                outMessages.Add(new CompilerMessage($"Invalid literal structure, contains invalid character.", CompilerMessage.MessageCode.InvalidLiteral, ref context));
+                context.AddErrorMessage(new CompilerMessage($"Invalid literal structure, contains invalid character.", CompilerMessage.MessageCode.InvalidLiteral, ref context));
             }
 
             // there number was missing after defining a different base
             if (digitCount == 0)
             {
-                outMessages.Add(new CompilerMessage($"Invalid literal structure, missing digits.", CompilerMessage.MessageCode.InvalidLiteral, ref context));
+                context.AddErrorMessage(new CompilerMessage($"Invalid literal structure, missing digits.", CompilerMessage.MessageCode.InvalidLiteral, ref context));
             }
 
             // switch to floating point number handling when dealing with decimal
             if (numberBase == 10 && input.MatchCharacter('.'))
             {
-                return TryHandleFloatingPoint(charBuffer, input, ref context, outMessages, out token);
+                return TryHandleFloatingPoint(charBuffer, input, ref context, out token);
             }
 
             Span<char> bufferSpan;
@@ -413,7 +487,7 @@ namespace Noveler.Compiler
             }
             else
             {
-                outMessages.Add(new CompilerMessage($"Invalid literal \"{bufferSpan}\", outside of valid range.", CompilerMessage.MessageCode.InvalidLiteral, ref context));
+                context.AddErrorMessage(new CompilerMessage($"Invalid literal \"{bufferSpan}\", outside of valid range.", CompilerMessage.MessageCode.InvalidLiteral, ref context));
                 context.CharacterOnLine += charBuffer.Count;
                 token = null;
                 return false;
@@ -423,7 +497,7 @@ namespace Noveler.Compiler
             return true;
         }
 
-        private static bool TryHandleFloatingPoint(PooledList<char> charBuffer, ReaderWrapper input, ref ReadingContext context, List<CompilerMessage> outMessages, out Token? token)
+        private static bool TryHandleFloatingPoint(PooledList<char> charBuffer, ReaderWrapper input, ref ReadingContext context, out Token? token)
         {
             // TODO: implement
             token = null;

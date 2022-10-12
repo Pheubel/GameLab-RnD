@@ -114,4 +114,10 @@ namespace Noveler.Compiler
             }
         }
     }
+
+    internal static class PooledListExtensions
+    {
+        public static string AsString(this PooledList<char> charList) => 
+            charList.AsSpan().ToString();
+    }
 }

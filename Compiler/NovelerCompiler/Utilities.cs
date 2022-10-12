@@ -50,9 +50,14 @@ namespace Noveler.Compiler
             return c >= '0' && c <= '9';
         }
 
-        public static bool IsAplhaNumeric(char c)
+        public static bool IsAlphaNumeric(char c)
         {
             return IsAlpha(c) || IsNumeric(c);
+        }
+
+        public static bool IsTerminator(char c)
+        {
+            return c == '\n' || c == ';';
         }
 
         public static InternalType GetTargetType(InternalType leftHandSide, InternalType rightHandSide)
@@ -107,6 +112,11 @@ namespace Noveler.Compiler
         {
             TokenType.Multiply,
             TokenType.Divide
+        };
+
+        public static readonly Dictionary<string, TokenType> Keywords = new Dictionary<string, TokenType>()
+        {
+            // {"", TokenType. }
         };
     }
 }

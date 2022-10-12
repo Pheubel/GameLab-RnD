@@ -31,5 +31,11 @@
             _buffer = _reader.Read();
             return _buffer.Value;
         }
+
+        public char ReadChar() => 
+            (char)Read();
+
+        public char PeekChar() =>
+            (char)Peek();
     }
 }
