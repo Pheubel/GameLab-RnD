@@ -5,10 +5,10 @@
         InvalidToken,
 
         //types
-        Int,
-        Long,
-        Float,
-        Double,
+        IntValue,
+        LongValue,
+        FloatValue,
+        DoubleValue,
 
         // literals
         IntLiteral,
@@ -31,6 +31,7 @@
         Decrement,
 
         // function
+        FunctionDeclaration,
         FunctionName,
         OpenFunction,
         CloseFunction,
@@ -51,9 +52,13 @@
         EndOfLine,
         EndOfFile,
 
+        // keywords
+
+
         //unsorted
         Negate,
         MultiplyAssign,
         DivideAssign,
+        UndefinedVariable,
     }
 }
