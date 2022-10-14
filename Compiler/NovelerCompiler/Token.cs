@@ -3,7 +3,7 @@
 namespace Noveler.Compiler
 {
     [DebuggerDisplay("Token ({Type})")]
-    class Token
+    public class Token
     {
         public TokenType Type;
         public string ValueString;

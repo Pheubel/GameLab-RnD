@@ -1,6 +1,6 @@
 ﻿namespace Noveler.Compiler
 {
-    enum TokenType
+    public enum TokenType
     {
         InvalidToken,
 

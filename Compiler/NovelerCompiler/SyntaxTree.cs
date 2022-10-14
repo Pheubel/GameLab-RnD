@@ -1,6 +1,6 @@
 ﻿namespace Noveler.Compiler
 {
-    internal class SyntaxTree
+    public class SyntaxTree
     {
         public TreeNode Root { get; }
 

@@ -1,6 +1,6 @@
 ﻿namespace Noveler.Compiler
 {
-    internal class TreeNode
+    public class TreeNode
     {
         public Token Token { get; set; }
         public List<TreeNode> Children { get; private set; }
@@ -28,7 +28,7 @@
         public void AddChildLeft(TreeNode childNode)
         {
             childNode.Parent = this;
-            Children.Insert(0,childNode);
+            Children.Insert(0, childNode);
         }
 
         public void InsertParent(TreeNode parentNode)
@@ -47,7 +47,7 @@
 
         public void ReplaceInParent(TreeNode replacement)
         {
-            if(this.Parent != null)
+            if (this.Parent != null)
             {
                 var index = this.Parent.Children.IndexOf(this);
                 this.Parent.Children[index] = replacement;

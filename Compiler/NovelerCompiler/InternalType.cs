@@ -1,6 +1,6 @@
 ﻿namespace Noveler.Compiler
 {
-    internal enum InternalType
+    public enum InternalType
     {
         Undeclared,
         Int32,
