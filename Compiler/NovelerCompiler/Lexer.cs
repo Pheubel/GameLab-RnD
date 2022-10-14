@@ -64,10 +64,13 @@ namespace NovelerCompiler
                         if (value.Type.IsValueToken())
                         {
                             node.AddChild(new TreeNode(value));
+                            currentNode.AddChild(node);
+
                             currentNode = node;
                         }
                         else if (value.Type == TokenType.OpenEvaluationScope)
                         {
+                            currentNode.AddChild(node);
                             context.NodeStack.Push(node);
 
                             currentNode = TreeNode.CreateInvalidNode();

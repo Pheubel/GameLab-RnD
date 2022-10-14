@@ -1,5 +1,8 @@
-﻿namespace Noveler.Compiler
+﻿using System.Diagnostics;
+
+namespace Noveler.Compiler
 {
+    [DebuggerDisplay("Node (Token:{Token.Type})")]
     public class TreeNode
     {
         public Token Token { get; set; }

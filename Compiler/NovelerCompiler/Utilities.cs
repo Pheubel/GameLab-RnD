@@ -163,7 +163,8 @@ namespace Noveler.Compiler
             TokenType.Add,
             TokenType.Subtract,
             TokenType.Multiply,
-            TokenType.Divide
+            TokenType.Divide,
+            TokenType.Negate
         };
 
         readonly static TokenType[] ExpressionTokens =
