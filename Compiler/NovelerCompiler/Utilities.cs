@@ -121,9 +121,12 @@ namespace Noveler.Compiler
             return c == '\n' || c == ';';
         }
 
-        public static InternalType GetTargetType(InternalType leftHandSide, InternalType rightHandSide)
+        public static TypeId GetTargetType(TypeId leftHandSide, TypeId rightHandSide)
         {
-            return (InternalType)Math.Max((int)leftHandSide, (int)rightHandSide);
+            if (leftHandSide.IsCustomType() || rightHandSide.IsCustomType())
+                throw new InvalidOperationException();
+
+            return (TypeId)Math.Max((int)leftHandSide, (int)rightHandSide);
         }
 
         public static bool IsValueToken(this TokenType token)

@@ -12,6 +12,6 @@
 
         public int GetTypeId() => _typeIdValue;
         public void SetTypeId(int id) => _typeIdValue = id;
-        public void SetTypeId(InternalType id) => _typeIdValue = (int)id;
+        public void SetTypeId(TypeId id) => _typeIdValue = (int)id;
     }
 }

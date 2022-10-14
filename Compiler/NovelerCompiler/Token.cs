@@ -8,7 +8,7 @@ namespace Noveler.Compiler
         public TokenType Type;
         public string ValueString;
 
-        public InternalType ValueType { get; set; } = InternalType.Undeclared;
+        public TypeId ValueType { get; set; } = TypeId.Undeclared;
 
         public Token(TokenType type, string? valueString = null)
         {

@@ -402,16 +402,16 @@ namespace NovelerCompiler
                 return false;
             }
 
-            var valueType = (InternalType)tableEntry.GetTypeId();
+            var valueType = (TypeId)tableEntry.GetTypeId();
             token = valueType switch
             {
-                InternalType.Int32 => new Token(TokenType.IntValue),
-                InternalType.Int64 => new Token(TokenType.LongLiteral),
-                InternalType.Float32 => new Token(TokenType.FloatValue),
-                InternalType.Float64 => new Token(TokenType.DoubleValue),
+                TypeId.Int32 => new Token(TokenType.IntValue),
+                TypeId.Int64 => new Token(TokenType.LongLiteral),
+                TypeId.Float32 => new Token(TokenType.FloatValue),
+                TypeId.Float64 => new Token(TokenType.DoubleValue),
 
                 // should not happen
-                InternalType.Undeclared => throw new NotImplementedException(),
+                TypeId.Undeclared => throw new NotImplementedException(),
 
                 // the type is not a language standard type
                 _ => new Token(TokenType.CustomType)
@@ -507,11 +507,11 @@ namespace NovelerCompiler
 
             if (int.TryParse(bufferSpan, numberStyles, null, out var intResult) && intResult >= 0)
             {
-                token = new Token(TokenType.IntLiteral, intResult.ToString()) { ValueType = InternalType.Int32 };
+                token = new Token(TokenType.IntLiteral, intResult.ToString()) { ValueType = TypeId.Int32 };
             }
             else if (long.TryParse(bufferSpan, numberStyles, null, out var longResult) && longResult >= 0)
             {
-                token = new Token(TokenType.LongLiteral, longResult.ToString()) { ValueType = InternalType.Int64 };
+                token = new Token(TokenType.LongLiteral, longResult.ToString()) { ValueType = TypeId.Int64 };
             }
             else
             {
@@ -547,11 +547,11 @@ namespace NovelerCompiler
 
             if (float.TryParse(bufferSpan, out float floatResult))
             {
-                token = new Token(TokenType.FloatLiteral, floatResult.ToString()) { ValueType = InternalType.Float32 };
+                token = new Token(TokenType.FloatLiteral, floatResult.ToString()) { ValueType = TypeId.Float32 };
             }
             else if (double.TryParse(bufferSpan, out double doubleResult))
             {
-                token = new Token(TokenType.FloatLiteral, doubleResult.ToString()) { ValueType = InternalType.Float32 };
+                token = new Token(TokenType.FloatLiteral, doubleResult.ToString()) { ValueType = TypeId.Float32 };
             }
             else
             {
