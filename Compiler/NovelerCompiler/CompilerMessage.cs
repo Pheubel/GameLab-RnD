@@ -30,7 +30,10 @@
 
             // errors
             InvalidToken,
-            InvalidLiteral
+            InvalidLiteral,
+            ReservedKeyword,
+            RedeclaredVariable,
+            UndefinedVariable
         }
 
         public enum MessageType

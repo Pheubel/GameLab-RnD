@@ -59,6 +59,7 @@
         Negate,
         MultiplyAssign,
         DivideAssign,
-        UndefinedVariable,
+        UndeclaredVariable,
+        CustomType,
     }
 }

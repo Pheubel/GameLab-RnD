@@ -9,39 +9,7 @@ namespace Noveler.Compiler
     {
         public static readonly IReadOnlyDictionary<string, TokenType> Keywords = new Dictionary<string, TokenType>()
         {
-            { "and",        TokenType.KeywordAnd },
-            { "or",         TokenType.KeywordOr },
-            { "not",        TokenType.KeywordNot },
-            { "is",         TokenType.KeywordIs },
-            { "xor",        TokenType.KeywordXor },
-            { "lesser",     TokenType.KeywordLesser },
-            { "greater",    TokenType.KeywordGreater },
-            { "than",       TokenType.KeywordThan },
-            { "big",        TokenType.KeywordBig },
-            { "whole",      TokenType.KeywordWhole },
-            { "number",     TokenType.KeywordNumber },
-            { "flag",       TokenType.KeywordFlag },
-            { "set",        TokenType.KeywordSet },
-            { "int",        TokenType.KeywordInt },
-            { "long",       TokenType.KeywordLong },
-            { "float",      TokenType.KeywordFloat },
-            { "double",     TokenType.KeywordDouble },
-            { "include",    TokenType.KeywordInclude },
-            { "true",       TokenType.KeywordTrue },
-            { "false",      TokenType.KeywordFalse },
-            { "equal",      TokenType.KeywordEqual },
-            { "equals",     TokenType.KeywordEquals },
-            { "to",         TokenType.KeywordTo },
-            { "function",   TokenType.KeywordFunction},
-            { "choice",     TokenType.KeywordChoice},
-            { "do",         TokenType.KeywordDo },
-            { "while",      TokenType.KeywordWhile },
-            { "for",        TokenType.KeywordFor },
-            { "each",       TokenType.KeywordEach },
-            { "return",     TokenType.KeywordReturn },
-            { "bool",       TokenType.KeywordBool },
-            { "boolean",    TokenType.KeywordBool },
-            { "event",      TokenType.KeywordEvent }
+
         };
 
         public static readonly IReadOnlySet<string> ReservedKeywords = new HashSet<string>()
@@ -61,7 +29,41 @@ namespace Noveler.Compiler
             "null",
             "none",
             "ref",
-            "char"
+            "char",
+
+            "and",
+            "or",
+            "not",
+            "is",
+            "xor",
+            "lesser",
+            "greater",
+            "than",
+            "big",
+            "whole",
+            "number",
+            "flag",
+            "set",
+            "int",
+            "long",
+            "float",
+            "double",
+            "include",
+            "true",
+            "false",
+            "equal",
+            "equals",
+            "to",
+            "function",
+            "choice",
+            "do",
+            "while",
+            "for",
+            "each",
+            "return",
+            "bool",
+            "boolean",
+            "event"
         };
 
         public static int SkipSpace(ReaderWrapper input)
@@ -171,11 +173,6 @@ namespace Noveler.Compiler
         {
             TokenType.Multiply,
             TokenType.Divide
-        };
-
-        public static readonly Dictionary<string, TokenType> Keywords = new Dictionary<string, TokenType>()
-        {
-            // {"", TokenType. }
         };
     }
 }

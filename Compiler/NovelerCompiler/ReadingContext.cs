@@ -31,13 +31,21 @@
             CharacterOnLine = 1;
         }
 
-        public void Recover() => 
+        public void Recover() =>
             IsInHealthyState = true;
 
         public void AddErrorMessage(CompilerMessage message)
         {
             IsInHealthyState = false;
             OutMessages.Add(message);
+        }
+
+        public void AddErrorMessage(string message, CompilerMessage.MessageCode messageCode)
+        {
+            ref var context = ref this;
+
+            IsInHealthyState = false;
+            OutMessages.Add(new CompilerMessage(message, messageCode, ref context));
         }
     }
 }

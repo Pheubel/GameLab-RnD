@@ -364,12 +364,19 @@ namespace Noveler.Compiler
             if (TryHandleKeyword(symbolString, out token))
                 return true;
 
+            // handle reserved keywords
+            if (Utilities.ReservedKeywords.Contains(symbolString))
+            {
+                context.AddErrorMessage($"\"{symbolString}\" is a reserved keyword that is currently not implemented.", CompilerMessage.MessageCode.ReservedKeyword);
+                return false;
+            }
+
             // TODO: allow multiple forward declaration?
             if (TryHandleSymbols(input, ref context, symbolString, out token))
                 return true;
 
             //context.AddErrorMessage(new CompilerMessage("Cannot "));
-            token = new Token(TokenType.UndefinedVariable, symbolString);
+            token = new Token(TokenType.UndefinedSymbol, symbolString);
             return false;
         }
 
@@ -382,8 +389,6 @@ namespace Noveler.Compiler
 
         private static bool TryHandleSymbols(ReaderWrapper input, ref ReadingContext context, string symbolString, [NotNullWhen(true)] out Token? token)
         {
-            context.VariableTable.TryGetValue(symbolString, out VariableTableEntry? tableEntry);
-
             context.CharacterOnLine += Utilities.SkipSpace(input);
 
             // determine if the variable should be declared
@@ -391,10 +396,45 @@ namespace Noveler.Compiler
             {
                 context.CharacterOnLine++;
 
-                context.CharacterOnLine += Utilities.SkipSpace(input);
+                // handle if variable already exists
+                if (!context.VariableTable.TryAdd(symbolString, new VariableTableEntry()))
+                {
+                    context.AddErrorMessage("Cannot re-declare a variable.", CompilerMessage.MessageCode.RedeclaredVariable);
+                    token = new Token(TokenType.InvalidToken, $"Reclared variable ({symbolString}).");
+                    return false;
+                }
 
+                // variable will get it's type from future keywords
+                token = new Token(TokenType.ValueVariable, symbolString);
 
+                return true;
             }
+
+            // the variable should already be declared
+            if (!context.VariableTable.TryGetValue(symbolString, out VariableTableEntry? tableEntry))
+            {
+                context.AddErrorMessage($"\"{symbolString}\" has not been declared yet. Make sure you declare", CompilerMessage.MessageCode.UndefinedVariable);
+                token = new Token(TokenType.UndeclaredVariable, symbolString);
+                return false;
+            }
+
+            token = (InternalType)tableEntry.GetTypeId() switch
+            {
+                InternalType.Int32 => new Token(TokenType.IntValue, TokenType.IntValue.ToString()),
+                InternalType.Int64 => new Token(TokenType.LongLiteral, TokenType.LongLiteral.ToString()),
+                InternalType.Float32 => new Token(TokenType.FloatValue, TokenType.FloatValue.ToString()),
+                InternalType.Float64 => new Token(TokenType.DoubleValue, TokenType.DoubleValue.ToString()),
+
+                // should not happen
+                InternalType.Undeclared => throw new NotImplementedException(),
+
+                // the type is not a language standard type
+                _ => new Token(TokenType.CustomType, tableEntry.GetTypeId().ToString()),
+            };
+
+            tableEntry.Appearances.Add(token);
+
+            return true;
         }
 
         private static bool TryHandleNumber(ReaderWrapper input, ref ReadingContext context, [NotNullWhen(true)] out Token? token)
