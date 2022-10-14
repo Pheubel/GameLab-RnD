@@ -418,19 +418,22 @@ namespace Noveler.Compiler
                 return false;
             }
 
-            token = (InternalType)tableEntry.GetTypeId() switch
+            var valueType = (InternalType)tableEntry.GetTypeId();
+            token = valueType switch
             {
-                InternalType.Int32 => new Token(TokenType.IntValue, TokenType.IntValue.ToString()),
-                InternalType.Int64 => new Token(TokenType.LongLiteral, TokenType.LongLiteral.ToString()),
-                InternalType.Float32 => new Token(TokenType.FloatValue, TokenType.FloatValue.ToString()),
-                InternalType.Float64 => new Token(TokenType.DoubleValue, TokenType.DoubleValue.ToString()),
+                InternalType.Int32 => new Token(TokenType.IntValue),
+                InternalType.Int64 => new Token(TokenType.LongLiteral),
+                InternalType.Float32 => new Token(TokenType.FloatValue),
+                InternalType.Float64 => new Token(TokenType.DoubleValue),
 
                 // should not happen
                 InternalType.Undeclared => throw new NotImplementedException(),
 
                 // the type is not a language standard type
-                _ => new Token(TokenType.CustomType, tableEntry.GetTypeId().ToString()),
+                _ => new Token(TokenType.CustomType)
             };
+
+            token.ValueType = valueType;
 
             tableEntry.Appearances.Add(token);
 
@@ -527,7 +530,7 @@ namespace Noveler.Compiler
             }
             else
             {
-                context.AddErrorMessage(new CompilerMessage($"Invalid literal \"{bufferSpan}\", outside of valid range.", CompilerMessage.MessageCode.InvalidLiteral, ref context));
+                context.AddErrorMessage($"Invalid literal \"{bufferSpan}\".", CompilerMessage.MessageCode.InvalidLiteral);
                 context.CharacterOnLine += charBuffer.Count;
                 token = null;
                 return false;

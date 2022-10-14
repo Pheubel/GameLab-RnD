@@ -61,5 +61,6 @@
         DivideAssign,
         UndeclaredVariable,
         CustomType,
+        UndefinedSymbol,
     }
 }
