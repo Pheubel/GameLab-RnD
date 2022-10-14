@@ -1,6 +1,7 @@
 ﻿using NovelerCompiler;
 using System.Collections;
 using System.Collections.Generic;
+using System.CommandLine.Parsing;
 using System.Runtime.CompilerServices;
 
 namespace Noveler.Compiler
@@ -9,7 +10,9 @@ namespace Noveler.Compiler
     {
         public static readonly IReadOnlyDictionary<string, TokenType> Keywords = new Dictionary<string, TokenType>()
         {
-
+            { "number" , TokenType.KeywordNumber},
+            { "big", TokenType.KeywordBig },
+            { "whole", TokenType.KeywordWhole }
         };
 
         public static readonly IReadOnlySet<string> ReservedKeywords = new HashSet<string>()
@@ -39,9 +42,8 @@ namespace Noveler.Compiler
             "lesser",
             "greater",
             "than",
-            "big",
-            "whole",
-            "number",
+
+
             "flag",
             "set",
             "int",
@@ -101,6 +103,31 @@ namespace Noveler.Compiler
             return false;
         }
 
+        public static bool MatchNewLine(this ReaderWrapper reader)
+        {
+            // new lines when file is LF
+            if (reader.PeekChar() == '\n')
+            {
+                reader.Read();
+                return true;
+            }
+
+            // new lines when file is CRLF
+            if (reader.PeekChar() == '\r' && reader.PeekSecondChar() == '\n')
+            {
+                reader.Read();
+                reader.Read();
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool PeekMatchNewLine(this ReaderWrapper reader)
+        {
+            return reader.PeekChar() == '\n' || (reader.PeekChar() == '\r' && reader.PeekSecondChar() == '\n');
+        }
+
         public static bool IsAlpha(char c)
         {
             return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
@@ -149,6 +176,11 @@ namespace Noveler.Compiler
             return FactorTokens.Contains(token);
         }
 
+        public static bool IsTerminatingToken(this TokenType token)
+        {
+            return TerminatingTokens.Contains(token);
+        }
+
         readonly static TokenType[] ValueTokens =
         {
             TokenType.IntLiteral,
@@ -177,6 +209,12 @@ namespace Noveler.Compiler
         {
             TokenType.Multiply,
             TokenType.Divide
+        };
+
+        readonly static TokenType[] TerminatingTokens =
+        {
+            TokenType.NewLine,
+            TokenType.SemiColon
         };
     }
 }

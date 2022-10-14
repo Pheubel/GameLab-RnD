@@ -9,12 +9,12 @@
         public bool IsInHealthyState;
         public string? CurrentFile;
         public Stack<TreeNode> NodeStack;
-        public Dictionary<string, VariableTableEntry> VariableTable;
+        public Dictionary<string, SymbolTableEntry> SymbolTable;
         public List<CompilerMessage> OutMessages;
 
-        public ReadingContext(Dictionary<string, VariableTableEntry> table, int lineNumber, int characterOnLine, string? currentFile, int scopeLevel, List<CompilerMessage> outMessages) : this()
+        public ReadingContext(Dictionary<string, SymbolTableEntry> symbolTable, int lineNumber, int characterOnLine, string? currentFile, int scopeLevel, List<CompilerMessage> outMessages) : this()
         {
-            VariableTable = table;
+            SymbolTable = symbolTable;
             LineNumber = lineNumber;
             CharacterOnLine = characterOnLine;
             CurrentFile = currentFile;
@@ -48,4 +48,6 @@
             OutMessages.Add(new CompilerMessage(message, messageCode, ref context));
         }
     }
+
+
 }

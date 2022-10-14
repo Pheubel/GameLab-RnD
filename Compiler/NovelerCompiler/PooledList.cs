@@ -50,6 +50,11 @@ namespace Noveler.Compiler
             _count++;
         }
 
+        public void Clear()
+        {
+            _count = 0;
+        }
+
         public void EnsureCapacity(int capacity)
         {
             if (_buffer == null)
@@ -117,7 +122,7 @@ namespace Noveler.Compiler
 
     internal static class PooledListExtensions
     {
-        public static string AsString(this PooledList<char> charList) => 
+        public static string AsString(this PooledList<char> charList) =>
             charList.AsSpan().ToString();
     }
 }

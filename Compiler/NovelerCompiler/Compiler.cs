@@ -94,9 +94,9 @@ namespace Noveler.Compiler
 
                 case TokenType.Assign:
                     break;
-                case TokenType.AssignAdd:
+                case TokenType.AddAssign:
                     break;
-                case TokenType.AssignSubtract:
+                case TokenType.SubtractAssign:
                     break;
                 case TokenType.Compare:
                     break;

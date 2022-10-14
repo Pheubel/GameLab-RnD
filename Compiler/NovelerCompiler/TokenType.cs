@@ -4,11 +4,13 @@
     {
         InvalidToken,
 
+        /*
         //types
         IntValue,
         LongValue,
         FloatValue,
         DoubleValue,
+        */
 
         // literals
         IntLiteral,
@@ -23,12 +25,15 @@
         Divide,
 
         Assign,
-        AssignAdd,
-        AssignSubtract,
+        AddAssign,
+        SubtractAssign,
+        MultiplyAssign,
+        DivideAssign,
 
         Compare,
         Increment,
         Decrement,
+        Negate,
 
         // function
         FunctionDeclaration,
@@ -53,14 +58,19 @@
         EndOfFile,
 
         // keywords
+        KeywordNumber,
 
 
         //unsorted
-        Negate,
-        MultiplyAssign,
-        DivideAssign,
         UndeclaredVariable,
         CustomType,
         UndefinedSymbol,
+        KeywordBig,
+        KeywordWhole,
+        KeywordSmall,
+        KeywordTiny,
+        KeywordSigned,
+        KeywordUnsigned,
+        NewLine,
     }
 }

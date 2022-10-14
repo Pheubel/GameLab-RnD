@@ -33,7 +33,8 @@
             InvalidLiteral,
             ReservedKeyword,
             RedeclaredVariable,
-            UndefinedVariable
+            UndefinedVariable,
+            MissingType
         }
 
         public enum MessageType

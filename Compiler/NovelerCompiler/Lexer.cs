@@ -27,7 +27,7 @@ namespace NovelerCompiler
                 );
 
             TreeNode currentNode = tree.Root;
-            Dictionary<string, VariableTableEntry> variableTable = new Dictionary<string, VariableTableEntry>();
+            Dictionary<string, SymbolTableEntry> variableTable = new Dictionary<string, SymbolTableEntry>();
             ReadingContext context = new ReadingContext(variableTable, 1, 1, null, 0, outMessages);
 
 
@@ -226,7 +226,7 @@ namespace NovelerCompiler
                     else if (input.MatchCharacter('='))
                     {
                         context.CharacterOnLine += 2;
-                        token = new Token(TokenType.AssignAdd);
+                        token = new Token(TokenType.AddAssign);
                     }
                     else
                     {
@@ -245,7 +245,7 @@ namespace NovelerCompiler
                     else if (input.MatchCharacter('='))
                     {
                         context.CharacterOnLine += 2;
-                        token = new Token(TokenType.AssignSubtract);
+                        token = new Token(TokenType.SubtractAssign);
                     }
                     else
                     {
@@ -294,6 +294,26 @@ namespace NovelerCompiler
                     token = new Token(TokenType.CloseEvaluationScope);
                     return;
 
+                case '\r':
+                    input.Read();
+                    if (input.MatchCharacter('\n'))
+                    {
+                        context.AdvanceLine();
+                        token = new Token(TokenType.NewLine);
+                    }
+                    break;
+
+                case '\n':
+                    input.Read();
+                    context.AdvanceLine();
+                    token = new Token(TokenType.NewLine);
+                    break;
+
+                case ';':
+                    input.Read();
+                    token = new Token(TokenType.SemiColon);
+                    break;
+
                 case unchecked((char)-1):
                     token = new Token(TokenType.EndOfFile);
                     return;
@@ -331,8 +351,10 @@ namespace NovelerCompiler
 
                     charBuffer.Add(c);
                 }
-
-                break;
+                else
+                {
+                    break;
+                }
             }
 
             context.CharacterOnLine += charBuffer.Count;
@@ -374,6 +396,8 @@ namespace NovelerCompiler
             return result;
         }
 
+
+
         private static bool TryHandleSymbols(ReaderWrapper input, ref ReadingContext context, string symbolString, [NotNullWhen(true)] out Token? token)
         {
             context.CharacterOnLine += Utilities.SkipSpace(input);
@@ -384,21 +408,194 @@ namespace NovelerCompiler
                 context.CharacterOnLine++;
 
                 // handle if variable already exists
-                if (!context.VariableTable.TryAdd(symbolString, new VariableTableEntry()))
+                if (!context.SymbolTable.TryAdd(symbolString, new SymbolTableEntry() { Kind = SymbolKind.Variable }))
                 {
                     context.AddErrorMessage("Cannot re-declare a variable.", CompilerMessage.MessageCode.RedeclaredVariable);
                     token = new Token(TokenType.InvalidToken, $"Reclared variable ({symbolString}).");
                     return false;
                 }
 
-                // variable will get it's type from future keywords
+                // determine the type for the variable
+
                 token = new Token(TokenType.ValueVariable, symbolString);
+                NumberModifier setFlags = 0;
+
+                using PooledList<char> typeBuffer = PooledList<char>.Rent(128);
+                while (true)
+                {
+                    typeBuffer.Clear();
+
+                    context.CharacterOnLine += Utilities.SkipSpace(input);
+
+                    // read in characters for type information
+                    while (true)
+                    {
+                        char c = input.PeekChar();
+
+                        if (Utilities.IsAlphaNumeric(c))
+                        {
+                            input.Read();
+
+                            typeBuffer.Add(c);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    context.CharacterOnLine += typeBuffer.Count;
+
+                    var typeContextString = typeBuffer.AsString();
+
+                    if (!Utilities.Keywords.TryGetValue(typeContextString, out TokenType tokenType))
+                    {
+                        if (string.IsNullOrEmpty(typeContextString))
+                        {
+                            context.AddErrorMessage("Missing type when declaring variable", CompilerMessage.MessageCode.MissingType);
+                            return false;
+                        }
+
+                        // TODO: remove this error when custom types are supported
+                        token.ValueType = TypeId.Undeclared;
+                        context.AddErrorMessage("Custom types are currently not supported.", CompilerMessage.MessageCode.InvalidToken);
+                        break;
+
+                        if (context.SymbolTable.TryGetValue(typeContextString, out var symbolEntry))
+                        {
+                            if (symbolEntry.Kind != SymbolKind.Unknown && symbolEntry.Kind != SymbolKind.Type)
+                            {
+                                // TODO: handle invalid symbol kinds
+                            }
+                        }
+                        else
+                        {
+                            symbolEntry = new SymbolTableEntry();
+                            context.SymbolTable.Add(typeContextString, symbolEntry);
+                        }
+
+                        symbolEntry.Appearances.Add(token);
+
+                        break;
+                    }
+
+                    #region Modifier Determination
+
+                    // determine the size modifier
+                    if (tokenType == TokenType.KeywordBig)
+                    {
+                        // TODO: handle conflicting size modifier
+                        if (setFlags.HasFlag(NumberModifier.HasDefinedSize))
+                        {
+
+                        }
+
+                        setFlags |= NumberModifier.Is64Bit;
+                        setFlags |= NumberModifier.HasDefinedSize;
+                    }
+                    else if (tokenType == TokenType.KeywordSmall)
+                    {
+                        // TODO: handle conflicting size modifier
+                        if (setFlags.HasFlag(NumberModifier.HasDefinedSize))
+                        {
+
+                        }
+
+                        setFlags |= NumberModifier.Is16Bit;
+                        setFlags |= NumberModifier.HasDefinedSize;
+                    }
+                    else if (tokenType == TokenType.KeywordTiny)
+                    {
+                        // TODO: handle conflicting size modifier
+                        if (setFlags.HasFlag(NumberModifier.HasDefinedSize))
+                        {
+
+                        }
+
+                        setFlags |= NumberModifier.Is8Bit;
+                        setFlags |= NumberModifier.HasDefinedSize;
+                    }
+
+                    // determine the type modifier
+                    else if (tokenType == TokenType.KeywordWhole)
+                    {
+                        // TODO: handle conflicting integer modifier
+                        if (setFlags.HasFlag(NumberModifier.HasDefinedFloatInt))
+                        {
+
+                        }
+
+                        setFlags |= NumberModifier.IsInteger;
+                        setFlags |= NumberModifier.HasDefinedFloatInt;
+                    }
+
+                    // determine the sign modifier
+                    else if (tokenType == TokenType.KeywordSigned)
+                    {
+                        // TODO: handle conflicting integer modifier
+                        if (setFlags.HasFlag(NumberModifier.HasDefinedSigned))
+                        {
+
+                        }
+
+                        setFlags |= NumberModifier.IsSigned;
+                        setFlags |= NumberModifier.HasDefinedSigned;
+                    }
+                    else if (tokenType == TokenType.KeywordUnsigned)
+                    {
+                        // TODO: handle conflicting integer modifier
+                        if (setFlags.HasFlag(NumberModifier.HasDefinedSigned))
+                        {
+
+                        }
+
+                        setFlags |= NumberModifier.IsUnsigned;
+                        setFlags |= NumberModifier.HasDefinedSigned;
+                    }
+
+                    #endregion
+
+                    // take a look at the set context for the number
+                    else if (tokenType == TokenType.KeywordNumber)
+                    {
+                        // determine if the number is an integer
+                        if (setFlags.HasFlag(NumberModifier.IsInteger))
+                        {
+                            // hack to get the right integer type quickly
+                            token.ValueType = (TypeId)(((uint)(setFlags & NumberModifier.SizeMask) >> 1) + (setFlags.HasFlag(NumberModifier.IsUnsigned) ? 2 : 1));
+                        }
+                        else
+                        {
+                            // TODO: floats should not have signed modifiers
+                            if (setFlags.HasFlag(NumberModifier.IsUnsigned))
+                            {
+                                token.ValueType = TypeId.Undeclared;
+                            }
+
+                            // TODO: float should not be smaller than 32 bit
+                            if (setFlags.HasFlag(NumberModifier.Is16Bit))
+                            {
+                                token.ValueType = TypeId.Undeclared;
+                            }
+
+                            token.ValueType = setFlags.HasFlag(NumberModifier.Is64Bit) ? TypeId.Float64 : TypeId.Float32;
+                        }
+
+                        break;
+                    }
+
+                    // invalid keyword found
+                    else
+                    {
+                        // TODO: handle case
+                    }
+                }
 
                 return true;
             }
 
             // the variable should already be declared
-            if (!context.VariableTable.TryGetValue(symbolString, out VariableTableEntry? tableEntry))
+            if (!context.SymbolTable.TryGetValue(symbolString, out SymbolTableEntry? tableEntry))
             {
                 context.AddErrorMessage($"\"{symbolString}\" has not been declared yet. Make sure you declare", CompilerMessage.MessageCode.UndefinedVariable);
                 token = new Token(TokenType.UndeclaredVariable, symbolString);
@@ -406,21 +603,15 @@ namespace NovelerCompiler
             }
 
             var valueType = (TypeId)tableEntry.GetTypeId();
-            token = valueType switch
+
+            // this should not happen
+            if (valueType == TypeId.Undeclared)
+                throw new InvalidOperationException();
+
+            token = new Token(TokenType.ValueVariable)
             {
-                TypeId.Int32 => new Token(TokenType.IntValue),
-                TypeId.Int64 => new Token(TokenType.LongLiteral),
-                TypeId.Float32 => new Token(TokenType.FloatValue),
-                TypeId.Float64 => new Token(TokenType.DoubleValue),
-
-                // should not happen
-                TypeId.Undeclared => throw new NotImplementedException(),
-
-                // the type is not a language standard type
-                _ => new Token(TokenType.CustomType)
+                ValueType = valueType
             };
-
-            token.ValueType = valueType;
 
             tableEntry.Appearances.Add(token);
 
