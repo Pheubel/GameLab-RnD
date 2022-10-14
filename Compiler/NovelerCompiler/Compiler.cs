@@ -542,9 +542,42 @@ namespace Noveler.Compiler
 
         private static bool TryHandleFloatingPoint(PooledList<char> charBuffer, ReaderWrapper input, ref ReadingContext context, out Token? token)
         {
-            // TODO: implement
-            token = null;
-            return false;
+            while (true)
+            {
+                char c = input.PeekChar();
+
+                if (c >= '0' && c <= '9')
+                {
+                    charBuffer.Add(c);
+                }
+                else
+                {
+                    break;
+                }
+
+                input.Read();
+            }
+
+            var bufferSpan = charBuffer.AsSpan();
+
+            if (float.TryParse(bufferSpan, out float floatResult))
+            {
+                token = new Token(TokenType.FloatLiteral, floatResult.ToString()) { ValueType = InternalType.Float32 };
+            }
+            else if (double.TryParse(bufferSpan, out double doubleResult))
+            {
+                token = new Token(TokenType.FloatLiteral, doubleResult.ToString()) { ValueType = InternalType.Float32 };
+            }
+            else
+            {
+                context.AddErrorMessage($"Invalid literal \"{bufferSpan}\".", CompilerMessage.MessageCode.InvalidLiteral);
+                context.CharacterOnLine += charBuffer.Count;
+                token = null;
+                return false;
+            }
+
+            context.CharacterOnLine += charBuffer.Count;
+            return true;
         }
 
         private static List<byte> EmitTree(SyntaxTree tree, List<CompilerMessage> outMessages)
