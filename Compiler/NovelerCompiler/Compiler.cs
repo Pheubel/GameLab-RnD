@@ -503,6 +503,7 @@ namespace Noveler.Compiler
             // switch to floating point number handling when dealing with decimal
             if (numberBase == 10 && input.MatchCharacter('.'))
             {
+                charBuffer.Add('.');
                 return TryHandleFloatingPoint(charBuffer, input, ref context, out token);
             }
 
