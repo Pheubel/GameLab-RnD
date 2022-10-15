@@ -27,6 +27,12 @@ namespace NovelerCompiler
                     continue;
                 }
 
+                Token? lastToken = tokens.LastOrDefault();
+
+                // skip if excessive terminating tokens
+                if (lastToken != null && lastToken.Type.IsTerminatingToken() && token.Type.IsTerminatingToken())
+                    continue;
+
                 tokens.Add(token);
 
                 // if the token is an end of file, wrap up tokenizing. 
@@ -148,6 +154,20 @@ namespace NovelerCompiler
                     token = new Token(TokenType.RightParenthesis);
                     return;
 
+                case '=':
+                    input.Read();
+                    if (input.MatchCharacter('='))
+                    {
+                        context.CharacterOnLine += 2;
+                        token = new Token(TokenType.Compare);
+                    }
+                    else
+                    {
+                        context.CharacterOnLine++;
+                        token = new Token(TokenType.Assign);
+                    }
+                    return;
+
                 case '\r':
                     input.Read();
                     if (input.MatchCharacter('\n'))
@@ -199,6 +219,8 @@ namespace NovelerCompiler
             }
 
             // handle unmatched tokens
+            input.Read();
+            context.CharacterOnLine++;
             token ??= Token.InvalidToken;
         }
 
