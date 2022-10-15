@@ -115,6 +115,26 @@ namespace NovelerCompiler
         }
     }
 
+    internal sealed class ZeroOrManyPattern : IPattern
+    {
+        readonly IPattern _pattern;
+
+        public ZeroOrManyPattern(IPattern pattern)
+        {
+            _pattern = new OptionalPattern(new OnceOrManyPattern(pattern));
+        }
+
+        public ZeroOrManyPattern(params TokenType[] patternSequnce)
+        {
+            _pattern = new OptionalPattern(new OnceOrManyPattern(patternSequnce));
+        }
+
+        public bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens)
+        {
+            return _pattern.MatchesSequence(sequence, out readTokens);
+        }
+    }
+
     internal sealed class AnyOfPattern : IPattern
     {
         readonly IPattern[] _patternSequence;
