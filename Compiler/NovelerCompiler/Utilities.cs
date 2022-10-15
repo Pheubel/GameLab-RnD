@@ -128,6 +128,28 @@ namespace Noveler.Compiler
             return reader.PeekChar() == '\n' || (reader.PeekChar() == '\r' && reader.PeekSecondChar() == '\n');
         }
 
+        public static bool HasSequence<T>(this ReadOnlySpan<T> sequence, ReadOnlySpan<T> sequencePattern)
+        {
+            if (sequencePattern.Length > sequence.Length)
+                return false;
+
+            return sequence[..sequencePattern.Length].SequenceEqual(sequencePattern);
+        }
+
+        public static bool HasSequence<T>(this Span<T> sequence, ReadOnlySpan<T> sequencePattern)
+        {
+            if (sequencePattern.Length > sequence.Length)
+                return false;
+
+            return sequence[..sequencePattern.Length].SequenceEqual(sequencePattern);
+        }
+
+        public static T GetLast<T>(this List<T> list) =>
+            list.Count > 0 ? list[^1] : throw new InvalidOperationException("Cannot get last element of empty list.");
+
+        public static T? GetLastOrDefault<T>(this List<T> list) =>
+            list.Count > 0 ? list[^1] : default;
+
         public static bool IsAlpha(char c)
         {
             return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
@@ -187,7 +209,7 @@ namespace Noveler.Compiler
             TokenType.LongLiteral,
             TokenType.FloatLiteral,
             TokenType.DoubleLiteral,
-            TokenType.ValueVariable
+            TokenType.Identifier
         };
 
         readonly static TokenType[] OperationTokens =

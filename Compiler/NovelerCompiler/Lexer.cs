@@ -1,198 +1,40 @@
 ﻿using Noveler.Compiler;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NovelerCompiler
 {
     public static class Lexer
     {
         /// <summary>
-        /// Analyze the raw script and turn it into a lexical structure of tokens and relations.
+        /// Analyze the raw script and turn it into a lexical stream of tokens.
         /// </summary>
         /// <param name="untokenizedInput"></param>
-        /// <param name="outMessages"></param>
+        /// <param name="context"></param>
         /// <returns></returns>
-        public static SyntaxTree Lex(TextReader untokenizedInput, List<CompilerMessage> outMessages) =>
-            Lex(new ReaderWrapper(untokenizedInput), outMessages);
-
-        internal static SyntaxTree Lex(ReaderWrapper untokenizedInput, List<CompilerMessage> outMessages)
+        internal static List<Token> Lex(ReaderWrapper untokenizedInput, ref ReadingContext context)
         {
-            SyntaxTree tree = new SyntaxTree(
-                new TreeNode(new Token(TokenType.Root))
-                );
-
-            TreeNode currentNode = tree.Root;
-            Dictionary<string, SymbolTableEntry> variableTable = new Dictionary<string, SymbolTableEntry>();
-            ReadingContext context = new ReadingContext(variableTable, 1, 1, null, 0, outMessages);
-
+            List<Token> tokens = new List<Token>(512);
 
             // tokenize the script
             while (true)
             {
                 var token = ReadToken(untokenizedInput, ref context);
 
-                // if the token is an end of file, wrap up tokenizing. 
-                if (token.Type == TokenType.EndOfFile)
-                    break;
-
                 if (token.Type == TokenType.InvalidToken)
                 {
-
                     context.AddErrorMessage(new CompilerMessage($"Found invalid token: {token.ValueString}", CompilerMessage.MessageCode.InvalidToken, ref context));
                     continue;
                 }
 
-                var node = new TreeNode(token);
+                tokens.Add(token);
 
-
-                if (token.Type.IsTerminatingToken())
-                {
-                    // if the current token is also an expression termination, then it can be skipped
-                    if (currentNode.Token.Type.IsTerminatingToken())
-                        continue;
-
-                    // TODO: handle when a expression is completed
-
-                    currentNode = node;
-                }
-
-                // check if the +/- token should be transformed
-                if (!currentNode.Token.Type.IsValueToken() && !currentNode.Token.Type.IsOperationToken())
-                {
-                    // the token can be skipped as it does not cause a transform
-                    if (token.Type == TokenType.Add)
-                        continue;
-                    if (token.Type == TokenType.Subtract)
-                    {
-                        token.Type = TokenType.Negate;
-
-                        // read next token to make sure the operation is in order
-                        var value = ReadToken(untokenizedInput, ref context);
-                        if (value.Type.IsValueToken())
-                        {
-                            node.AddChild(new TreeNode(value));
-                            currentNode.AddChild(node);
-
-                            currentNode = node;
-                        }
-                        else if (value.Type == TokenType.OpenEvaluationScope)
-                        {
-                            currentNode.AddChild(node);
-                            context.NodeStack.Push(node);
-
-                            currentNode = TreeNode.CreateInvalidNode();
-                        }
-                        else
-                        {
-                            context.AddErrorMessage(new CompilerMessage($"Cannot negate value, found: {value.ValueString}", CompilerMessage.MessageCode.InvalidToken, ref context));
-                        }
-                    }
-                }
-
-                if (token.Type == TokenType.OpenEvaluationScope)
-                {
-                    context.NodeStack.Push(currentNode);
-
-                    currentNode = TreeNode.CreateInvalidNode();
-                }
-
-                else if (token.Type == TokenType.CloseEvaluationScope)
-                {
-                    if (context.NodeStack.TryPop(out var poppedNode))
-                    {
-                        if (currentNode.Parent != null)
-                        {
-                            currentNode.ReplaceParent(poppedNode);
-                        }
-                        else
-                        {
-                            currentNode.InsertParent(poppedNode);
-                        }
-                        poppedNode.Token.ValueType = Utilities.GetTargetType(currentNode.Token.ValueType, poppedNode.Token.ValueType);
-                    }
-                    else
-                    {
-                        context.AddErrorMessage(new CompilerMessage($"Unbalanced parentheses, extra \')\' found.", CompilerMessage.MessageCode.InvalidToken, ref context));
-                    }
-                }
-
-                else if (token.Type.IsValueToken())
-                {
-                    currentNode.AddChild(node);
-
-                    currentNode = node;
-                }
-
-                if (token.Type.IsExpressionToken())
-                {
-                    currentNode.InsertParent(node);
-
-                    // read next token to make sure the operation is in order
-                    var value = ReadToken(untokenizedInput, ref context);
-                    if (value.Type.IsValueToken())
-                    {
-                        token.ValueType = Utilities.GetTargetType(currentNode.Token.ValueType, value.ValueType);
-                        node.AddChild(new TreeNode(value));
-                        currentNode = node;
-                    }
-                    else if (value.Type == TokenType.OpenEvaluationScope)
-                    {
-                        node.Token.ValueType = currentNode.Token.ValueType;
-                        context.NodeStack.Push(node);
-
-                        currentNode = TreeNode.CreateInvalidNode();
-                    }
-                    else
-                    {
-                        context.AddErrorMessage(new CompilerMessage($"Expected value, found: {value.ValueString}", CompilerMessage.MessageCode.InvalidToken, ref context));
-                    }
-                }
-
-                if (token.Type.IsFactorToken())
-                {
-                    // todo test this
-                    if (currentNode.Token.Type.IsExpressionToken())
-                    {
-                        currentNode.ReplaceInParent(node);
-                        node.AddChild(currentNode);
-                    }
-                    else
-                    {
-                        currentNode.InsertParent(node);
-                    }
-
-                    // read next token to make sure the operation is in order
-                    var value = ReadToken(untokenizedInput, ref context);
-                    if (value.Type.IsValueToken())
-                    {
-                        token.ValueType = Utilities.GetTargetType(currentNode.Token.ValueType, value.ValueType);
-                        node.AddChild(new TreeNode(value));
-                        currentNode = node;
-                    }
-                    else if (value.Type == TokenType.OpenEvaluationScope)
-                    {
-                        node.Token.ValueType = currentNode.Token.ValueType;
-                        context.NodeStack.Push(node);
-
-                        currentNode = TreeNode.CreateInvalidNode();
-                    }
-                    else
-                    {
-                        context.AddErrorMessage(new CompilerMessage($"Expected value, found: {value.ValueString}", CompilerMessage.MessageCode.InvalidToken, ref context));
-                    }
-                }
-
-
-
+                // if the token is an end of file, wrap up tokenizing. 
+                if (token.Type == TokenType.EndOfFile)
+                    break;
             }
 
-
-            return tree;
+            return tokens;
         }
 
         private static Token ReadToken(ReaderWrapper input, ref ReadingContext context)
@@ -297,13 +139,13 @@ namespace NovelerCompiler
                 case '(':
                     input.Read();
                     context.CharacterOnLine++;
-                    token = new Token(TokenType.OpenEvaluationScope);
+                    token = new Token(TokenType.LeftParenthesis);
                     return;
 
                 case ')':
                     input.Read();
                     context.CharacterOnLine++;
-                    token = new Token(TokenType.CloseEvaluationScope);
+                    token = new Token(TokenType.RightParenthesis);
                     return;
 
                 case '\r':
@@ -323,7 +165,20 @@ namespace NovelerCompiler
 
                 case ';':
                     input.Read();
+                    context.CharacterOnLine++;
                     token = new Token(TokenType.SemiColon);
+                    break;
+
+                case ':':
+                    input.Read();
+                    context.CharacterOnLine++;
+                    token = new Token(TokenType.Colon);
+                    break;
+
+                case ',':
+                    input.Read();
+                    context.CharacterOnLine++;
+                    token = new Token(TokenType.Comma);
                     break;
 
                 case unchecked((char)-1):
@@ -372,15 +227,6 @@ namespace NovelerCompiler
             context.CharacterOnLine += charBuffer.Count;
             string symbolString = charBuffer.AsString();
 
-            // determine if this is a function declaration
-            if (input.MatchCharacter('('))
-            {
-                context.CharacterOnLine++;
-                //TODO: handle function start declaration
-                token = new Token(TokenType.FunctionDeclaration, symbolString);
-                return false;
-            }
-
             // handle keywords
             if (TryHandleKeyword(symbolString, out token))
                 return true;
@@ -392,11 +238,9 @@ namespace NovelerCompiler
                 return false;
             }
 
-            // TODO: allow multiple forward declaration?
-            if (TryHandleSymbols(input, ref context, symbolString, out token))
+            if (TryHandleSymbols(ref context, symbolString, out token))
                 return true;
 
-            //context.AddErrorMessage(new CompilerMessage("Cannot "));
             token = new Token(TokenType.UndefinedSymbol, symbolString);
             return false;
         }
@@ -408,224 +252,16 @@ namespace NovelerCompiler
             return result;
         }
 
-
-
-        private static bool TryHandleSymbols(ReaderWrapper input, ref ReadingContext context, string symbolString, [NotNullWhen(true)] out Token? token)
+        private static bool TryHandleSymbols(ref ReadingContext context, string symbolString, [NotNullWhen(true)] out Token? token)
         {
-            context.CharacterOnLine += Utilities.SkipSpace(input);
-
-            // determine if the variable should be declared
-            if (Utilities.MatchCharacter(input, ':'))
+            if (!context.SymbolTable.TryGetValue(symbolString, out var symbolEntry))
             {
-                context.CharacterOnLine++;
-
-                // handle if variable already exists
-                if (!context.SymbolTable.TryAdd(symbolString, new SymbolTableEntry() { Kind = SymbolKind.Variable }))
-                {
-                    context.AddErrorMessage("Cannot re-declare a variable.", CompilerMessage.MessageCode.RedeclaredVariable);
-                    token = new Token(TokenType.InvalidToken, $"Reclared variable ({symbolString}).");
-                    return false;
-                }
-
-                // determine the type for the variable
-
-                token = new Token(TokenType.ValueVariable, symbolString);
-                NumberModifier setFlags = 0;
-
-                using PooledList<char> typeBuffer = PooledList<char>.Rent(128);
-                while (true)
-                {
-                    typeBuffer.Clear();
-
-                    context.CharacterOnLine += Utilities.SkipSpace(input);
-
-                    // read in characters for type information
-                    while (true)
-                    {
-                        char c = input.PeekChar();
-
-                        if (Utilities.IsAlphaNumeric(c))
-                        {
-                            input.Read();
-
-                            typeBuffer.Add(c);
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-
-                    context.CharacterOnLine += typeBuffer.Count;
-
-                    var typeContextString = typeBuffer.AsString();
-
-                    if (!Utilities.Keywords.TryGetValue(typeContextString, out TokenType tokenType))
-                    {
-                        if (string.IsNullOrEmpty(typeContextString))
-                        {
-                            context.AddErrorMessage("Missing type when declaring variable", CompilerMessage.MessageCode.MissingType);
-                            return false;
-                        }
-
-                        // TODO: remove this error when custom types are supported
-                        token.ValueType = TypeId.Undeclared;
-                        context.AddErrorMessage("Custom types are currently not supported.", CompilerMessage.MessageCode.InvalidToken);
-                        break;
-
-                        if (context.SymbolTable.TryGetValue(typeContextString, out var symbolEntry))
-                        {
-                            if (symbolEntry.Kind != SymbolKind.Unknown && symbolEntry.Kind != SymbolKind.Type)
-                            {
-                                // TODO: handle invalid symbol kinds
-                            }
-                        }
-                        else
-                        {
-                            symbolEntry = new SymbolTableEntry();
-                            context.SymbolTable.Add(typeContextString, symbolEntry);
-                        }
-
-                        symbolEntry.Appearances.Add(token);
-
-                        break;
-                    }
-
-                    #region Modifier Determination
-
-                    // determine the size modifier
-                    if (tokenType == TokenType.KeywordBig)
-                    {
-                        // TODO: handle conflicting size modifier
-                        if (setFlags.HasFlag(NumberModifier.HasDefinedSize))
-                        {
-
-                        }
-
-                        setFlags |= NumberModifier.Is64Bit;
-                        setFlags |= NumberModifier.HasDefinedSize;
-                    }
-                    else if (tokenType == TokenType.KeywordSmall)
-                    {
-                        // TODO: handle conflicting size modifier
-                        if (setFlags.HasFlag(NumberModifier.HasDefinedSize))
-                        {
-
-                        }
-
-                        setFlags |= NumberModifier.Is16Bit;
-                        setFlags |= NumberModifier.HasDefinedSize;
-                    }
-                    else if (tokenType == TokenType.KeywordTiny)
-                    {
-                        // TODO: handle conflicting size modifier
-                        if (setFlags.HasFlag(NumberModifier.HasDefinedSize))
-                        {
-
-                        }
-
-                        setFlags |= NumberModifier.Is8Bit;
-                        setFlags |= NumberModifier.HasDefinedSize;
-                    }
-
-                    // determine the type modifier
-                    else if (tokenType == TokenType.KeywordWhole)
-                    {
-                        // TODO: handle conflicting integer modifier
-                        if (setFlags.HasFlag(NumberModifier.HasDefinedFloatInt))
-                        {
-
-                        }
-
-                        setFlags |= NumberModifier.IsInteger;
-                        setFlags |= NumberModifier.HasDefinedFloatInt;
-                    }
-
-                    // determine the sign modifier
-                    else if (tokenType == TokenType.KeywordSigned)
-                    {
-                        // TODO: handle conflicting integer modifier
-                        if (setFlags.HasFlag(NumberModifier.HasDefinedSigned))
-                        {
-
-                        }
-
-                        setFlags |= NumberModifier.IsSigned;
-                        setFlags |= NumberModifier.HasDefinedSigned;
-                    }
-                    else if (tokenType == TokenType.KeywordUnsigned)
-                    {
-                        // TODO: handle conflicting integer modifier
-                        if (setFlags.HasFlag(NumberModifier.HasDefinedSigned))
-                        {
-
-                        }
-
-                        setFlags |= NumberModifier.IsUnsigned;
-                        setFlags |= NumberModifier.HasDefinedSigned;
-                    }
-
-                    #endregion
-
-                    // take a look at the set context for the number
-                    else if (tokenType == TokenType.KeywordNumber)
-                    {
-                        // determine if the number is an integer
-                        if (setFlags.HasFlag(NumberModifier.IsInteger))
-                        {
-                            // hack to get the right integer type quickly
-                            token.ValueType = (TypeId)(((uint)(setFlags & NumberModifier.SizeMask) >> 1) + (setFlags.HasFlag(NumberModifier.IsUnsigned) ? 2 : 1));
-                        }
-                        else
-                        {
-                            // TODO: floats should not have signed modifiers
-                            if (setFlags.HasFlag(NumberModifier.IsUnsigned))
-                            {
-                                token.ValueType = TypeId.Undeclared;
-                            }
-
-                            // TODO: float should not be smaller than 32 bit
-                            if (setFlags.HasFlag(NumberModifier.Is16Bit))
-                            {
-                                token.ValueType = TypeId.Undeclared;
-                            }
-
-                            token.ValueType = setFlags.HasFlag(NumberModifier.Is64Bit) ? TypeId.Float64 : TypeId.Float32;
-                        }
-
-                        break;
-                    }
-
-                    // invalid keyword found
-                    else
-                    {
-                        // TODO: handle case
-                    }
-                }
-
-                return true;
+                symbolEntry = new SymbolTableEntry();
+                context.SymbolTable.Add(symbolString, symbolEntry);
             }
 
-            // the variable should already be declared
-            if (!context.SymbolTable.TryGetValue(symbolString, out SymbolTableEntry? tableEntry))
-            {
-                context.AddErrorMessage($"\"{symbolString}\" has not been declared yet. Make sure you declare", CompilerMessage.MessageCode.UndefinedVariable);
-                token = new Token(TokenType.UndeclaredVariable, symbolString);
-                return false;
-            }
-
-            var valueType = (TypeId)tableEntry.GetTypeId();
-
-            // this should not happen
-            if (valueType == TypeId.Undeclared)
-                throw new InvalidOperationException();
-
-            token = new Token(TokenType.ValueVariable)
-            {
-                ValueType = valueType
-            };
-
-            tableEntry.Appearances.Add(token);
+            token = new Token(TokenType.Symbol, symbolString);
+            symbolEntry.Appearances.Add(token);
 
             return true;
         }

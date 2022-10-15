@@ -19,9 +19,15 @@ namespace Noveler.Compiler
             var outMessages = new List<CompilerMessage>();
             messages = outMessages;
 
-            var tree = Lexer.Lex(reader, outMessages);
+            Dictionary<string, SymbolTableEntry> variableTable = new Dictionary<string, SymbolTableEntry>();
+            ReadingContext context = new ReadingContext(variableTable, 1, 1, null, 0, outMessages);
 
-            result = EmitTree(tree, outMessages);
+            var tokenStream = Lexer.Lex(reader, ref context);
+            //var tree = SyntaxAnalyzer.Analyze()
+
+            //result = EmitTree(tree, outMessages);
+
+            result = new List<byte>();
 
             return true;
         }
@@ -114,7 +120,7 @@ namespace Noveler.Compiler
                     break;
                 case TokenType.ClosingCurlyBracket:
                     break;
-                case TokenType.ValueVariable:
+                case TokenType.Identifier:
                     break;
                 case TokenType.Root:
                     EmitCode(node.Children[0]);

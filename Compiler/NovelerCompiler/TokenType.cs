@@ -42,15 +42,21 @@
         CloseFunction,
 
         //evaluation
-        OpenEvaluationScope,
-        CloseEvaluationScope,
+        LeftParenthesis,
+        RightParenthesis,
 
-        // closing
+        // defining
+        Colon,
+
+        // separating
+        Comma,
+
+        // terminating
         SemiColon,
         ClosingCurlyBracket,
 
         // variables
-        ValueVariable,
+        Identifier,
 
         // special
         Root,
@@ -72,5 +78,6 @@
         KeywordSigned,
         KeywordUnsigned,
         NewLine,
+        Symbol,
     }
 }
