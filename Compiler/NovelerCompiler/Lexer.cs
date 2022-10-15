@@ -49,6 +49,18 @@ namespace NovelerCompiler
 
                 var node = new TreeNode(token);
 
+
+                if (token.Type.IsTerminatingToken())
+                {
+                    // if the current token is also an expression termination, then it can be skipped
+                    if (currentNode.Token.Type.IsTerminatingToken())
+                        continue;
+
+                    // TODO: handle when a expression is completed
+
+                    currentNode = node;
+                }
+
                 // check if the +/- token should be transformed
                 if (!currentNode.Token.Type.IsValueToken() && !currentNode.Token.Type.IsOperationToken())
                 {
