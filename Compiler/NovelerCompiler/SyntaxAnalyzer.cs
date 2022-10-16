@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NovelerCompiler
 {
-    internal static class SyntaxAnalyzer
+    internal static partial class SyntaxAnalyzer
     {
         // TODO: move to syntax analyzer
         //// determine if this is a function declaration
