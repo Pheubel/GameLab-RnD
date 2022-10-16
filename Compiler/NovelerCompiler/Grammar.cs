@@ -13,6 +13,9 @@ namespace NovelerCompiler
         public static ExactPattern Exact(params TokenType[] sequence) =>
             new ExactPattern(sequence);
 
+        public static TokenPattern Tokens(params TokenType[] sequence) =>
+            new TokenPattern(sequence);
+
         public static OnceOrManyPattern OnceOrMany(params IPattern[] pattern) =>
             new OnceOrManyPattern(pattern);
 
