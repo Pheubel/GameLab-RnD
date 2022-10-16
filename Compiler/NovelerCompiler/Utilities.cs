@@ -12,7 +12,8 @@ namespace Noveler.Compiler
         {
             { "number" , TokenType.KeywordNumber},
             { "big", TokenType.KeywordBig },
-            { "whole", TokenType.KeywordWhole }
+            { "whole", TokenType.KeywordWhole },
+            { "return", TokenType.Return }
         };
 
         public static readonly IReadOnlySet<string> ReservedKeywords = new HashSet<string>()
@@ -62,7 +63,6 @@ namespace Noveler.Compiler
             "while",
             "for",
             "each",
-            "return",
             "bool",
             "boolean",
             "event"
