@@ -104,7 +104,7 @@ namespace Noveler.Compiler
                     break;
                 case TokenType.SubtractAssign:
                     break;
-                case TokenType.Compare:
+                case TokenType.EqualsTo:
                     break;
                 case TokenType.Increment:
                     break;
