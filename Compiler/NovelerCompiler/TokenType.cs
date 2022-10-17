@@ -107,5 +107,7 @@
         LeftCurlyBacket,
         RightCurlyBacket,
         Return,
+        KeywordBoolean,
+        Period,
     }
 }

@@ -327,11 +327,17 @@ namespace NovelerCompiler
                     }
                     return;
 
+                case '.':
+                    input.Read();
+                    context.CharacterOnLine++;
+                    token = new Token(TokenType.Period);
+                    return;
+
                 case ',':
                     input.Read();
                     context.CharacterOnLine++;
                     token = new Token(TokenType.Comma);
-                    return; ;
+                    return;
 
                 case unchecked((char)-1):
                     token = new Token(TokenType.EndOfFile);
