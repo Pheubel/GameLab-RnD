@@ -15,7 +15,7 @@ namespace NovelerCompiler
         /// <summary>
         /// : ~<see cref="NewLineGrammar"/>
         /// </summary>
-        static readonly Grammar CharacerGrammar;
+        static readonly Grammar CharacterGrammar;
 
         /// <summary>
         /// : 'true'<br/>
@@ -37,6 +37,7 @@ namespace NovelerCompiler
         /// | <see cref="PreDecrementExpressionGrammar"/>
         /// </summary>
         static readonly Grammar UnaryExpressionGrammar;
+
 
         static readonly Grammar PrimaryExpressionGrammar;
 
@@ -65,6 +66,9 @@ namespace NovelerCompiler
         /// </summary>
         static readonly Grammar BooleanExpressionGrammar;
 
+        /// <summary>
+        /// : <see cref="ValueTypeGrammar"/>
+        /// </summary>
         static readonly Grammar TypeGrammar;
 
         /// <summary>
@@ -175,6 +179,7 @@ namespace NovelerCompiler
         /// <summary>
         /// : <see cref="BlockGrammar"/><br/>
         /// | <see cref="ExpressionStatementGrammar"/><br/>
+        /// | <see cref="SelectionStatementGrammar"/><br/>
         /// | <see cref="JumpStatementGrammar"/><br/>
         /// </summary>
         static readonly Grammar EmbeddedStatementGrammar;
@@ -183,6 +188,7 @@ namespace NovelerCompiler
         /// : <see cref="StatementExpressionGrammar"/> <see cref="StatementEliminatorGrammar"/>
         /// </summary>
         static readonly Grammar ExpressionStatementGrammar;
+
 
         static readonly Grammar StatementExpressionGrammar;
 
@@ -226,6 +232,10 @@ namespace NovelerCompiler
         /// </summary>
         static readonly Grammar StatementListGrammar;
 
+        /// <summary>
+        /// : <see cref="DeclarationStatementGrammar"/><br/>
+        /// | <see cref="EmbeddedStatementGrammar"/>
+        /// </summary>
         static readonly Grammar StatementGrammar;
 
         /// <summary>
@@ -238,6 +248,84 @@ namespace NovelerCompiler
         /// </summary>
         static readonly Grammar ReturnStatementGrammar;
 
+        /// <summary>
+        /// : <see cref="LocalVariableDeclaratorGrammar"/> <see cref="StatementEliminatorGrammar"/>
+        /// </summary>
+        static readonly Grammar DeclarationStatementGrammar;
+
+        /// <summary>
+        /// : <see cref="IdentifierGrammar"/> ':' <see cref="TypeGrammar"/><br/>
+        /// | <see cref="IdentifierGrammar"/> ':' <see cref="TypeGrammar"/> '=' <see cref="LocalVariableInitializerGrammar"/>
+        /// </summary>
+        static readonly Grammar LocalVariableDeclaratorGrammar;
+
+        /// <summary>
+        /// : <see cref="ExpressionGrammar"/>
+        /// </summary>
+        static readonly Grammar LocalVariableInitializerGrammar;
+
+        /// <summary>
+        /// : <see cref="IfStatementGrammar"/>
+        /// </summary>
+        static readonly Grammar SelectionStatementGrammar;
+
+        /// <summary>
+        /// : <see cref="IntegerTypeGrammar"/><br/>
+        /// | <see cref="FloatingPointTypeGrammar"/>
+        /// </summary>
+        static readonly Grammar NumericTypeGrammar;
+
+        /// <summary>
+        /// : <see cref="SignedGrammar"/> <see cref="TypeSizeGrammar"/> 'whole' 'number'
+        /// </summary>
+        static readonly Grammar IntegerTypeGrammar;
+
+        /// <summary>
+        /// : <see cref="TypeSizeGrammar"/> 'number'
+        /// </summary>
+        static readonly Grammar FloatingPointTypeGrammar;
+
+        /// <summary>
+        /// : 'unsigned'
+        /// | 'signed'
+        /// </summary>
+        static readonly Grammar SignedGrammar;
+
+        /// <summary>
+        /// : 'tiny'<br/>
+        /// | 'small'<br/>
+        /// | 'big'
+        /// </summary>
+        static readonly Grammar TypeSizeGrammar;
+
+        /// <summary>
+        /// : <see cref="TypeNameGrammar"/><br/>
+        /// | <see cref="SimpleValueTypeGrammar"/>
+        /// </summary>
+        static readonly Grammar ValueTypeGrammar;
+
+        /// <summary>
+        /// : <see cref="NumericTypeGrammar"/><br/>
+        /// | 'boolean'
+        /// </summary>
+        static readonly Grammar SimpleValueTypeGrammar;
+
+        /// <summary>
+        /// : <see cref="NamespaceOrTypeNameGrammar"/>
+        /// </summary>
+        static readonly Grammar TypeNameGrammar;
+
+        /// <summary>
+        /// : <see cref="NamespaceOrTypeNameGrammar"/>
+        /// </summary>
+        static readonly Grammar NamespaceNameGrammar;
+
+        /// <summary>
+        /// : <see cref="IdentifierGrammar"/><br/>
+        /// | <see cref="NamespaceOrTypeNameGrammar"/> '.' <see cref="IdentifierGrammar"/>
+        /// </summary>
+        static readonly Grammar NamespaceOrTypeNameGrammar;
+
         #endregion // Grammars
 
 
@@ -246,7 +334,7 @@ namespace NovelerCompiler
             #region Instantiation
 
             NewLineGrammar = new Grammar();
-            CharacerGrammar = new Grammar();
+            CharacterGrammar = new Grammar();
             BooleanLiteralGrammar = new Grammar();
             StatementEliminatorGrammar = new Grammar();
             UnaryExpressionGrammar = new Grammar();
@@ -281,6 +369,23 @@ namespace NovelerCompiler
             EmbeddedStatementGrammar = new Grammar();
             JumpStatementGrammar = new Grammar();
             ReturnStatementGrammar = new Grammar();
+            StatementGrammar = new Grammar();
+            SelectionStatementGrammar = new Grammar();
+            LocalVariableInitializerGrammar = new Grammar();
+            ArgumentListGrammar = new Grammar();
+            DeclarationStatementGrammar = new Grammar();
+            LocalVariableDeclaratorGrammar = new Grammar();
+            IntegerTypeGrammar = new Grammar();
+            FloatingPointTypeGrammar = new Grammar();
+            TypeSizeGrammar = new Grammar();
+            SignedGrammar = new Grammar();
+            NumericTypeGrammar = new Grammar();
+            SimpleValueTypeGrammar = new Grammar();
+            NamespaceNameGrammar = new Grammar();
+            NamespaceOrTypeNameGrammar = new Grammar();
+            TypeNameGrammar = new Grammar();
+            ValueTypeGrammar = new Grammar();
+            TypeGrammar = new Grammar();
 
             #endregion // Instantiation
 
@@ -292,7 +397,7 @@ namespace NovelerCompiler
                 IPattern.Tokens(TokenType.NewLine)
                 );
 
-            CharacerGrammar.SetGrammar(
+            CharacterGrammar.SetGrammar(
                 IPattern.None(NewLineGrammar)
                 );
 
@@ -326,24 +431,12 @@ namespace NovelerCompiler
                 IPattern.Tokens(TokenType.LeftParenthesis), TypeGrammar, IPattern.Tokens(TokenType.RightParenthesis), UnaryExpressionGrammar
                 );
 
-            AssignmentGrammar.SetGrammar(
-
-                );
-
             ExpressionGrammar.SetGrammar(
                 AssignmentGrammar
                 );
 
             BooleanExpressionGrammar.SetGrammar(
                 ExpressionGrammar
-                );
-
-            PrimaryExpressionGrammar.SetGrammar(
-
-                );
-
-            TypeGrammar.SetGrammar(
-
                 );
 
             ReturnTypeGrammar.SetGrammar(
@@ -476,6 +569,7 @@ namespace NovelerCompiler
             EmbeddedStatementGrammar.SetGrammar(
                 IPattern.Any(BlockGrammar,
                              ExpressionStatementGrammar),
+                             SelectionStatementGrammar,
                              // iteration statement for loops
                              JumpStatementGrammar
                 );
@@ -488,6 +582,90 @@ namespace NovelerCompiler
 
             ReturnStatementGrammar.SetGrammar(
                 IPattern.Tokens(TokenType.Return), IPattern.Optional(ExpressionGrammar), StatementEliminatorGrammar
+                );
+
+            StatementGrammar.SetGrammar(
+                IPattern.Any(DeclarationStatementGrammar,
+                             EmbeddedStatementGrammar)
+                );
+
+            DeclarationStatementGrammar.SetGrammar(
+                IPattern.Any(IPattern.Exact(LocalVariableDeclaratorGrammar, StatementEliminatorGrammar)
+                             /* local constant declaration */)
+                );
+
+            LocalVariableDeclaratorGrammar.SetGrammar(
+                IPattern.Any(IPattern.Exact(IdentifierGrammar, IPattern.Tokens(), TypeGrammar),
+                             IPattern.Exact(IdentifierGrammar, IPattern.Tokens(), TypeGrammar, IPattern.Tokens(TokenType.Assign), LocalVariableInitializerGrammar))
+                );
+
+            LocalVariableInitializerGrammar.SetGrammar(
+                IPattern.Any(ExpressionGrammar
+                             /* array initializer */)
+                );
+
+            SelectionStatementGrammar.SetGrammar(
+                IPattern.Any(IfStatementGrammar
+                             /* switch statement */)
+                );
+
+            PrimaryExpressionGrammar.SetGrammar(
+                // TODO
+                );
+
+            TypeGrammar.SetGrammar(
+                IPattern.Any(ValueTypeGrammar)
+                );
+
+            NumericTypeGrammar.SetGrammar(
+                IPattern.Any(IntegerTypeGrammar,
+                             FloatingPointTypeGrammar)
+                );
+
+            IntegerTypeGrammar.SetGrammar(
+                IPattern.Optional(SignedGrammar), IPattern.Optional(TypeSizeGrammar), IPattern.Tokens(TokenType.KeywordWhole, TokenType.KeywordNumber)
+                );
+
+            FloatingPointTypeGrammar.SetGrammar(
+                IPattern.Optional(TypeSizeGrammar), IPattern.Tokens(TokenType.KeywordNumber)
+                );
+
+            SignedGrammar.SetGrammar(
+                IPattern.Any(TokenType.KeywordUnsigned,
+                             TokenType.KeywordSigned)
+                );
+
+            TypeSizeGrammar.SetGrammar(
+                IPattern.Any(TokenType.KeywordTiny,
+                             TokenType.KeywordSmall,
+                             TokenType.KeywordBig)
+                );
+
+            ValueTypeGrammar.SetGrammar(
+                IPattern.Any(TypeNameGrammar,
+                             SimpleValueTypeGrammar)
+                );
+
+            SimpleValueTypeGrammar.SetGrammar(
+                IPattern.Any(NumericTypeGrammar,
+                             IPattern.Tokens(TokenType.KeywordBoolean))
+                );
+
+            TypeNameGrammar.SetGrammar(
+                NamespaceOrTypeNameGrammar
+                );
+
+            NamespaceNameGrammar.SetGrammar(
+                NamespaceOrTypeNameGrammar
+                );
+
+            NamespaceOrTypeNameGrammar.SetGrammar(
+                IPattern.Any(IdentifierGrammar,
+                             IPattern.Exact(NamespaceNameGrammar, IPattern.Tokens(TokenType.Period), IdentifierGrammar))
+                );
+
+            AssignmentGrammar.SetGrammar(
+                UnaryExpressionGrammar, AssignmentOperatorGrammar, ExpressionGrammar
                 );
 
             #endregion // Initialization
