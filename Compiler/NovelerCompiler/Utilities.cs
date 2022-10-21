@@ -10,7 +10,11 @@ namespace Noveler.Compiler
     {
         public static readonly IReadOnlyDictionary<string, TokenType> Keywords = new Dictionary<string, TokenType>()
         {
-            { "number" , TokenType.KeywordNumber},
+            { "signed", TokenType.KeywordSigned },
+            { "unsigned", TokenType.KeywordUnsigned },
+            { "number" , TokenType.KeywordNumber },
+            { "tiny",  TokenType.KeywordTiny },
+            { "small", TokenType.KeywordSmall },
             { "big", TokenType.KeywordBig },
             { "whole", TokenType.KeywordWhole },
             { "return", TokenType.Return }
@@ -18,10 +22,7 @@ namespace Noveler.Compiler
 
         public static readonly IReadOnlySet<string> ReservedKeywords = new HashSet<string>()
         {
-            "signed",
-            "unsigned",
-            "tiny",
-            "small",
+
             "byte",
             "sbyte",
             "short",
@@ -205,8 +206,8 @@ namespace Noveler.Compiler
 
         readonly static TokenType[] ValueTokens =
         {
-            TokenType.IntLiteral,
-            TokenType.LongLiteral,
+            TokenType.Int32Literal,
+            TokenType.Int64Literal,
             TokenType.FloatLiteral,
             TokenType.DoubleLiteral,
             TokenType.Identifier

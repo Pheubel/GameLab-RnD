@@ -507,13 +507,15 @@ namespace NovelerCompiler
                 bufferSpan = charBuffer.AsSpan()[2..];
             }
 
+            // TODO: handle postfixes to force specific literal types
+
             if (int.TryParse(bufferSpan, numberStyles, null, out var intResult) && intResult >= 0)
             {
-                token = new Token(TokenType.IntLiteral, intResult.ToString()) { ValueType = TypeId.Int32 };
+                token = new Token(TokenType.Int32Literal, intResult.ToString()) { ValueType = TypeId.Int32 };
             }
             else if (long.TryParse(bufferSpan, numberStyles, null, out var longResult) && longResult >= 0)
             {
-                token = new Token(TokenType.LongLiteral, longResult.ToString()) { ValueType = TypeId.Int64 };
+                token = new Token(TokenType.Int64Literal, longResult.ToString()) { ValueType = TypeId.Int64 };
             }
             else
             {

@@ -4,17 +4,15 @@
     {
         InvalidToken,
 
-        /*
-        //types
-        IntValue,
-        LongValue,
-        FloatValue,
-        DoubleValue,
-        */
-
         // literals
-        IntLiteral,
-        LongLiteral,
+        Int8Literal,
+        Uint8Literal,
+        Int16Literal,
+        Uint16Literal,
+        Int32Literal,
+        Uint32Literal,
+        Int64Literal,
+        Uint64Literal,
         FloatLiteral,
         DoubleLiteral,
 

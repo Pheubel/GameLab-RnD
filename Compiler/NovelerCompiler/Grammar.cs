@@ -53,6 +53,9 @@ namespace NovelerCompiler
         [MemberNotNull(nameof(_patternSequence))]
         public void SetGrammar(params IPattern[] patternSequence)
         {
+            if (_patternSequence != null)
+                throw new InvalidOperationException("Cannot redefine a set grammar.");
+
             _patternSequence = patternSequence;
         }
 
@@ -96,9 +99,10 @@ namespace NovelerCompiler
             if (sequence.Length < _matchSequence.Length)
                 return false;
 
+            // If a token type does not match return false early
             for (int i = 0; i < _matchSequence.Length; i++)
             {
-                if (sequence[i].Type == _matchSequence[i])
+                if (sequence[i].Type != _matchSequence[i])
                     return false;
             }
 

@@ -38,7 +38,9 @@ namespace NovelerCompiler
         /// </summary>
         static readonly Grammar UnaryExpressionGrammar;
 
-
+        /// <summary>
+        /// : <see cref="PrimaryNoArrayCreationExpression"/>
+        /// </summary>
         static readonly Grammar PrimaryExpressionGrammar;
 
         /// <summary>
@@ -189,7 +191,14 @@ namespace NovelerCompiler
         /// </summary>
         static readonly Grammar ExpressionStatementGrammar;
 
-
+        /// <summary>
+        /// : <see cref="InvocationExpressionGrammar"/><br/>
+        /// | <see cref="AssignmentGrammar"/><br/>
+        /// | <see cref="PostIncrementExpressionGrammar"/><br/>
+        /// | <see cref="PostDecrementExpressionGrammar"/><br/>
+        /// | <see cref="PreIncrementExpressionGrammar"/><br/>
+        /// | <see cref="PreDecrementExpressionGrammar"/>
+        /// </summary>
         static readonly Grammar StatementExpressionGrammar;
 
         /// <summary>
@@ -321,10 +330,44 @@ namespace NovelerCompiler
         static readonly Grammar NamespaceNameGrammar;
 
         /// <summary>
-        /// : <see cref="IdentifierGrammar"/><br/>
-        /// | <see cref="NamespaceOrTypeNameGrammar"/> '.' <see cref="IdentifierGrammar"/>
+        /// : ( <see cref="IdentifierGrammar"/> '.' )* <see cref="IdentifierGrammar"/>
         /// </summary>
         static readonly Grammar NamespaceOrTypeNameGrammar;
+
+        /// <summary>
+        /// : <see cref="PrimaryExpressionGrammar"/> '++'
+        /// </summary>
+        static readonly Grammar PostIncrementExpressionGrammar;
+
+        /// <summary>
+        /// : <see cref="PrimaryExpressionGrammar"/> '--'
+        /// </summary>
+        static readonly Grammar PostDecrementExpressionGrammar;
+
+        /// <summary>
+        /// : <see cref="BooleanLiteralGrammar"/><br/>
+        /// | <see cref="IntegerLiteralGrammar"/><br/>
+        /// | <see cref="FloatLiteralGrammar"/>
+        /// </summary>
+        static readonly Grammar LiteralGrammar;
+
+        static readonly Grammar IntegerLiteralGrammar;
+
+        static readonly Grammar FloatLiteralGrammar;
+
+        /// <summary>
+        /// : <see cref="LiteralGrammar"/><br/>
+        /// | <see cref="ParenthesizedExpressionGrammar"/><br/>
+        /// | <see cref="InvocationExpressionGrammar"/><br/>
+        /// | <see cref="PostIncrementExpressionGrammar"/><br/>
+        /// | <see cref="PostDecrementExpressionGrammar"/>
+        /// </summary>
+        static readonly Grammar PrimaryNoArrayCreationExpression;
+
+        /// <summary>
+        /// : '(' <see cref="ExpressionGrammar"/> ')'
+        /// </summary>
+        static readonly Grammar ParenthesizedExpressionGrammar;
 
         #endregion // Grammars
 
@@ -386,6 +429,15 @@ namespace NovelerCompiler
             TypeNameGrammar = new Grammar();
             ValueTypeGrammar = new Grammar();
             TypeGrammar = new Grammar();
+            PostIncrementExpressionGrammar = new Grammar();
+            PostDecrementExpressionGrammar = new Grammar();
+            IntegerLiteralGrammar = new Grammar();
+            FloatLiteralGrammar = new Grammar();
+            LiteralGrammar = new Grammar();
+            ParenthesizedExpressionGrammar = new Grammar();
+            PrimaryExpressionGrammar = new Grammar();
+            StatementExpressionGrammar = new Grammar();
+            PrimaryNoArrayCreationExpression = new Grammar();
 
             #endregion // Instantiation
 
@@ -510,7 +562,7 @@ namespace NovelerCompiler
                 );
 
             IdentifierGrammar.SetGrammar(
-                IPattern.Tokens(TokenType.Identifier)
+                IPattern.Tokens(TokenType.Symbol)
                 );
 
             ShiftExpressionGrammar.SetGrammar(
@@ -595,8 +647,8 @@ namespace NovelerCompiler
                 );
 
             LocalVariableDeclaratorGrammar.SetGrammar(
-                IPattern.Any(IPattern.Exact(IdentifierGrammar, IPattern.Tokens(), TypeGrammar),
-                             IPattern.Exact(IdentifierGrammar, IPattern.Tokens(), TypeGrammar, IPattern.Tokens(TokenType.Assign), LocalVariableInitializerGrammar))
+                IPattern.Any(IPattern.Exact(IdentifierGrammar, IPattern.Tokens(TokenType.Colon), TypeGrammar),
+                             IPattern.Exact(IdentifierGrammar, IPattern.Tokens(TokenType.Colon), TypeGrammar, IPattern.Tokens(TokenType.Assign), LocalVariableInitializerGrammar))
                 );
 
             LocalVariableInitializerGrammar.SetGrammar(
@@ -607,10 +659,6 @@ namespace NovelerCompiler
             SelectionStatementGrammar.SetGrammar(
                 IPattern.Any(IfStatementGrammar
                              /* switch statement */)
-                );
-
-            PrimaryExpressionGrammar.SetGrammar(
-                // TODO
                 );
 
             TypeGrammar.SetGrammar(
@@ -660,12 +708,72 @@ namespace NovelerCompiler
                 );
 
             NamespaceOrTypeNameGrammar.SetGrammar(
-                IPattern.Any(IdentifierGrammar,
-                             IPattern.Exact(NamespaceNameGrammar, IPattern.Tokens(TokenType.Period), IdentifierGrammar))
+                IPattern.ZeroOrMany(IdentifierGrammar, IPattern.Tokens(TokenType.Period)), IdentifierGrammar
+
+                //IPattern.Any(IdentifierGrammar,
+                //             IPattern.Exact(NamespaceNameGrammar, IPattern.Tokens(TokenType.Period), IdentifierGrammar))
                 );
 
-            AssignmentGrammar.SetGrammar(
-                UnaryExpressionGrammar, AssignmentOperatorGrammar, ExpressionGrammar
+            PostIncrementExpressionGrammar.SetGrammar(
+                PrimaryExpressionGrammar, IPattern.Tokens(TokenType.Increment)
+                );
+
+            PostDecrementExpressionGrammar.SetGrammar(
+                PrimaryExpressionGrammar, IPattern.Tokens(TokenType.Decrement)
+                );
+
+            PrimaryExpressionGrammar.SetGrammar(
+                IPattern.Any(PrimaryNoArrayCreationExpression)
+                );
+
+            StatementExpressionGrammar.SetGrammar(
+                IPattern.Any(// null conditional invocation
+                             InvocationExpressionGrammar,
+                             // object creation expression
+                             AssignmentGrammar,
+                             PostIncrementExpressionGrammar,
+                             PostDecrementExpressionGrammar,
+                             PreIncrementExpressionGrammar,
+                             PreDecrementExpressionGrammar)
+                );
+
+            LiteralGrammar.SetGrammar(
+                IPattern.Any(BooleanLiteralGrammar,
+                             IntegerLiteralGrammar,
+                             FloatLiteralGrammar)
+                );
+
+            IntegerLiteralGrammar.SetGrammar(
+                IPattern.Any(TokenType.Int8Literal,
+                             TokenType.Uint8Literal,
+                             TokenType.Int16Literal,
+                             TokenType.Uint16Literal,
+                             TokenType.Int32Literal,
+                             TokenType.Uint32Literal,
+                             TokenType.Int64Literal,
+                             TokenType.Uint64Literal)
+                );
+
+            FloatLiteralGrammar.SetGrammar(
+                IPattern.Any(TokenType.FloatLiteral,
+                             TokenType.DoubleLiteral)
+                );
+
+            PrimaryNoArrayCreationExpression.SetGrammar(
+                IPattern.Any(LiteralGrammar,
+                            // interpolated string
+                            ParenthesizedExpressionGrammar,
+                            // member access
+                            InvocationExpressionGrammar,
+                            // array element access
+                            PostIncrementExpressionGrammar,
+                            PostDecrementExpressionGrammar
+                            // object creation expression
+                            )
+                );
+
+            ParenthesizedExpressionGrammar.SetGrammar(
+                IPattern.Tokens(TokenType.LeftParenthesis), ExpressionGrammar, IPattern.Tokens(TokenType.RightParenthesis)
                 );
 
             #endregion // Initialization

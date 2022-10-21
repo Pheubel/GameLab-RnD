@@ -27,6 +27,8 @@ namespace Noveler.Compiler
 
             //result = EmitTree(tree, outMessages);
 
+            SyntaxAnalyzer.Test(tokenStream);
+
             result = new List<byte>();
 
             return true;
@@ -55,10 +57,10 @@ namespace Noveler.Compiler
             {
                 case TokenType.InvalidToken:
                     break;
-                case TokenType.IntLiteral:
+                case TokenType.Int32Literal:
                     Console.WriteLine($"LoadConst32 R0 {node.Token.ValueString:X}");
                     break;
-                case TokenType.LongLiteral:
+                case TokenType.Int64Literal:
                     Console.WriteLine($"LoadConst64 R0 {node.Token.ValueString:X}");
                     break;
                 case TokenType.FloatLiteral:

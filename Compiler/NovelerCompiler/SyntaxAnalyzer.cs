@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,6 +10,29 @@ namespace NovelerCompiler
 {
     internal static partial class SyntaxAnalyzer
     {
+
+        public static void Test(List<Token> tokenStream)
+        {
+            var tokenStreamSpan = CollectionsMarshal.AsSpan(tokenStream);
+            var result = DeclarationStatementGrammar.MatchesSequence(tokenStreamSpan, out var readCount);
+
+            Console.WriteLine($"result: {result}\tread tokens: {readCount}");
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         // TODO: move to syntax analyzer
         //// determine if this is a function declaration
         //if (input.MatchCharacter('('))
