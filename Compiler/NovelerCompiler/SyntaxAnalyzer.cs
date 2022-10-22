@@ -14,7 +14,7 @@ namespace NovelerCompiler
         public static void Test(List<Token> tokenStream)
         {
             var tokenStreamSpan = CollectionsMarshal.AsSpan(tokenStream);
-            var result = DeclarationStatementGrammar.MatchesSequence(tokenStreamSpan, out var readCount);
+            var result = DeclarationStatementGrammar.MatchesSequence(tokenStreamSpan, out var readCount, out ParseTreeNode? parseTree);
 
             Console.WriteLine($"result: {result}\tread tokens: {readCount}");
         }

@@ -1,11 +1,12 @@
 ﻿using Noveler.Compiler;
 using System.Diagnostics.CodeAnalysis;
+using System.Xml.Linq;
 
 namespace NovelerCompiler
 {
     interface IPattern
     {
-        bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens);
+        bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens, [NotNullWhen(true)] out ParseTreeNode? treeState);
 
         public static ExactPattern Exact(params IPattern[] patterns) =>
             new ExactPattern(patterns);
@@ -59,7 +60,7 @@ namespace NovelerCompiler
             _patternSequence = patternSequence;
         }
 
-        public bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens)
+        public bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens, [NotNullWhen(true)] out ParseTreeNode? treeState)
         {
             if (_patternSequence == null || _patternSequence.Length == 0)
                 throw new InvalidOperationException("There is no set grammar for this rule.");
@@ -67,15 +68,18 @@ namespace NovelerCompiler
             readTokens = 0;
 
             var sequenceSlice = sequence;
+            treeState = new ParseTreeNode(ParseTreeNode.NodeKind.Grammar);
 
             for (int i = 0; i < _patternSequence.Length; i++)
             {
-                if (!_patternSequence[i].MatchesSequence(sequenceSlice, out int readCount))
+                if (!_patternSequence[i].MatchesSequence(sequenceSlice, out int readCount, out ParseTreeNode? node))
                 {
                     readTokens = 0;
+                    treeState = null;
                     return false;
                 }
 
+                treeState.AddNodeOrAdoptChildren(node);
                 sequenceSlice = sequenceSlice[readCount..];
                 readTokens += readCount;
             }
@@ -93,17 +97,32 @@ namespace NovelerCompiler
             _matchSequence = sequence;
         }
 
-        public bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens)
+        public bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens, [NotNullWhen(true)] out ParseTreeNode? treeState)
         {
             readTokens = default;
             if (sequence.Length < _matchSequence.Length)
+            {
+                treeState = null;
                 return false;
+            }
+
+            treeState = new ParseTreeNode(ParseTreeNode.NodeKind.Sequence);
 
             // If a token type does not match return false early
             for (int i = 0; i < _matchSequence.Length; i++)
             {
                 if (sequence[i].Type != _matchSequence[i])
+                {
+                    treeState = null;
                     return false;
+                }
+
+                var tokenNode = new ParseTreeNode(ParseTreeNode.NodeKind.Token)
+                {
+                    Token = sequence[i]
+                };
+
+                treeState.Children!.Add(tokenNode);
             }
 
             readTokens = _matchSequence.Length;
@@ -126,18 +145,23 @@ namespace NovelerCompiler
             _patterns[0] = new TokenPattern(patternSequnce);
         }
 
-        public bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens)
+        public bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens, out ParseTreeNode? treeState)
         {
             readTokens = 0;
             var sequenceSlice = sequence;
 
+            treeState = new ParseTreeNode(ParseTreeNode.NodeKind.Sequence);
+
             for (int i = 0; i < _patterns.Length; i++)
             {
-                if (!_patterns[i].MatchesSequence(sequenceSlice, out int readCount))
+                if (!_patterns[i].MatchesSequence(sequenceSlice, out int readCount, out ParseTreeNode? node))
                 {
                     readTokens = 0;
+                    treeState = null;
                     return false;
                 }
+
+                treeState.AddNodeOrAdoptChildren(node);
 
                 sequenceSlice = sequenceSlice[readCount..];
                 readTokens += readCount;
@@ -161,14 +185,16 @@ namespace NovelerCompiler
             _pattern = new TokenPattern(patternSequnce);
         }
 
-        public bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens)
+        public bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens, [NotNullWhen(true)] out ParseTreeNode? treeState)
         {
             readTokens = 0;
 
             var sequenceSlice = sequence;
+            treeState = new ParseTreeNode(ParseTreeNode.NodeKind.Sequence);
 
-            while (_pattern.MatchesSequence(sequenceSlice, out int readCount))
+            while (_pattern.MatchesSequence(sequenceSlice, out int readCount, out ParseTreeNode? node))
             {
+                treeState.AddNodeOrAdoptChildren(node);
                 sequenceSlice = sequenceSlice[readCount..];
                 readTokens += readCount;
             }
@@ -191,9 +217,20 @@ namespace NovelerCompiler
             _pattern = new TokenPattern(patternSequnce);
         }
 
-        public bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens)
+        public bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens, [NotNullWhen(true)] out ParseTreeNode? treeState)
         {
-            readTokens = _pattern.MatchesSequence(sequence, out var readCount) ? readCount : 0;
+            treeState = new ParseTreeNode(ParseTreeNode.NodeKind.Sequence);
+
+            if (_pattern.MatchesSequence(sequence, out var readCount, out ParseTreeNode? node))
+            {
+                treeState.AddNodeOrAdoptChildren(node);
+                readTokens = readCount;
+            }
+            else
+            {
+                readTokens = 0;
+            }
+
             return true;
         }
     }
@@ -212,9 +249,9 @@ namespace NovelerCompiler
             _pattern = new OptionalPattern(new OnceOrManyPattern(patternSequnce));
         }
 
-        public bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens)
+        public bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens, [NotNullWhen(true)] out ParseTreeNode? treeState)
         {
-            return _pattern.MatchesSequence(sequence, out readTokens);
+            return _pattern.MatchesSequence(sequence, out readTokens, out treeState);
         }
     }
 
@@ -237,14 +274,15 @@ namespace NovelerCompiler
             }
         }
 
-        public bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens)
+        public bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens, [NotNullWhen(true)] out ParseTreeNode? treeState)
         {
             for (int i = 0; i < _patternSequence.Length; i++)
             {
-                if (_patternSequence[i].MatchesSequence(sequence, out readTokens))
+                if (_patternSequence[i].MatchesSequence(sequence, out readTokens, out treeState))
                     return true;
             }
 
+            treeState = null;
             readTokens = 0;
             return false;
         }
@@ -269,19 +307,20 @@ namespace NovelerCompiler
             }
         }
 
-        public bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens)
+        public bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens, [NotNullWhen(true)] out ParseTreeNode? treeState)
         {
+            readTokens = 0;
+            treeState = new ParseTreeNode(ParseTreeNode.NodeKind.Sequence);
+
             for (int i = 0; i < _patternSequence.Length; i++)
             {
-                if (_patternSequence[i].MatchesSequence(sequence, out _))
+                if (_patternSequence[i].MatchesSequence(sequence, out _, out _))
                 {
-                    readTokens = 0;
-                    return true;
+                    return false;
                 }
             }
 
-            readTokens = 1;
-            return false;
+            return true;
         }
     }
 }

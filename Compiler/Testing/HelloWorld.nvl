@@ -1,3 +1,4 @@
 variable : big number
 
-variable = 3 + 4 - 5 + -6
+variable = 3 + 4 - 5 + -6 * 2
+

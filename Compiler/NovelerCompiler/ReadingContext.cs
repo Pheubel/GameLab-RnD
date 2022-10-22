@@ -8,7 +8,6 @@
         public int ScopeLevel;
         public bool IsInHealthyState;
         public string? CurrentFile;
-        public Stack<TreeNode> NodeStack;
         public Dictionary<string, SymbolTableEntry> SymbolTable;
         public List<CompilerMessage> OutMessages;
 
@@ -19,7 +18,6 @@
             CharacterOnLine = characterOnLine;
             CurrentFile = currentFile;
             ScopeLevel = scopeLevel;
-            NodeStack = new Stack<TreeNode>();
             ReadState = ReadState.Story;
             IsInHealthyState = true;
             OutMessages = outMessages;
