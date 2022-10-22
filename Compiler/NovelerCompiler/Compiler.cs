@@ -20,7 +20,7 @@ namespace Noveler.Compiler
             messages = outMessages;
 
             Dictionary<string, SymbolTableEntry> variableTable = new Dictionary<string, SymbolTableEntry>();
-            ReadingContext context = new ReadingContext(variableTable, 1, 1, null, 0, outMessages);
+            ReadingContext context = new ReadingContext(variableTable, 1, 1, null, outMessages);
 
             var tokenStream = Lexer.Lex(reader, ref context);
             //var tree = SyntaxAnalyzer.Analyze()

@@ -8,6 +8,8 @@ namespace Noveler.Compiler
 {
     internal static class Utilities
     {
+        public const char EndOfFile = unchecked((char)-1);
+
         public static readonly IReadOnlyDictionary<string, TokenType> Keywords = new Dictionary<string, TokenType>()
         {
             { "signed", TokenType.KeywordSigned },

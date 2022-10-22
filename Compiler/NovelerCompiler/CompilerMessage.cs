@@ -20,6 +20,13 @@
             Source = $"{(context.CurrentFile is null ? string.Empty : context.CurrentFile + ": ")} Line: {context.LineNumber} Column: {context.CharacterOnLine}";
         }
 
+        internal CompilerMessage(string content, MessageCode code, Token token)
+        {
+            Content = content;
+            Code = code;
+            Source = $"{(token.SourceFile is null ? string.Empty : token.SourceFile + ": ")} Line: {token.LineNumber} Column: {token.PositionOnLine.Start}";
+        }
+
         public enum MessageCode
         {
             // messages

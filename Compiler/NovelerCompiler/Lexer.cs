@@ -80,18 +80,18 @@ namespace NovelerCompiler
                     input.Read();
                     if (input.MatchCharacter('+'))
                     {
+                        token = new Token(TokenType.Increment, ref context, 2);
                         context.CharacterOnLine += 2;
-                        token = new Token(TokenType.Increment);
                     }
                     else if (input.MatchCharacter('='))
                     {
+                        token = new Token(TokenType.AddAssign, ref context, 2);
                         context.CharacterOnLine += 2;
-                        token = new Token(TokenType.AddAssign);
                     }
                     else
                     {
+                        token = new Token(TokenType.Add, ref context, 1);
                         context.CharacterOnLine += 1;
-                        token = new Token(TokenType.Add);
                     }
                     return;
 
@@ -99,18 +99,18 @@ namespace NovelerCompiler
                     input.Read();
                     if (input.MatchCharacter('-'))
                     {
+                        token = new Token(TokenType.Decrement, ref context, 2);
                         context.CharacterOnLine += 2;
-                        token = new Token(TokenType.Decrement);
                     }
                     else if (input.MatchCharacter('='))
                     {
+                        token = new Token(TokenType.SubtractAssign, ref context, 2);
                         context.CharacterOnLine += 2;
-                        token = new Token(TokenType.SubtractAssign);
                     }
                     else
                     {
+                        token = new Token(TokenType.Subtract, ref context, 1);
                         context.CharacterOnLine += 1;
-                        token = new Token(TokenType.Subtract);
                     }
                     return;
 
@@ -118,13 +118,13 @@ namespace NovelerCompiler
                     input.Read();
                     if (input.MatchCharacter('='))
                     {
+                        token = new Token(TokenType.MultiplyAssign, ref context, 2);
                         context.CharacterOnLine += 2;
-                        token = new Token(TokenType.MultiplyAssign);
                     }
                     else
                     {
+                        token = new Token(TokenType.Multiply, ref context, 2);
                         context.CharacterOnLine += 1;
-                        token = new Token(TokenType.Multiply);
                     }
                     return;
 
@@ -132,13 +132,13 @@ namespace NovelerCompiler
                     input.Read();
                     if (input.MatchCharacter('='))
                     {
+                        token = new Token(TokenType.DivideAssign, ref context, 2);
                         context.CharacterOnLine += 2;
-                        token = new Token(TokenType.DivideAssign);
                     }
                     else
                     {
+                        token = new Token(TokenType.Divide, ref context, 1);
                         context.CharacterOnLine += 1;
-                        token = new Token(TokenType.Divide);
                     }
                     return;
 
@@ -148,24 +148,24 @@ namespace NovelerCompiler
                     {
                         if (input.MatchCharacter('='))
                         {
+                            token = new Token(TokenType.LeftShiftAssign, ref context, 3);
                             context.CharacterOnLine += 3;
-                            token = new Token(TokenType.LeftShiftAssign);
                         }
                         else
                         {
+                            token = new Token(TokenType.LeftShift, ref context, 2);
                             context.CharacterOnLine += 2;
-                            token = new Token(TokenType.LeftShift);
                         }
                     }
                     else if (input.MatchCharacter('='))
                     {
+                        token = new Token(TokenType.LessThanOrEqual, ref context, 2);
                         context.CharacterOnLine += 2;
-                        token = new Token(TokenType.LessThanOrEqual);
                     }
                     else
                     {
+                        token = new Token(TokenType.LessThan, ref context, 1);
                         context.CharacterOnLine++;
-                        token = new Token(TokenType.LessThan);
                     }
                     return;
 
@@ -175,24 +175,24 @@ namespace NovelerCompiler
                     {
                         if (input.MatchCharacter('='))
                         {
+                            token = new Token(TokenType.RightShiftAssign, ref context, 3);
                             context.CharacterOnLine += 3;
-                            token = new Token(TokenType.RightShiftAssign);
                         }
                         else
                         {
+                            token = new Token(TokenType.RightShift, ref context, 2);
                             context.CharacterOnLine += 2;
-                            token = new Token(TokenType.RightShift);
                         }
                     }
                     else if (input.MatchCharacter('='))
                     {
+                        token = new Token(TokenType.GreaterThanOrEqual, ref context, 2);
                         context.CharacterOnLine += 2;
-                        token = new Token(TokenType.GreaterThanOrEqual);
                     }
                     else
                     {
+                        token = new Token(TokenType.GreaterThan, ref context, 1);
                         context.CharacterOnLine++;
-                        token = new Token(TokenType.GreaterThan);
                     }
                     return;
 
@@ -200,18 +200,18 @@ namespace NovelerCompiler
                     input.Read();
                     if (input.MatchCharacter('&'))
                     {
+                        token = new Token(TokenType.ConditionalAnd, ref context, 2);
                         context.CharacterOnLine += 2;
-                        token = new Token(TokenType.ConditionalAnd);
                     }
                     else if (input.MatchCharacter('='))
                     {
+                        token = new Token(TokenType.AndAssign, ref context, 2);
                         context.CharacterOnLine += 2;
-                        token = new Token(TokenType.AndAssign);
                     }
                     else
                     {
+                        token = new Token(TokenType.And, ref context, 1);
                         context.CharacterOnLine++;
-                        token = new Token(TokenType.And);
                     }
                     return;
 
@@ -219,18 +219,18 @@ namespace NovelerCompiler
                     input.Read();
                     if (input.MatchCharacter('|'))
                     {
+                        token = new Token(TokenType.ConditionalOr, ref context, 2);
                         context.CharacterOnLine += 2;
-                        token = new Token(TokenType.ConditionalOr);
                     }
                     else if (input.MatchCharacter('='))
                     {
+                        token = new Token(TokenType.OrAssign, ref context, 2);
                         context.CharacterOnLine += 2;
-                        token = new Token(TokenType.OrAssign);
                     }
                     else
                     {
+                        token = new Token(TokenType.Or, ref context, 1);
                         context.CharacterOnLine++;
-                        token = new Token(TokenType.Or);
                     }
                     return;
 
@@ -238,51 +238,51 @@ namespace NovelerCompiler
                     input.Read();
                     if (input.MatchCharacter('='))
                     {
+                        token = new Token(TokenType.XOrAssign, ref context, 2);
                         context.CharacterOnLine += 2;
-                        token = new Token(TokenType.XOrAssign);
                     }
                     else
                     {
+                        token = new Token(TokenType.XOr, ref context, 2);
                         context.CharacterOnLine++;
-                        token = new Token(TokenType.XOr);
                     }
                     return;
 
                 case '(':
                     input.Read();
+                    token = new Token(TokenType.LeftParenthesis, ref context, 1);
                     context.CharacterOnLine++;
-                    token = new Token(TokenType.LeftParenthesis);
                     return;
 
                 case ')':
                     input.Read();
+                    token = new Token(TokenType.RightParenthesis, ref context, 1);
                     context.CharacterOnLine++;
-                    token = new Token(TokenType.RightParenthesis);
                     return;
 
                 case '{':
                     input.Read();
+                    token = new Token(TokenType.LeftCurlyBacket, ref context, 1);
                     context.CharacterOnLine++;
-                    token = new Token(TokenType.LeftCurlyBacket);
                     return;
 
                 case '}':
                     input.Read();
+                    token = new Token(TokenType.RightCurlyBacket, ref context, 1);
                     context.CharacterOnLine++;
-                    token = new Token(TokenType.RightCurlyBacket);
                     return;
 
                 case '=':
                     input.Read();
                     if (input.MatchCharacter('='))
                     {
+                        token = new Token(TokenType.EqualsTo, ref context, 2);
                         context.CharacterOnLine += 2;
-                        token = new Token(TokenType.EqualsTo);
                     }
                     else
                     {
+                        token = new Token(TokenType.Assign, ref context, 1);
                         context.CharacterOnLine++;
-                        token = new Token(TokenType.Assign);
                     }
                     return;
 
@@ -290,57 +290,57 @@ namespace NovelerCompiler
                     input.Read();
                     if (input.MatchCharacter('\n'))
                     {
+                        token = new Token(TokenType.NewLine, ref context, 2);
                         context.AdvanceLine();
-                        token = new Token(TokenType.NewLine);
                     }
                     break;
 
                 case '\n':
                     input.Read();
+                    token = new Token(TokenType.NewLine, ref context, 1);
                     context.AdvanceLine();
-                    token = new Token(TokenType.NewLine);
-                    break;
+                    return;
 
                 case ';':
                     input.Read();
+                    token = new Token(TokenType.SemiColon, ref context, 1);
                     context.CharacterOnLine++;
-                    token = new Token(TokenType.SemiColon);
-                    break;
+                    return;
 
                 case ':':
                     input.Read();
+                    token = new Token(TokenType.Colon, ref context, 1);
                     context.CharacterOnLine++;
-                    token = new Token(TokenType.Colon);
                     return;
 
                 case '!':
                     input.Read();
                     if (input.MatchCharacter('='))
                     {
+                        token = new Token(TokenType.NotEqualsTo, ref context, 2);
                         context.CharacterOnLine += 2;
-                        token = new Token(TokenType.NotEqualsTo);
                     }
                     else
                     {
+                        token = new Token(TokenType.ExclamationMark, ref context, 1);
                         context.CharacterOnLine++;
-                        token = new Token(TokenType.ExclamationMark);
                     }
                     return;
 
                 case '.':
                     input.Read();
+                    token = new Token(TokenType.Period, ref context, 1);
                     context.CharacterOnLine++;
-                    token = new Token(TokenType.Period);
                     return;
 
                 case ',':
                     input.Read();
+                    token = new Token(TokenType.Comma, ref context, 1);
                     context.CharacterOnLine++;
-                    token = new Token(TokenType.Comma);
                     return;
 
-                case unchecked((char)-1):
-                    token = new Token(TokenType.EndOfFile);
+                case Utilities.EndOfFile:
+                    token = new Token(TokenType.EndOfFile, ref context, 1);
                     return;
 
                 default:
@@ -358,8 +358,8 @@ namespace NovelerCompiler
 
             // handle unmatched tokens
             input.Read();
+            token ??= new Token(TokenType.InvalidToken, ref context, 1);
             context.CharacterOnLine++;
-            token ??= Token.InvalidToken;
         }
 
         private static bool TryHandleSymbolOrKeyword(ReaderWrapper input, ref ReadingContext context, [NotNullWhen(true)] out Token? token)
@@ -384,31 +384,38 @@ namespace NovelerCompiler
                 }
             }
 
-            context.CharacterOnLine += charBuffer.Count;
             string symbolString = charBuffer.AsString();
 
             // handle keywords
-            if (TryHandleKeyword(symbolString, out token))
+            if (TryHandleKeyword(symbolString, ref context, out token))
+            {
+                context.CharacterOnLine += charBuffer.Count;
                 return true;
+            }
 
             // handle reserved keywords
             if (Utilities.ReservedKeywords.Contains(symbolString))
             {
                 context.AddErrorMessage($"\"{symbolString}\" is a reserved keyword that is currently not implemented.", CompilerMessage.MessageCode.ReservedKeyword);
+                context.CharacterOnLine += charBuffer.Count;
                 return false;
             }
 
             if (TryHandleSymbols(ref context, symbolString, out token))
+            {
+                context.CharacterOnLine += charBuffer.Count;
                 return true;
+            }
 
-            token = new Token(TokenType.UndefinedSymbol, symbolString);
+            token = new Token(TokenType.UndefinedSymbol, ref context, symbolString.Length, symbolString);
+            context.CharacterOnLine += charBuffer.Count;
             return false;
         }
 
-        private static bool TryHandleKeyword(string symbolString, [NotNullWhen(true)] out Token? token)
+        private static bool TryHandleKeyword(string symbolString, ref ReadingContext context, [NotNullWhen(true)] out Token? token)
         {
             bool result = Utilities.Keywords.TryGetValue(symbolString, out var keywordToken);
-            token = result ? new Token(keywordToken, symbolString) : Token.InvalidToken;
+            token = result ? new Token(keywordToken, ref context, symbolString.Length, symbolString) : null;
             return result;
         }
 
@@ -420,7 +427,7 @@ namespace NovelerCompiler
                 context.SymbolTable.Add(symbolString, symbolEntry);
             }
 
-            token = new Token(TokenType.Symbol, symbolString);
+            token = new Token(TokenType.Symbol, ref context, symbolString.Length, symbolString);
             symbolEntry.Appearances.Add(token);
 
             return true;
@@ -470,20 +477,26 @@ namespace NovelerCompiler
             // If the was no number to lex
             if (numberBase == 10 && digitCount == 0)
             {
-                token = null;
+                token = new Token(TokenType.InvalidToken, ref context, charBuffer.Count);
                 context.CharacterOnLine += charBuffer.Count;
                 return false;
             }
 
             if (Utilities.IsAlphaNumeric((char)input.Peek()))
             {
-                context.AddErrorMessage(new CompilerMessage($"Invalid literal structure, contains invalid character.", CompilerMessage.MessageCode.InvalidLiteral, ref context));
+                token = new Token(TokenType.InvalidToken, ref context, charBuffer.Count);
+                context.AddErrorMessage(new CompilerMessage($"Invalid literal structure, contains invalid character.", CompilerMessage.MessageCode.InvalidLiteral, token));
+                context.CharacterOnLine += charBuffer.Count;
+                return false;
             }
 
             // there number was missing after defining a different base
             if (digitCount == 0)
             {
-                context.AddErrorMessage(new CompilerMessage($"Invalid literal structure, missing digits.", CompilerMessage.MessageCode.InvalidLiteral, ref context));
+                token = new Token(TokenType.InvalidToken, ref context, charBuffer.Count);
+                context.AddErrorMessage(new CompilerMessage($"Invalid literal structure, missing digits.", CompilerMessage.MessageCode.InvalidLiteral, token));
+                context.CharacterOnLine += charBuffer.Count;
+                return false;
             }
 
             // switch to floating point number handling when dealing with decimal
@@ -511,17 +524,17 @@ namespace NovelerCompiler
 
             if (int.TryParse(bufferSpan, numberStyles, null, out var intResult) && intResult >= 0)
             {
-                token = new Token(TokenType.Int32Literal, intResult.ToString()) { ValueType = TypeId.Int32 };
+                token = new Token(TokenType.Int32Literal, ref context, bufferSpan.Length, intResult.ToString()) { ValueType = TypeId.Int32 };
             }
             else if (long.TryParse(bufferSpan, numberStyles, null, out var longResult) && longResult >= 0)
             {
-                token = new Token(TokenType.Int64Literal, longResult.ToString()) { ValueType = TypeId.Int64 };
+                token = new Token(TokenType.Int64Literal, ref context, bufferSpan.Length, longResult.ToString()) { ValueType = TypeId.Int64 };
             }
             else
             {
-                context.AddErrorMessage($"Invalid literal \"{bufferSpan}\".", CompilerMessage.MessageCode.InvalidLiteral);
+                token = new Token(TokenType.InvalidToken, ref context, charBuffer.Count);
+                context.AddErrorMessage($"Invalid literal \"{bufferSpan}\".", CompilerMessage.MessageCode.InvalidLiteral, token);
                 context.CharacterOnLine += charBuffer.Count;
-                token = null;
                 return false;
             }
 
@@ -549,19 +562,21 @@ namespace NovelerCompiler
 
             var bufferSpan = charBuffer.AsSpan();
 
+            // TODO: float suffix should be handled
+
             if (float.TryParse(bufferSpan, out float floatResult))
             {
-                token = new Token(TokenType.FloatLiteral, floatResult.ToString()) { ValueType = TypeId.Float32 };
+                token = new Token(TokenType.FloatLiteral, ref context, bufferSpan.Length, floatResult.ToString()) { ValueType = TypeId.Float32 };
             }
             else if (double.TryParse(bufferSpan, out double doubleResult))
             {
-                token = new Token(TokenType.FloatLiteral, doubleResult.ToString()) { ValueType = TypeId.Float32 };
+                token = new Token(TokenType.FloatLiteral, ref context, bufferSpan.Length, doubleResult.ToString()) { ValueType = TypeId.Float32 };
             }
             else
             {
-                context.AddErrorMessage($"Invalid literal \"{bufferSpan}\".", CompilerMessage.MessageCode.InvalidLiteral);
+                token = new Token(TokenType.InvalidToken, ref context, charBuffer.Count);
+                context.AddErrorMessage($"Invalid literal \"{bufferSpan}\".", CompilerMessage.MessageCode.InvalidLiteral, token);
                 context.CharacterOnLine += charBuffer.Count;
-                token = null;
                 return false;
             }
 

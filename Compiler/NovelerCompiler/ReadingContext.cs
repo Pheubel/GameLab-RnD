@@ -4,21 +4,17 @@
     {
         public int LineNumber;
         public int CharacterOnLine;
-        public ReadState ReadState;
-        public int ScopeLevel;
         public bool IsInHealthyState;
         public string? CurrentFile;
         public Dictionary<string, SymbolTableEntry> SymbolTable;
         public List<CompilerMessage> OutMessages;
 
-        public ReadingContext(Dictionary<string, SymbolTableEntry> symbolTable, int lineNumber, int characterOnLine, string? currentFile, int scopeLevel, List<CompilerMessage> outMessages) : this()
+        public ReadingContext(Dictionary<string, SymbolTableEntry> symbolTable, int lineNumber, int characterOnLine, string? currentFile, List<CompilerMessage> outMessages) : this()
         {
             SymbolTable = symbolTable;
             LineNumber = lineNumber;
             CharacterOnLine = characterOnLine;
             CurrentFile = currentFile;
-            ScopeLevel = scopeLevel;
-            ReadState = ReadState.Story;
             IsInHealthyState = true;
             OutMessages = outMessages;
         }
@@ -44,6 +40,12 @@
 
             IsInHealthyState = false;
             OutMessages.Add(new CompilerMessage(message, messageCode, ref context));
+        }
+
+        public void AddErrorMessage(string message, CompilerMessage.MessageCode messageCode, Token token)
+        {
+            IsInHealthyState = false;
+            OutMessages.Add(new CompilerMessage(message, messageCode, token));
         }
     }
 
