@@ -17,7 +17,7 @@ namespace Noveler.Compiler
         {
             Type = type;
             ValueString = valueString ?? string.Empty;
-            PositionOnLine = new Range(contex.CharacterOnLine, contex.CharacterOnLine + tokenLength);
+            PositionOnLine = new Range(contex.CharacterOnLine, contex.CharacterOnLine + tokenLength - 1);
             LineNumber = contex.LineNumber;
             SourceFile = contex.CurrentFile;
         }
