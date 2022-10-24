@@ -366,11 +366,22 @@ namespace NovelerCompiler
                         token = new Token(TokenType.EscapedPipe, ref context, 2);
                         context.CharacterOnLine += 2;
                     }
+                    else if (input.MatchCharacter('@'))
+                    {
+                        token = new Token(TokenType.EscapedAtSign, ref context, 2);
+                        context.CharacterOnLine += 2;
+                    }
                     else
                     {
                         token = new Token(TokenType.InvalidEscapedCharacter, ref context, input.ReadChar());
                         context.CharacterOnLine += 2;
                     }
+                    return;
+
+                case '@':
+                    input.Read();
+                    token = new Token(TokenType.AtSign, ref context, 1);
+                    context.CharacterOnLine++;
                     return;
 
                 case Utilities.EndOfFile:

@@ -129,5 +129,7 @@
         EscapedPipe,
         InvalidEscapedCharacter,
         EscapedNewLine,
+        AtSign,
+        EscapedAtSign,
     }
 }
