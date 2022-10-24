@@ -17,20 +17,33 @@
         DoubleLiteral,
 
         // operation
+        /// <summary> +</summary>
         Add,
+        /// <summary> -</summary>
         Subtract,
+        /// <summary> *</summary>
         Multiply,
+        /// <summary> /</summary>
         Divide,
 
+        /// <summary> =</summary>
         Assign,
+        /// <summary> +=</summary>
         AddAssign,
+        /// <summary> -=</summary>
         SubtractAssign,
+        /// <summary> *=</summary>
         MultiplyAssign,
+        /// <summary> /=</summary>
         DivideAssign,
 
+        /// <summary> ==</summary>
         EqualsTo,
+        /// <summary> ++</summary>
         Increment,
+        /// <summary> --</summary>
         Decrement,
+        /// <summary> -(value)</summary>
         Negate,
 
         // function
@@ -44,42 +57,46 @@
         RightParenthesis,
 
         // defining
+        /// <summary> :</summary>
         Colon,
 
         // separating
+        /// <summary> ,</summary>
         Comma,
 
         // terminating
+        /// <summary> ;</summary>
         SemiColon,
-        ClosingCurlyBracket,
 
         // variables
         Identifier,
 
         // special
-        Root,
         EndOfLine,
         EndOfFile,
+        UndeclaredVariable,
 
         // keywords
         KeywordNumber,
-
-
-        //unsorted
-        UndeclaredVariable,
-        CustomType,
-        UndefinedSymbol,
         KeywordBig,
-        KeywordWhole,
         KeywordSmall,
         KeywordTiny,
+        KeywordWhole,
         KeywordSigned,
         KeywordUnsigned,
-        NewLine,
-        Symbol,
         KeywordTrue,
         KeywordFalse,
         KeywordNothing,
+        KeywordReturn,
+        KeywordBoolean,
+        KeywordFunction,
+        KeywordIf,
+
+        //unsorted
+        CustomType,
+        UndefinedSymbol,
+        NewLine,
+        Symbol,
         Remainder,
         ModuloAssign,
         AndAssign,
@@ -87,7 +104,6 @@
         XOrAssign,
         LeftShiftAssign,
         RightShiftAssign,
-        KeywordIf,
         KeywordElse,
         LessThan,
         LeftShift,
@@ -102,11 +118,16 @@
         XOr,
         ConditionalOr,
         Or,
+        /// <summary> {</summary>
         LeftCurlyBacket,
+        /// <summary> }</summary>
         RightCurlyBacket,
-        Return,
-        KeywordBoolean,
+        /// <summary> .</summary>
         Period,
-        KeywordFunction,
+        EscapedWhiteSpace,
+        EscapedBackslash,
+        EscapedPipe,
+        InvalidEscapedCharacter,
+        EscapedNewLine,
     }
 }

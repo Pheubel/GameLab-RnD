@@ -339,6 +339,40 @@ namespace NovelerCompiler
                     context.CharacterOnLine++;
                     return;
 
+                case '\\':
+                    input.Read();
+                    if (input.MatchCharacter(' '))
+                    {
+                        token = new Token(TokenType.EscapedWhiteSpace, ref context, 2);
+                        context.CharacterOnLine += 2;
+                    }
+                    else if (input.MatchNewLine())
+                    {
+                        token = new Token(TokenType.EscapedWhiteSpace, ref context, 2);
+                        context.AdvanceLine();
+                    }
+                    else if (input.MatchCharacter('\n'))
+                    {
+                        token = new Token(TokenType.EscapedNewLine, ref context, 2);
+                        context.CharacterOnLine += 2;
+                    }
+                    else if (input.MatchCharacter('\\'))
+                    {
+                        token = new Token(TokenType.EscapedBackslash, ref context, 2);
+                        context.CharacterOnLine += 2;
+                    }
+                    else if (input.MatchCharacter('|'))
+                    {
+                        token = new Token(TokenType.EscapedPipe, ref context, 2);
+                        context.CharacterOnLine += 2;
+                    }
+                    else
+                    {
+                        token = new Token(TokenType.InvalidEscapedCharacter, ref context, input.ReadChar());
+                        context.CharacterOnLine += 2;
+                    }
+                    return;
+
                 case Utilities.EndOfFile:
                     token = new Token(TokenType.EndOfFile, ref context, 1);
                     return;
@@ -421,6 +455,8 @@ namespace NovelerCompiler
 
         private static bool TryHandleSymbols(ref ReadingContext context, string symbolString, [NotNullWhen(true)] out Token? token)
         {
+            // TODO: remove symbol table operations out of the lexer
+
             if (!context.SymbolTable.TryGetValue(symbolString, out var symbolEntry))
             {
                 symbolEntry = new SymbolTableEntry();

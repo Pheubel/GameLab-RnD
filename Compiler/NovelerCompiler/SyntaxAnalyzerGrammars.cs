@@ -659,7 +659,7 @@ namespace NovelerCompiler
                 );
 
             ReturnStatementGrammar.SetGrammar(
-                IPattern.Tokens(TokenType.Return), IPattern.Optional(ExpressionGrammar), StatementEliminatorGrammar
+                IPattern.Tokens(TokenType.KeywordReturn), IPattern.Optional(ExpressionGrammar), StatementEliminatorGrammar
                 );
 
             StatementGrammar.SetGrammar(

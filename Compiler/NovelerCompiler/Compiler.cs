@@ -119,7 +119,7 @@ namespace Noveler.Compiler
                     break;
                 case TokenType.SemiColon:
                     break;
-                case TokenType.ClosingCurlyBracket:
+                case TokenType.RightCurlyBacket:
                     break;
                 case TokenType.Identifier:
                     break;
