@@ -26,6 +26,7 @@ namespace NovelerCompiler
         /// <summary>
         /// : <see cref="NewLineGrammar"/>
         /// | ';'
+        /// | '\0'
         /// </summary>
         static readonly Grammar StatementEliminatorGrammar;
 
@@ -369,6 +370,11 @@ namespace NovelerCompiler
         /// </summary>
         static readonly Grammar ParenthesizedExpressionGrammar;
 
+        /// <summary>
+        /// : <see cref="StatementEliminatorGrammar"/>
+        /// </summary>
+        static readonly Grammar EmptyExpresionGrammar;
+
         #endregion // Grammars
 
 
@@ -438,6 +444,7 @@ namespace NovelerCompiler
             PrimaryExpressionGrammar = new Grammar();
             StatementExpressionGrammar = new Grammar();
             PrimaryNoArrayCreationExpression = new Grammar();
+            EmptyExpresionGrammar = new Grammar();
 
             #endregion // Instantiation
 
@@ -459,7 +466,7 @@ namespace NovelerCompiler
                 );
 
             StatementEliminatorGrammar.SetGrammar(
-                IPattern.Any(IPattern.Tokens(TokenType.SemiColon), NewLineGrammar)
+                IPattern.Any(IPattern.Tokens(TokenType.SemiColon, TokenType.EndOfFile), NewLineGrammar)
                 );
 
             UnaryExpressionGrammar.SetGrammar(
@@ -774,6 +781,10 @@ namespace NovelerCompiler
 
             ParenthesizedExpressionGrammar.SetGrammar(
                 IPattern.Tokens(TokenType.LeftParenthesis), ExpressionGrammar, IPattern.Tokens(TokenType.RightParenthesis)
+                );
+
+            EmptyExpresionGrammar.SetGrammar(
+                StatementEliminatorGrammar
                 );
 
             #endregion // Initialization
