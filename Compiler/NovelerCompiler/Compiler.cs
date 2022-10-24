@@ -11,7 +11,6 @@ namespace Noveler.Compiler
 {
     public class Compiler
     {
-        // TODO use TextReader to use streams instead in the future?
         public static bool Compile(TextReader script, out List<byte> result, out IReadOnlyList<CompilerMessage> messages)
         {
             var reader = new ReaderWrapper(script);

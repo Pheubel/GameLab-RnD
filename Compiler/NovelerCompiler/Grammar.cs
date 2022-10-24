@@ -132,7 +132,7 @@ namespace NovelerCompiler
 
     internal sealed class ExactPattern : IPattern
     {
-        IPattern[] _patterns;
+        readonly IPattern[] _patterns;
 
         public ExactPattern(params IPattern[] pattern)
         {
