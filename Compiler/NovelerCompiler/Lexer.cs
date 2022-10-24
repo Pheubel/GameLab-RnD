@@ -341,17 +341,7 @@ namespace NovelerCompiler
 
                 case '\\':
                     input.Read();
-                    if (input.MatchCharacter(' '))
-                    {
-                        token = new Token(TokenType.EscapedWhiteSpace, ref context, 2);
-                        context.CharacterOnLine += 2;
-                    }
-                    else if (input.MatchNewLine())
-                    {
-                        token = new Token(TokenType.EscapedWhiteSpace, ref context, 2);
-                        context.AdvanceLine();
-                    }
-                    else if (input.MatchCharacter('\n'))
+                    if (input.MatchCharacter('\n'))
                     {
                         token = new Token(TokenType.EscapedNewLine, ref context, 2);
                         context.CharacterOnLine += 2;
@@ -378,6 +368,10 @@ namespace NovelerCompiler
                     }
                     return;
 
+                case '"':
+                    TryHandleStringLiteral(input, ref context, out token);
+                    return;
+
                 case '@':
                     input.Read();
                     token = new Token(TokenType.AtSign, ref context, 1);
@@ -401,10 +395,87 @@ namespace NovelerCompiler
                 }
             }
 
-            // handle unmatched tokens
+            // treat remaining characters as raw text
+
+            using var charBuffer = PooledList<char>.Rent(512);
+            charBuffer.Add(input.ReadChar());
+
+            while (true)
+            {
+                char c = input.PeekChar();
+
+                if (c == '\\' || c == '@' || c == ' ' || (c == '\n' || (c == '\n' && input.PeekSecondChar() == '\n')))
+                    break;
+
+                input.Read();
+                charBuffer.Add(c);
+            }
+
+            token = new Token(TokenType.RawText, ref context, charBuffer.Count, charBuffer.AsString());
+            context.CharacterOnLine += charBuffer.Count;
+
+            //// handle unmatched tokens
+            //input.Read();
+            //token ??= new Token(TokenType.InvalidToken, ref context, 1);
+            //context.CharacterOnLine++;
+        }
+
+        private static bool TryHandleStringLiteral(ReaderWrapper input, ref ReadingContext context, out Token token)
+        {
+            using var charBuffer = PooledList<char>.Rent(512);
+
             input.Read();
-            token ??= new Token(TokenType.InvalidToken, ref context, 1);
-            context.CharacterOnLine++;
+
+            int passedTokens = 1;
+            while (true)
+            {
+                char c = input.PeekChar();
+                passedTokens++;
+
+                if (c == '"')
+                    break;
+
+                if (c == '\\')
+                {
+                    if (input.MatchCharacter('\\'))
+                    {
+                        charBuffer.Add('\\');
+                        passedTokens++;
+                    }
+                    else if (input.MatchCharacter('n'))
+                    {
+                        charBuffer.Add('\n');
+                        passedTokens++;
+                    }
+                    else if (input.MatchCharacter('"'))
+                    {
+                        charBuffer.Add('"');
+                        passedTokens++;
+                    }
+                    else
+                    {
+                        token = new Token(TokenType.MalformedStringLiteral, ref context, passedTokens);
+                        return false;
+                    }
+                }
+
+                // make sure string is properly closed on a single line
+                if (c == '\n' || (c == '\r' && input.PeekSecondChar() == '\n'))
+                {
+                    token = new Token(TokenType.MalformedStringLiteral, ref context, passedTokens);
+                    return false;
+                }
+
+                charBuffer.Add(c);
+                input.Read();
+            }
+
+            input.Read();
+
+            token = new Token(TokenType.StringLiteral, ref context, passedTokens, charBuffer.AsString());
+
+            context.CharacterOnLine += passedTokens;
+            return true;
         }
 
         private static bool TryHandleSymbolOrKeyword(ReaderWrapper input, ref ReadingContext context, [NotNullWhen(true)] out Token? token)

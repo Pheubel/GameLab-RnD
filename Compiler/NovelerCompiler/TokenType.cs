@@ -131,5 +131,9 @@
         EscapedNewLine,
         AtSign,
         EscapedAtSign,
+        KeywordImport,
+        RawText,
+        MalformedStringLiteral,
+        StringLiteral,
     }
 }

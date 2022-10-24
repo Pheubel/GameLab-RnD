@@ -19,7 +19,8 @@ namespace Noveler.Compiler
             { "small", TokenType.KeywordSmall },
             { "big", TokenType.KeywordBig },
             { "whole", TokenType.KeywordWhole },
-            { "return", TokenType.KeywordReturn }
+            { "return", TokenType.KeywordReturn },
+            { "import", TokenType.KeywordImport }
         };
 
         public static readonly IReadOnlySet<string> ReservedKeywords = new HashSet<string>()
