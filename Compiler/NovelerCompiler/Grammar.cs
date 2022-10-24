@@ -145,7 +145,7 @@ namespace NovelerCompiler
             _patterns[0] = new TokenPattern(patternSequnce);
         }
 
-        public bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens, out ParseTreeNode? treeState)
+        public bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens, [NotNullWhen(true)] out ParseTreeNode? treeState)
         {
             readTokens = 0;
             var sequenceSlice = sequence;
