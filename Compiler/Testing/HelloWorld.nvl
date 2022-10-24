@@ -1,3 +1,25 @@
-variable : big number
+@import "external_script.nvl" // imports functions and variables
 
-variable = 3 + 4 - 5 + -6 * 2
+@characterHappiness : number
+
+@code {
+    characterHappiness = 6
+}
+
+Hello you, this is an example of embedding variables into text
+@characterHappiness
+
+@if (characterHappiness > 5) {
+    I feel great
+}
+@else {
+    I feel ok
+}
+
+what do you want?
+@choice {
+    food:
+        i want a hamburger.
+    money:
+        I want a small loan of a million dollars
+}

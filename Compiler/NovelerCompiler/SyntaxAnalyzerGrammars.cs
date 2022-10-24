@@ -375,6 +375,22 @@ namespace NovelerCompiler
         /// </summary>
         static readonly Grammar EmptyExpresionGrammar;
 
+        /// <summary>
+        /// : <see cref="FunctionNoReturnValueDeclarationGrammar"/>
+        /// | <see cref="FunctionDelarationGrammar"/>
+        /// </summary>
+        static readonly Grammar FunctionDelarationGrammar;
+
+        /// <summary>
+        /// : 'function' <see cref="IdentifierGrammar"/> '(' <see cref="ArgumentListGrammar"/>? ')' <see cref="BlockGrammar"/>
+        /// </summary>
+        static readonly Grammar FunctionNoReturnValueDeclarationGrammar;
+
+        /// <summary>
+        /// : 'function' <see cref="IdentifierGrammar"/> '(' <see cref="ArgumentListGrammar"/>? ')' ':' <see cref="TypeGrammar"/> <see cref="BlockGrammar"/>
+        /// </summary>
+        static readonly Grammar FunctionReturnValueDeclarationGrammar;
+
         #endregion // Grammars
 
 
@@ -445,6 +461,9 @@ namespace NovelerCompiler
             StatementExpressionGrammar = new Grammar();
             PrimaryNoArrayCreationExpression = new Grammar();
             EmptyExpresionGrammar = new Grammar();
+            FunctionReturnValueDeclarationGrammar = new Grammar();
+            FunctionNoReturnValueDeclarationGrammar = new Grammar();
+            FunctionDelarationGrammar = new Grammar();
 
             #endregion // Instantiation
 
@@ -785,6 +804,19 @@ namespace NovelerCompiler
 
             EmptyExpresionGrammar.SetGrammar(
                 StatementEliminatorGrammar
+                );
+
+            FunctionReturnValueDeclarationGrammar.SetGrammar(
+                IPattern.Tokens(TokenType.KeywordFunction), IdentifierGrammar, IPattern.Tokens(TokenType.LeftParenthesis), IPattern.Optional(ArgumentListGrammar), IPattern.Tokens(TokenType.Colon), TypeGrammar, BlockGrammar
+                );
+
+            FunctionNoReturnValueDeclarationGrammar.SetGrammar(
+                IPattern.Tokens(TokenType.KeywordFunction), IdentifierGrammar, IPattern.Tokens(TokenType.LeftParenthesis), IPattern.Optional(ArgumentListGrammar), BlockGrammar
+                );
+
+            FunctionDelarationGrammar.SetGrammar(
+                IPattern.Any(FunctionNoReturnValueDeclarationGrammar,
+                             FunctionReturnValueDeclarationGrammar)
                 );
 
             #endregion // Initialization

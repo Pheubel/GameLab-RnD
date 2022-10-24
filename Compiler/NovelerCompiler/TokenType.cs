@@ -107,5 +107,6 @@
         Return,
         KeywordBoolean,
         Period,
+        KeywordFunction,
     }
 }
