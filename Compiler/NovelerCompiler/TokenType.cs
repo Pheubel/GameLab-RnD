@@ -119,7 +119,7 @@
         ConditionalOr,
         Or,
         /// <summary> {</summary>
-        LeftCurlyBacket,
+        LeftCurlyBracket,
         /// <summary> }</summary>
         RightCurlyBacket,
         /// <summary> .</summary>
@@ -135,5 +135,7 @@
         RawText,
         MalformedStringLiteral,
         StringLiteral,
+        KeywordCode,
+        SingleLineComment,
     }
 }

@@ -20,7 +20,8 @@ namespace Noveler.Compiler
             { "big", TokenType.KeywordBig },
             { "whole", TokenType.KeywordWhole },
             { "return", TokenType.KeywordReturn },
-            { "import", TokenType.KeywordImport }
+            { "import", TokenType.KeywordImport },
+            { "code", TokenType.KeywordCode }
         };
 
         public static readonly IReadOnlySet<string> ReservedKeywords = new HashSet<string>()
@@ -69,7 +70,9 @@ namespace Noveler.Compiler
             "each",
             "bool",
             "boolean",
-            "event"
+            "event",
+            "switch",
+            "case"
         };
 
         public static int SkipSpace(ReaderWrapper input)

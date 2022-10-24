@@ -123,9 +123,6 @@ namespace Noveler.Compiler
                     break;
                 case TokenType.Identifier:
                     break;
-                case TokenType.Root:
-                    EmitCode(node.Children[0]);
-                    break;
                 case TokenType.EndOfLine:
                     break;
                 case TokenType.EndOfFile:

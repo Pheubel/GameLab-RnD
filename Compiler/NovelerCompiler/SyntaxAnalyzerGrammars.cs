@@ -180,6 +180,11 @@ namespace NovelerCompiler
         static readonly Grammar IfStatementGrammar;
 
         /// <summary>
+        /// : <see cref="StatementEliminatorGrammar"/>
+        /// </summary>
+        static readonly Grammar EmptyStatementGrammar;
+
+        /// <summary>
         /// : <see cref="BlockGrammar"/><br/>
         /// | <see cref="ExpressionStatementGrammar"/><br/>
         /// | <see cref="SelectionStatementGrammar"/><br/>
@@ -419,6 +424,12 @@ namespace NovelerCompiler
         /// </summary>
         static readonly Grammar StoryAtomGrammar;
 
+        /// <summary>
+        /// : <see cref="StoryEmbeddedChoiceStatementGrammar"/><br/>
+        /// | <see cref="StoryEmbeddedIfStatementGrammar"/><br/>
+        /// | <see cref="StoryEmbeddedExpressionStatementGrammar"/><br/>
+        /// | <see cref="StoryEmbeddedCodeGrammar"/>
+        /// </summary>
         static readonly Grammar StoryEmbeddedStatementGrammar;
 
         /// <summary>
@@ -452,18 +463,38 @@ namespace NovelerCompiler
         /// </summary>
         static readonly Grammar EmbeddedVariableInStoryGrammar;
 
+        /// <summary>
+        /// : '@' 'if' '(' <see cref="BooleanExpressionGrammar"/> ')' '{' <see cref="StoryPartGrammar"/>* '}'<br/>
+        /// | '@' 'if' '(' <see cref="BooleanExpressionGrammar"/> ')' '{' <see cref="StoryPartGrammar"/>* '}' 'else' '{' <see cref="StoryPartGrammar"/>* '}'
+        /// </summary>
         static readonly Grammar StoryEmbeddedIfStatementGrammar;
 
         static readonly Grammar StoryEmbeddedChoiceStatementGrammar;
 
+        static readonly Grammar StoryChoiceExpressionGrammar;
+
+        static readonly Grammar StoryChoiceGrammar;
+
         static readonly Grammar StoryEmbeddedVariableDeclarationGrammar;
 
+        /// <summary>
+        /// : '@' 'code' <see cref="BlockGrammar"/>
+        /// </summary>
         static readonly Grammar StoryEmbeddedCodeGrammar;
 
         /// <summary>
         /// : '@' <see cref="ExpressionStatementGrammar"/>
         /// </summary>
         static readonly Grammar StoryEmbeddedExpressionStatementGrammar;
+
+        /// <summary>
+        /// : <see cref="LocalVariableDeclaratorGrammar"/> <see cref="NewLineGrammar"/>
+        /// </summary>
+        static readonly Grammar StoryDeclarationStatementGrammar;
+
+        static readonly Grammar StoryExpressionStatementGrammar;
+
+        static readonly Grammar EmptyStoryStatement;
 
         #endregion // Grammars
 
@@ -547,6 +578,18 @@ namespace NovelerCompiler
             StoryPartGrammar = new Grammar();
             EmbeddedValueInStoryGrammar = new Grammar();
             StoryEmbeddedExpressionStatementGrammar = new Grammar();
+            StoryEmbeddedIfStatementGrammar = new Grammar();
+            StoryDeclarationStatementGrammar = new Grammar();
+            StoryEmbeddedChoiceStatementGrammar = new Grammar();
+            StoryEmbeddedVariableDeclarationGrammar = new Grammar();
+            StoryChoiceGrammar = new Grammar();
+            StoryChoiceExpressionGrammar = new Grammar();
+            StoryExpressionStatementGrammar = new Grammar();
+            StoryEmbeddedStatementGrammar = new Grammar();
+            StringLiteralGrammar = new Grammar();
+            EmptyStatementGrammar = new Grammar();
+            StoryEmbeddedCodeGrammar = new Grammar();
+            EmptyStoryStatement = new Grammar();
 
             #endregion // Instantiation
 
@@ -563,7 +606,9 @@ namespace NovelerCompiler
                 );
 
             StoryPartGrammar.SetGrammar(
-                IPattern.Any(StoryAtomGrammar, StoryEmbeddedStatementGrammar)
+                IPattern.Any(StoryAtomGrammar,
+                             StoryEmbeddedStatementGrammar,
+                             EmptyStoryStatement)
                 );
 
             StoryAtomGrammar.SetGrammar(
@@ -593,6 +638,10 @@ namespace NovelerCompiler
                              TokenType.KeywordImport)
                 );
 
+            EmptyStoryStatement.SetGrammar(
+                NewLineGrammar
+                );
+
             EmbeddedValueInStoryGrammar.SetGrammar(
                 IPattern.Any(EmbeddedVariableInStoryGrammar)
                 );
@@ -602,11 +651,47 @@ namespace NovelerCompiler
                 );
 
             StoryEmbeddedStatementGrammar.SetGrammar(
-                // TODO: add missing embedded statements, like choice, if, else, etc.
+                IPattern.Any(StoryEmbeddedChoiceStatementGrammar,
+                             StoryEmbeddedIfStatementGrammar,
+                             StoryEmbeddedExpressionStatementGrammar,
+                             StoryEmbeddedCodeGrammar)
+                );
+
+            StoryEmbeddedIfStatementGrammar.SetGrammar(
+                IPattern.Any(IPattern.Exact(IPattern.Tokens(TokenType.KeywordIf, TokenType.LeftParenthesis), BooleanExpressionGrammar, IPattern.Tokens(TokenType.RightParenthesis, TokenType.LeftCurlyBracket), IPattern.ZeroOrMany(StoryPartGrammar), IPattern.Tokens(TokenType.RightCurlyBacket)),
+                             IPattern.Exact(IPattern.Tokens(TokenType.KeywordIf, TokenType.LeftParenthesis), BooleanExpressionGrammar, IPattern.Tokens(TokenType.RightParenthesis, TokenType.LeftCurlyBracket), IPattern.ZeroOrMany(StoryPartGrammar), IPattern.Tokens(TokenType.RightCurlyBacket, TokenType.KeywordElse), EmbeddedStatementGrammar))
+                );
+
+            StoryChoiceGrammar.SetGrammar(
+                IPattern.OnceOrMany(StoryAtomGrammar), IPattern.Tokens(TokenType.Colon), NewLineGrammar
+                );
+
+            StoryEmbeddedChoiceStatementGrammar.SetGrammar(
+                IPattern.OnceOrMany(StoryChoiceGrammar, StoryChoiceExpressionGrammar)
+                );
+
+            StoryChoiceExpressionGrammar.SetGrammar(
+                IPattern.OnceOrMany(StoryPartGrammar)
+                );
+
+            StoryExpressionStatementGrammar.SetGrammar(
+                StatementExpressionGrammar, NewLineGrammar
                 );
 
             StoryEmbeddedExpressionStatementGrammar.SetGrammar(
-                IPattern.Tokens(TokenType.AtSign), ExpressionStatementGrammar
+                IPattern.Tokens(TokenType.AtSign), StoryExpressionStatementGrammar
+                );
+
+            StoryEmbeddedVariableDeclarationGrammar.SetGrammar(
+                IPattern.Tokens(TokenType.AtSign), StoryDeclarationStatementGrammar
+                );
+
+            StoryDeclarationStatementGrammar.SetGrammar(
+                LocalVariableDeclaratorGrammar, NewLineGrammar
+                );
+
+            StoryEmbeddedCodeGrammar.SetGrammar(
+                IPattern.Tokens(TokenType.AtSign, TokenType.KeywordCode), BlockGrammar
                 );
 
             NewLineGrammar.SetGrammar(
@@ -775,7 +860,11 @@ namespace NovelerCompiler
                 );
 
             BlockGrammar.SetGrammar(
-                IPattern.Tokens(TokenType.LeftCurlyBacket), IPattern.Optional(StatementListGrammar), IPattern.Tokens(TokenType.RightCurlyBacket)
+                IPattern.Tokens(TokenType.LeftCurlyBracket), IPattern.Optional(StatementListGrammar), IPattern.Tokens(TokenType.RightCurlyBacket)
+                );
+
+            EmptyStatementGrammar.SetGrammar(
+                StatementEliminatorGrammar
                 );
 
             StatementListGrammar.SetGrammar(
@@ -784,6 +873,7 @@ namespace NovelerCompiler
 
             EmbeddedStatementGrammar.SetGrammar(
                 IPattern.Any(BlockGrammar,
+                             EmptyStatementGrammar,
                              ExpressionStatementGrammar),
                              SelectionStatementGrammar,
                              // iteration statement for loops

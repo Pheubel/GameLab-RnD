@@ -9,13 +9,16 @@ namespace NovelerCompiler
     internal class ParseTreeNode
     {
         public NodeKind Kind { get; }
+        public GrammarKind GrammarKind { get; }
         public List<ParseTreeNode>? Children { get; }
         [DisallowNull]
         public Token? Token { get; set; }
 
-        public ParseTreeNode(NodeKind kind)
+
+        public ParseTreeNode(NodeKind kind, GrammarKind grammarKind = GrammarKind.NotAValidGrammar)
         {
             Kind = kind;
+            GrammarKind = grammarKind;
 
             if (kind != NodeKind.Token)
                 Children = new List<ParseTreeNode>();
@@ -48,5 +51,10 @@ namespace NovelerCompiler
             Sequence,
             Token
         }
+    }
+
+    public enum GrammarKind
+    {
+        NotAValidGrammar
     }
 }

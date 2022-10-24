@@ -27,6 +27,10 @@ namespace NovelerCompiler
                     continue;
                 }
 
+                // strip comments out before they are put into the token stream
+                if (token.Type == TokenType.SingleLineComment)
+                    continue;
+
                 Token? lastToken = tokens.LastOrDefault();
 
                 //// skip if excessive terminating tokens
@@ -134,6 +138,18 @@ namespace NovelerCompiler
                     {
                         token = new Token(TokenType.DivideAssign, ref context, 2);
                         context.CharacterOnLine += 2;
+                    }
+                    else if (input.MatchCharacter('/'))
+                    {
+                        int commentLength = 2;
+
+                        while (!input.PeekMatchNewLine())
+                        {
+                            input.Read();
+                            commentLength++;
+                        }
+                        token = new Token(TokenType.SingleLineComment, ref context, commentLength);
+                        context.CharacterOnLine += commentLength;
                     }
                     else
                     {
@@ -262,7 +278,7 @@ namespace NovelerCompiler
 
                 case '{':
                     input.Read();
-                    token = new Token(TokenType.LeftCurlyBacket, ref context, 1);
+                    token = new Token(TokenType.LeftCurlyBracket, ref context, 1);
                     context.CharacterOnLine++;
                     return;
 
