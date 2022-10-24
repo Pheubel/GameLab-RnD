@@ -308,6 +308,7 @@ namespace NovelerCompiler
                     {
                         token = new Token(TokenType.NewLine, ref context, 2);
                         context.AdvanceLine();
+                        return;
                     }
                     break;
 
@@ -420,7 +421,7 @@ namespace NovelerCompiler
             {
                 char c = input.PeekChar();
 
-                if (c == '\\' || c == '@' || c == ' ' || (c == '\n' || (c == '\n' && input.PeekSecondChar() == '\n')))
+                if (c == '\\' || c == '@' || c == ' ' || input.PeekMatchNewLine())
                     break;
 
                 input.Read();
@@ -525,13 +526,13 @@ namespace NovelerCompiler
                 return true;
             }
 
-            // handle reserved keywords
-            if (Utilities.ReservedKeywords.Contains(symbolString))
-            {
-                context.AddErrorMessage($"\"{symbolString}\" is a reserved keyword that is currently not implemented.", CompilerMessage.MessageCode.ReservedKeyword);
-                context.CharacterOnLine += charBuffer.Count;
-                return false;
-            }
+            //// handle reserved keywords
+            //if (Utilities.ReservedKeywords.Contains(symbolString))
+            //{
+            //    context.AddErrorMessage($"\"{symbolString}\" is a reserved keyword that is currently not implemented.", CompilerMessage.MessageCode.ReservedKeyword);
+            //    context.CharacterOnLine += charBuffer.Count;
+            //    return false;
+            //}
 
             if (TryHandleSymbols(ref context, symbolString, out token))
             {
