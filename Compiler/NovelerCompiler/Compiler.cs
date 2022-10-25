@@ -113,10 +113,6 @@ namespace Noveler.Compiler
                     break;
                 case TokenType.FunctionName:
                     break;
-                case TokenType.OpenFunction:
-                    break;
-                case TokenType.CloseFunction:
-                    break;
                 case TokenType.SemiColon:
                     break;
                 case TokenType.RightCurlyBacket:

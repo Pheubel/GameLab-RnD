@@ -89,7 +89,7 @@ namespace NovelerCompiler
         static readonly Grammar MultiplicativeExpressionGrammar;
 
         /// <summary>
-        /// : <see cref="UnaryExpressionGrammar"/><br/>
+        /// : <see cref="MultiplicativeExpressionGrammar"/><br/>
         /// | <see cref="UnaryExpressionGrammar"/> '+' <see cref="UnaryExpressionGrammar"/><br/>
         /// | <see cref="UnaryExpressionGrammar"/> '-' <see cref="UnaryExpressionGrammar"/>
         /// </summary>
@@ -132,13 +132,13 @@ namespace NovelerCompiler
 
         /// <summary>
         /// : <see cref="ExclusiveOrExpressionGrammar"/><br/>
-        /// | <see cref="InclusiveOrExpressionGramar"/> '|' <see cref="ExclusiveOrExpressionGrammar"/>
+        /// | <see cref="InclusiveOrExpressionGrammar"/> '|' <see cref="ExclusiveOrExpressionGrammar"/>
         /// </summary>
-        static readonly Grammar InclusiveOrExpressionGramar;
+        static readonly Grammar InclusiveOrExpressionGrammar;
 
         /// <summary>
-        /// : <see cref="InclusiveOrExpressionGramar"/><br/>
-        /// | <see cref="ConditionalAndExpressionGrammar"/> '<![CDATA[&]]><![CDATA[&]]>' <see cref="InclusiveOrExpressionGramar"/>
+        /// : <see cref="InclusiveOrExpressionGrammar"/><br/>
+        /// | <see cref="ConditionalAndExpressionGrammar"/> '<![CDATA[&]]><![CDATA[&]]>' <see cref="InclusiveOrExpressionGrammar"/>
         /// </summary>
         static readonly Grammar ConditionalAndExpressionGrammar;
 
@@ -208,7 +208,7 @@ namespace NovelerCompiler
         static readonly Grammar StatementExpressionGrammar;
 
         /// <summary>
-        /// : <see cref="PrimaryExpressionGrammar"/> '(' <see cref="ArgumentListGrammar"/>? ')'
+        /// : <see cref="IdentifierGrammar"/> '(' <see cref="ArgumentListGrammar"/>? ')'
         /// </summary>
         static readonly Grammar InvocationExpressionGrammar;
 
@@ -341,12 +341,12 @@ namespace NovelerCompiler
         static readonly Grammar NamespaceOrTypeNameGrammar;
 
         /// <summary>
-        /// : <see cref="PrimaryExpressionGrammar"/> '++'
+        /// : <see cref="IdentifierGrammar"/> '++'
         /// </summary>
         static readonly Grammar PostIncrementExpressionGrammar;
 
         /// <summary>
-        /// : <see cref="PrimaryExpressionGrammar"/> '--'
+        /// : <see cref="IdentifierGrammar"/> '--'
         /// </summary>
         static readonly Grammar PostDecrementExpressionGrammar;
 
@@ -405,7 +405,7 @@ namespace NovelerCompiler
         static readonly Grammar StoryGrammar;
 
         /// <summary>
-        /// : 'import' <see cref="StringLiteralGrammar"/>
+        /// : '@' 'import' <see cref="StringLiteralGrammar"/> <see cref="NewLineGrammar"/>+
         /// </summary>
         static readonly Grammar ImportGrammar;
 
@@ -465,7 +465,7 @@ namespace NovelerCompiler
 
         /// <summary>
         /// : '@' 'if' '(' <see cref="BooleanExpressionGrammar"/> ')' '{' <see cref="StoryPartGrammar"/>* '}'<br/>
-        /// | '@' 'if' '(' <see cref="BooleanExpressionGrammar"/> ')' '{' <see cref="StoryPartGrammar"/>* '}' 'else' '{' <see cref="StoryPartGrammar"/>* '}'
+        /// | '@' 'if' '(' <see cref="BooleanExpressionGrammar"/> ')' '{' <see cref="StoryPartGrammar"/>* '}' '@' 'else' '{' <see cref="StoryPartGrammar"/>* '}'
         /// </summary>
         static readonly Grammar StoryEmbeddedIfStatementGrammar;
 
@@ -483,7 +483,7 @@ namespace NovelerCompiler
         static readonly Grammar StoryEmbeddedCodeGrammar;
 
         /// <summary>
-        /// : '@' <see cref="ExpressionStatementGrammar"/>
+        /// : '@' <see cref="StoryExpressionStatementGrammar"/>
         /// </summary>
         static readonly Grammar StoryEmbeddedExpressionStatementGrammar;
 
@@ -494,7 +494,15 @@ namespace NovelerCompiler
 
         static readonly Grammar StoryExpressionStatementGrammar;
 
-        static readonly Grammar EmptyStoryStatement;
+        static readonly Grammar EmptyStoryStatementGrammar;
+
+        static readonly Grammar NonAssignmentExpressionGrammar;
+
+        static readonly Grammar StorySentenceGrammar;
+
+        static readonly Grammar StoryLineTerminatorGrammar;
+
+        static readonly Grammar StorySentenceLegalTokenGrammar;
 
         #endregion // Grammars
 
@@ -503,93 +511,97 @@ namespace NovelerCompiler
         {
             #region Instantiation
 
-            NewLineGrammar = new Grammar();
-            CharacterGrammar = new Grammar();
-            BooleanLiteralGrammar = new Grammar();
-            StatementEliminatorGrammar = new Grammar();
-            UnaryExpressionGrammar = new Grammar();
-            PreIncrementExpressionGrammar = new Grammar();
-            PreDecrementExpressionGrammar = new Grammar();
-            CastExpressionGrammar = new Grammar();
-            ReturnTypeGrammar = new Grammar();
-            MultiplicativeExpressionGrammar = new Grammar();
-            AdditiveExpressionGrammar = new Grammar();
-            AssignmentOperatorGrammar = new Grammar();
-            BooleanExpressionGrammar = new Grammar();
-            AssignmentGrammar = new Grammar();
-            ExpressionGrammar = new Grammar();
-            ConstantExpressionGrammar = new Grammar();
-            IfStatementGrammar = new Grammar();
-            ExpressionStatementGrammar = new Grammar();
-            InvocationExpressionGrammar = new Grammar();
-            ArgumentGrammar = new Grammar();
-            ArgumentNameGrammar = new Grammar();
-            IdentifierGrammar = new Grammar();
-            ArgumentValueGrammar = new Grammar();
-            ShiftExpressionGrammar = new Grammar();
-            RelationalExpressionGrammmar = new Grammar();
-            EqualityExpressionGrammar = new Grammar();
-            AndExpressionGrammar = new Grammar();
-            ExclusiveOrExpressionGrammar = new Grammar();
-            InclusiveOrExpressionGramar = new Grammar();
-            ConditionalAndExpressionGrammar = new Grammar();
-            ConditionalOrExpressionGrammar = new Grammar();
-            BlockGrammar = new Grammar();
-            StatementListGrammar = new Grammar();
-            EmbeddedStatementGrammar = new Grammar();
-            JumpStatementGrammar = new Grammar();
-            ReturnStatementGrammar = new Grammar();
-            StatementGrammar = new Grammar();
-            SelectionStatementGrammar = new Grammar();
-            LocalVariableInitializerGrammar = new Grammar();
-            ArgumentListGrammar = new Grammar();
-            DeclarationStatementGrammar = new Grammar();
-            LocalVariableDeclaratorGrammar = new Grammar();
-            IntegerTypeGrammar = new Grammar();
-            FloatingPointTypeGrammar = new Grammar();
-            TypeSizeGrammar = new Grammar();
-            SignedGrammar = new Grammar();
-            NumericTypeGrammar = new Grammar();
-            SimpleValueTypeGrammar = new Grammar();
-            NamespaceNameGrammar = new Grammar();
-            NamespaceOrTypeNameGrammar = new Grammar();
-            TypeNameGrammar = new Grammar();
-            ValueTypeGrammar = new Grammar();
-            TypeGrammar = new Grammar();
-            PostIncrementExpressionGrammar = new Grammar();
-            PostDecrementExpressionGrammar = new Grammar();
-            IntegerLiteralGrammar = new Grammar();
-            FloatLiteralGrammar = new Grammar();
-            LiteralGrammar = new Grammar();
-            ParenthesizedExpressionGrammar = new Grammar();
-            PrimaryExpressionGrammar = new Grammar();
-            StatementExpressionGrammar = new Grammar();
-            PrimaryNoArrayCreationExpression = new Grammar();
-            EmptyExpresionGrammar = new Grammar();
-            FunctionReturnValueDeclarationGrammar = new Grammar();
-            FunctionNoReturnValueDeclarationGrammar = new Grammar();
-            FunctionDelarationGrammar = new Grammar();
-            KeywordsGrammar = new Grammar();
-            EmbeddedVariableInStoryGrammar = new Grammar();
-            StoryGrammar = new Grammar();
-            ImportGrammar = new Grammar();
-            StoryAtomGrammar = new Grammar();
-            EscapedCharactersGrammar = new Grammar();
-            StoryPartGrammar = new Grammar();
-            EmbeddedValueInStoryGrammar = new Grammar();
-            StoryEmbeddedExpressionStatementGrammar = new Grammar();
-            StoryEmbeddedIfStatementGrammar = new Grammar();
-            StoryDeclarationStatementGrammar = new Grammar();
-            StoryEmbeddedChoiceStatementGrammar = new Grammar();
-            StoryEmbeddedVariableDeclarationGrammar = new Grammar();
-            StoryChoiceGrammar = new Grammar();
-            StoryChoiceExpressionGrammar = new Grammar();
-            StoryExpressionStatementGrammar = new Grammar();
-            StoryEmbeddedStatementGrammar = new Grammar();
-            StringLiteralGrammar = new Grammar();
-            EmptyStatementGrammar = new Grammar();
-            StoryEmbeddedCodeGrammar = new Grammar();
-            EmptyStoryStatement = new Grammar();
+            NewLineGrammar = new Grammar(GrammarKind.NewLine);
+            CharacterGrammar = new Grammar(GrammarKind.Character);
+            BooleanLiteralGrammar = new Grammar(GrammarKind.BooleanLiteral);
+            StatementEliminatorGrammar = new Grammar(GrammarKind.StatementEliminator);
+            UnaryExpressionGrammar = new Grammar(GrammarKind.UnaryExpression);
+            PreIncrementExpressionGrammar = new Grammar(GrammarKind.PreIncrementExpression);
+            PreDecrementExpressionGrammar = new Grammar(GrammarKind.PreDecrementExpression);
+            CastExpressionGrammar = new Grammar(GrammarKind.CastExpression);
+            ReturnTypeGrammar = new Grammar(GrammarKind.ReturnType);
+            MultiplicativeExpressionGrammar = new Grammar(GrammarKind.MultiplicativeExpression);
+            AdditiveExpressionGrammar = new Grammar(GrammarKind.AdditiveExpression);
+            AssignmentOperatorGrammar = new Grammar(GrammarKind.AssignmentOperator);
+            BooleanExpressionGrammar = new Grammar(GrammarKind.BooleanExpression);
+            AssignmentGrammar = new Grammar(GrammarKind.Assignment);
+            ExpressionGrammar = new Grammar(GrammarKind.Expression);
+            ConstantExpressionGrammar = new Grammar(GrammarKind.ConstantExpression);
+            IfStatementGrammar = new Grammar(GrammarKind.IfStatement);
+            ExpressionStatementGrammar = new Grammar(GrammarKind.ExpressionStatement);
+            InvocationExpressionGrammar = new Grammar(GrammarKind.InvocationExpression);
+            ArgumentGrammar = new Grammar(GrammarKind.Argument);
+            ArgumentNameGrammar = new Grammar(GrammarKind.ArgumentName);
+            IdentifierGrammar = new Grammar(GrammarKind.Identifier);
+            ArgumentValueGrammar = new Grammar(GrammarKind.ArgumentValue);
+            ShiftExpressionGrammar = new Grammar(GrammarKind.ShiftExpression);
+            RelationalExpressionGrammmar = new Grammar(GrammarKind.RelationalExpression);
+            EqualityExpressionGrammar = new Grammar(GrammarKind.EqualityExpression);
+            AndExpressionGrammar = new Grammar(GrammarKind.AndExpression);
+            ExclusiveOrExpressionGrammar = new Grammar(GrammarKind.ExclusiveOrExpression);
+            InclusiveOrExpressionGrammar = new Grammar(GrammarKind.InclusiveOrExpression);
+            ConditionalAndExpressionGrammar = new Grammar(GrammarKind.ConditionalAndExpression);
+            ConditionalOrExpressionGrammar = new Grammar(GrammarKind.ConditionalOrExpression);
+            BlockGrammar = new Grammar(GrammarKind.Block);
+            StatementListGrammar = new Grammar(GrammarKind.StatementList);
+            EmbeddedStatementGrammar = new Grammar(GrammarKind.EmbeddedStatement);
+            JumpStatementGrammar = new Grammar(GrammarKind.JumpStatement);
+            ReturnStatementGrammar = new Grammar(GrammarKind.ReturnStatement);
+            StatementGrammar = new Grammar(GrammarKind.Statement);
+            SelectionStatementGrammar = new Grammar(GrammarKind.SelectionStatement);
+            LocalVariableInitializerGrammar = new Grammar(GrammarKind.LocalVariableInitializer);
+            ArgumentListGrammar = new Grammar(GrammarKind.ArgumentList);
+            DeclarationStatementGrammar = new Grammar(GrammarKind.DeclarationStatement);
+            LocalVariableDeclaratorGrammar = new Grammar(GrammarKind.LocalVariableDeclarator);
+            IntegerTypeGrammar = new Grammar(GrammarKind.IntegerType);
+            FloatingPointTypeGrammar = new Grammar(GrammarKind.FloatingPointType);
+            TypeSizeGrammar = new Grammar(GrammarKind.TypeSize);
+            SignedGrammar = new Grammar(GrammarKind.Signed);
+            NumericTypeGrammar = new Grammar(GrammarKind.NumericType);
+            SimpleValueTypeGrammar = new Grammar(GrammarKind.SimpleValueType);
+            NamespaceNameGrammar = new Grammar(GrammarKind.NamespaceName);
+            NamespaceOrTypeNameGrammar = new Grammar(GrammarKind.NamespaceOrTypeName);
+            TypeNameGrammar = new Grammar(GrammarKind.TypeName);
+            ValueTypeGrammar = new Grammar(GrammarKind.ValueType);
+            TypeGrammar = new Grammar(GrammarKind.Type);
+            PostIncrementExpressionGrammar = new Grammar(GrammarKind.PostIncrementExpression);
+            PostDecrementExpressionGrammar = new Grammar(GrammarKind.PostDecrementExpression);
+            IntegerLiteralGrammar = new Grammar(GrammarKind.IntegerLiteral);
+            FloatLiteralGrammar = new Grammar(GrammarKind.FloatLiteral);
+            LiteralGrammar = new Grammar(GrammarKind.Literal);
+            ParenthesizedExpressionGrammar = new Grammar(GrammarKind.ParenthesizedExpression);
+            PrimaryExpressionGrammar = new Grammar(GrammarKind.PrimaryExpression);
+            StatementExpressionGrammar = new Grammar(GrammarKind.StatementExpression);
+            PrimaryNoArrayCreationExpression = new Grammar(GrammarKind.PrimaryNoArrayCreation);
+            EmptyExpresionGrammar = new Grammar(GrammarKind.EmptyExpression);
+            FunctionReturnValueDeclarationGrammar = new Grammar(GrammarKind.FunctionReturnValueDeclaration);
+            FunctionNoReturnValueDeclarationGrammar = new Grammar(GrammarKind.FunctionNoReturnValueDeclaration);
+            FunctionDelarationGrammar = new Grammar(GrammarKind.FunctionDeclaration);
+            KeywordsGrammar = new Grammar(GrammarKind.Keywords);
+            EmbeddedVariableInStoryGrammar = new Grammar(GrammarKind.EmbeddedVariableInStory);
+            StoryGrammar = new Grammar(GrammarKind.Story);
+            ImportGrammar = new Grammar(GrammarKind.Import);
+            StoryAtomGrammar = new Grammar(GrammarKind.StoryAtom);
+            EscapedCharactersGrammar = new Grammar(GrammarKind.EscapedCharacters);
+            StoryPartGrammar = new Grammar(GrammarKind.StoryPart);
+            EmbeddedValueInStoryGrammar = new Grammar(GrammarKind.EmbeddedValueInStory);
+            StoryEmbeddedExpressionStatementGrammar = new Grammar(GrammarKind.StoryEmbeddedExpressionStatement);
+            StoryEmbeddedIfStatementGrammar = new Grammar(GrammarKind.StoryEmbeddedIfStatement);
+            StoryDeclarationStatementGrammar = new Grammar(GrammarKind.StoryDeclarationStatement);
+            StoryEmbeddedChoiceStatementGrammar = new Grammar(GrammarKind.StoryEmbeddedChoiceStatement);
+            StoryEmbeddedVariableDeclarationGrammar = new Grammar(GrammarKind.StoryEmbeddedVariableDeclaration);
+            StoryChoiceGrammar = new Grammar(GrammarKind.StoryChoice);
+            StoryChoiceExpressionGrammar = new Grammar(GrammarKind.StoryChoiceExpression);
+            StoryExpressionStatementGrammar = new Grammar(GrammarKind.StoryExpressionStatement);
+            StoryEmbeddedStatementGrammar = new Grammar(GrammarKind.StoryEmbeddedStatement);
+            StringLiteralGrammar = new Grammar(GrammarKind.StringLiteral);
+            EmptyStatementGrammar = new Grammar(GrammarKind.EmptyStatement);
+            StoryEmbeddedCodeGrammar = new Grammar(GrammarKind.StoryEmbeddedCode);
+            EmptyStoryStatementGrammar = new Grammar(GrammarKind.EmptyStoryStatement);
+            NonAssignmentExpressionGrammar = new Grammar(GrammarKind.NonAssignmentExpression);
+            StorySentenceGrammar = new Grammar(GrammarKind.StorySentence);
+            StoryLineTerminatorGrammar = new Grammar(GrammarKind.StoryLineTerminator);
+            StorySentenceLegalTokenGrammar = new Grammar(GrammarKind.StorySentenceLegalToken);
 
             #endregion // Instantiation
 
@@ -598,17 +610,15 @@ namespace NovelerCompiler
             #region Initialization
 
             StoryGrammar.SetGrammar(
-                IPattern.ZeroOrMany(ImportGrammar), IPattern.ZeroOrMany(StoryPartGrammar)
+                IPattern.ZeroOrMany(ImportGrammar), IPattern.ZeroOrMany(IPattern.Any(StoryPartGrammar, EmptyStoryStatementGrammar))
                 );
 
             ImportGrammar.SetGrammar(
-                IPattern.Tokens(TokenType.KeywordImport, TokenType.StringLiteral)
+                IPattern.Tokens(TokenType.AtSign, TokenType.KeywordImport, TokenType.StringLiteral), IPattern.OnceOrMany(NewLineGrammar)
                 );
 
             StoryPartGrammar.SetGrammar(
-                IPattern.Any(StoryAtomGrammar,
-                             StoryEmbeddedStatementGrammar,
-                             EmptyStoryStatement)
+                IPattern.Any(StoryEmbeddedStatementGrammar, StorySentenceGrammar), StoryLineTerminatorGrammar
                 );
 
             StoryAtomGrammar.SetGrammar(
@@ -616,14 +626,56 @@ namespace NovelerCompiler
                              LiteralGrammar,
                              KeywordsGrammar,
                              EscapedCharactersGrammar,
-                             EmbeddedValueInStoryGrammar)
+                             EmbeddedValueInStoryGrammar,
+                             IdentifierGrammar,
+                             StorySentenceLegalTokenGrammar)
+                );
+
+            StorySentenceLegalTokenGrammar.SetGrammar(
+                IPattern.Any(TokenType.Add,
+                             TokenType.Subtract,
+                             TokenType.Multiply,
+                             TokenType.Divide,
+                             TokenType.Assign,
+                             TokenType.AddAssign,
+                             TokenType.SubtractAssign,
+                             TokenType.MultiplyAssign,
+                             TokenType.DivideAssign,
+                             TokenType.EqualsTo,
+                             TokenType.Increment,
+                             TokenType.Decrement,
+                             TokenType.Comma,
+                             TokenType.SemiColon,
+                             TokenType.Remainder,
+                             TokenType.ModuloAssign,
+                             TokenType.AndAssign,
+                             TokenType.XOrAssign,
+                             TokenType.LeftShiftAssign,
+                             TokenType.RightShiftAssign,
+                             TokenType.LessThan,
+                             TokenType.LeftShift,
+                             TokenType.RightShift,
+                             TokenType.GreaterThan,
+                             TokenType.GreaterThanOrEqual,
+                             TokenType.LessThanOrEqual,
+                             TokenType.ExclamationMark,
+                             TokenType.NotEqualsTo,
+                             TokenType.ConditionalAnd,
+                             TokenType.And,
+                             TokenType.XOr,
+                             TokenType.Period)
+                );
+
+            StorySentenceGrammar.SetGrammar(
+                IPattern.OnceOrMany(StoryAtomGrammar), IPattern.ZeroOrMany(IPattern.Tokens(TokenType.Or), NewLineGrammar, IPattern.OnceOrMany(StoryAtomGrammar))
                 );
 
             EscapedCharactersGrammar.SetGrammar(
                 IPattern.Any(TokenType.EscapedAtSign,
                              TokenType.EscapedBackslash,
                              TokenType.EscapedNewLine,
-                             TokenType.EscapedPipe)
+                             TokenType.EscapedPipe,
+                             TokenType.EscapedColon)
                 );
 
             KeywordsGrammar.SetGrammar(
@@ -638,8 +690,13 @@ namespace NovelerCompiler
                              TokenType.KeywordImport)
                 );
 
-            EmptyStoryStatement.SetGrammar(
+            EmptyStoryStatementGrammar.SetGrammar(
                 NewLineGrammar
+                );
+
+            StoryLineTerminatorGrammar.SetGrammar(
+                IPattern.Any(NewLineGrammar,
+                             IPattern.Tokens(TokenType.EndOfFile))
                 );
 
             EmbeddedValueInStoryGrammar.SetGrammar(
@@ -651,15 +708,16 @@ namespace NovelerCompiler
                 );
 
             StoryEmbeddedStatementGrammar.SetGrammar(
-                IPattern.Any(StoryEmbeddedChoiceStatementGrammar,
+                IPattern.Any(StoryEmbeddedVariableDeclarationGrammar,
+                             StoryEmbeddedChoiceStatementGrammar,
                              StoryEmbeddedIfStatementGrammar,
                              StoryEmbeddedExpressionStatementGrammar,
                              StoryEmbeddedCodeGrammar)
                 );
 
             StoryEmbeddedIfStatementGrammar.SetGrammar(
-                IPattern.Any(IPattern.Exact(IPattern.Tokens(TokenType.KeywordIf, TokenType.LeftParenthesis), BooleanExpressionGrammar, IPattern.Tokens(TokenType.RightParenthesis, TokenType.LeftCurlyBracket), IPattern.ZeroOrMany(StoryPartGrammar), IPattern.Tokens(TokenType.RightCurlyBacket)),
-                             IPattern.Exact(IPattern.Tokens(TokenType.KeywordIf, TokenType.LeftParenthesis), BooleanExpressionGrammar, IPattern.Tokens(TokenType.RightParenthesis, TokenType.LeftCurlyBracket), IPattern.ZeroOrMany(StoryPartGrammar), IPattern.Tokens(TokenType.RightCurlyBacket, TokenType.KeywordElse), EmbeddedStatementGrammar))
+                IPattern.Any(IPattern.Exact(IPattern.Tokens(TokenType.AtSign, TokenType.KeywordIf, TokenType.LeftParenthesis), BooleanExpressionGrammar, IPattern.Tokens(TokenType.RightParenthesis, TokenType.LeftCurlyBracket), IPattern.ZeroOrMany(StoryPartGrammar), IPattern.Tokens(TokenType.RightCurlyBacket)),
+                             IPattern.Exact(IPattern.Tokens(TokenType.AtSign, TokenType.KeywordIf, TokenType.LeftParenthesis), BooleanExpressionGrammar, IPattern.Tokens(TokenType.RightParenthesis, TokenType.LeftCurlyBracket), IPattern.ZeroOrMany(StoryPartGrammar), IPattern.Tokens(TokenType.RightCurlyBacket, TokenType.AtSign, TokenType.KeywordElse, TokenType.LeftCurlyBracket), IPattern.ZeroOrMany(StoryPartGrammar), IPattern.Tokens(TokenType.RightCurlyBacket)))
                 );
 
             StoryChoiceGrammar.SetGrammar(
@@ -667,7 +725,7 @@ namespace NovelerCompiler
                 );
 
             StoryEmbeddedChoiceStatementGrammar.SetGrammar(
-                IPattern.OnceOrMany(StoryChoiceGrammar, StoryChoiceExpressionGrammar)
+                IPattern.Tokens(TokenType.AtSign, TokenType.KeywordChoice, TokenType.LeftCurlyBracket), IPattern.OnceOrMany(StoryChoiceGrammar, StoryChoiceExpressionGrammar), IPattern.Tokens(TokenType.RightCurlyBacket)
                 );
 
             StoryChoiceExpressionGrammar.SetGrammar(
@@ -675,7 +733,7 @@ namespace NovelerCompiler
                 );
 
             StoryExpressionStatementGrammar.SetGrammar(
-                StatementExpressionGrammar, NewLineGrammar
+                StatementExpressionGrammar
                 );
 
             StoryEmbeddedExpressionStatementGrammar.SetGrammar(
@@ -687,7 +745,7 @@ namespace NovelerCompiler
                 );
 
             StoryDeclarationStatementGrammar.SetGrammar(
-                LocalVariableDeclaratorGrammar, NewLineGrammar
+                LocalVariableDeclaratorGrammar
                 );
 
             StoryEmbeddedCodeGrammar.SetGrammar(
@@ -699,7 +757,7 @@ namespace NovelerCompiler
                 );
 
             CharacterGrammar.SetGrammar(
-                IPattern.None(NewLineGrammar)
+                IPattern.None(TokenType.NewLine)
                 );
 
             BooleanLiteralGrammar.SetGrammar(
@@ -733,7 +791,8 @@ namespace NovelerCompiler
                 );
 
             ExpressionGrammar.SetGrammar(
-                AssignmentGrammar
+                IPattern.Any(NonAssignmentExpressionGrammar,
+                             AssignmentGrammar)
                 );
 
             BooleanExpressionGrammar.SetGrammar(
@@ -753,7 +812,7 @@ namespace NovelerCompiler
                 );
 
             AdditiveExpressionGrammar.SetGrammar(
-                IPattern.Any(UnaryExpressionGrammar,
+                IPattern.Any(MultiplicativeExpressionGrammar,
                              IPattern.Exact(AdditiveExpressionGrammar, IPattern.Tokens(TokenType.Add), UnaryExpressionGrammar),
                              IPattern.Exact(AdditiveExpressionGrammar, IPattern.Tokens(TokenType.Subtract), UnaryExpressionGrammar))
                 );
@@ -789,8 +848,9 @@ namespace NovelerCompiler
                 StatementExpressionGrammar, StatementEliminatorGrammar
                 );
 
+            // TODO: see if this can be better
             InvocationExpressionGrammar.SetGrammar(
-                PrimaryExpressionGrammar, IPattern.Tokens(TokenType.LeftParenthesis), IPattern.Optional(ArgumentListGrammar), IPattern.Tokens(TokenType.RightParenthesis)
+                IdentifierGrammar, IPattern.Tokens(TokenType.LeftParenthesis), IPattern.Optional(ArgumentListGrammar), IPattern.Tokens(TokenType.RightParenthesis)
                 );
 
             ArgumentListGrammar.SetGrammar(
@@ -844,14 +904,14 @@ namespace NovelerCompiler
                              IPattern.Exact(ExclusiveOrExpressionGrammar, IPattern.Tokens(TokenType.XOr), AndExpressionGrammar))
                 );
 
-            InclusiveOrExpressionGramar.SetGrammar(
+            InclusiveOrExpressionGrammar.SetGrammar(
                 IPattern.Any(ExclusiveOrExpressionGrammar,
-                             IPattern.Exact(InclusiveOrExpressionGramar, IPattern.Tokens(TokenType.Or), ExclusiveOrExpressionGrammar))
+                             IPattern.Exact(InclusiveOrExpressionGrammar, IPattern.Tokens(TokenType.Or), ExclusiveOrExpressionGrammar))
                 );
 
             ConditionalAndExpressionGrammar.SetGrammar(
-                IPattern.Any(InclusiveOrExpressionGramar,
-                             IPattern.Exact(ConditionalAndExpressionGrammar, IPattern.Tokens(TokenType.ConditionalAnd), InclusiveOrExpressionGramar))
+                IPattern.Any(InclusiveOrExpressionGrammar,
+                             IPattern.Exact(ConditionalAndExpressionGrammar, IPattern.Tokens(TokenType.ConditionalAnd), InclusiveOrExpressionGrammar))
                 );
 
             ConditionalOrExpressionGrammar.SetGrammar(
@@ -874,10 +934,10 @@ namespace NovelerCompiler
             EmbeddedStatementGrammar.SetGrammar(
                 IPattern.Any(BlockGrammar,
                              EmptyStatementGrammar,
-                             ExpressionStatementGrammar),
+                             ExpressionStatementGrammar,
                              SelectionStatementGrammar,
                              // iteration statement for loops
-                             JumpStatementGrammar
+                             JumpStatementGrammar)
                 );
 
             JumpStatementGrammar.SetGrammar(
@@ -969,11 +1029,11 @@ namespace NovelerCompiler
                 );
 
             PostIncrementExpressionGrammar.SetGrammar(
-                PrimaryExpressionGrammar, IPattern.Tokens(TokenType.Increment)
+                IdentifierGrammar, IPattern.Tokens(TokenType.Increment)
                 );
 
             PostDecrementExpressionGrammar.SetGrammar(
-                PrimaryExpressionGrammar, IPattern.Tokens(TokenType.Decrement)
+                IdentifierGrammar, IPattern.Tokens(TokenType.Decrement)
                 );
 
             PrimaryExpressionGrammar.SetGrammar(
@@ -1021,6 +1081,7 @@ namespace NovelerCompiler
             PrimaryNoArrayCreationExpression.SetGrammar(
                 IPattern.Any(LiteralGrammar,
                             // interpolated string
+                            IdentifierGrammar,
                             ParenthesizedExpressionGrammar,
                             // member access
                             InvocationExpressionGrammar,
@@ -1050,6 +1111,10 @@ namespace NovelerCompiler
             FunctionDelarationGrammar.SetGrammar(
                 IPattern.Any(FunctionNoReturnValueDeclarationGrammar,
                              FunctionReturnValueDeclarationGrammar)
+                );
+
+            NonAssignmentExpressionGrammar.SetGrammar(
+                ConditionalOrExpressionGrammar
                 );
 
             #endregion // Initialization

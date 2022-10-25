@@ -1,14 +1,3 @@
-@import "external_script.nvl" // imports functions and variables
-
-@characterHappiness : number
-
-@code {
-    characterHappiness = 6
-}
-
-Hello you, this is an example of embedding variables into text
-@characterHappiness
-
 @if (characterHappiness > 5) {
     I feel great
 }

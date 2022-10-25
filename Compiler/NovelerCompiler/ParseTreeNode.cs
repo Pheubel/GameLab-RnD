@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace NovelerCompiler
 {
-    [DebuggerDisplay("Node ({Kind})")]
+    [DebuggerDisplay("Node ({Kind}: {GrammarKind})")]
     internal class ParseTreeNode
     {
         public NodeKind Kind { get; }
@@ -51,10 +51,5 @@ namespace NovelerCompiler
             Sequence,
             Token
         }
-    }
-
-    public enum GrammarKind
-    {
-        NotAValidGrammar
     }
 }

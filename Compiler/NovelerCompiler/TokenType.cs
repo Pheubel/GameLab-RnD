@@ -49,8 +49,6 @@
         // function
         FunctionDeclaration,
         FunctionName,
-        OpenFunction,
-        CloseFunction,
 
         //evaluation
         LeftParenthesis,
@@ -93,7 +91,6 @@
         KeywordIf,
 
         //unsorted
-        CustomType,
         UndefinedSymbol,
         NewLine,
         Symbol,
@@ -117,6 +114,7 @@
         And,
         XOr,
         ConditionalOr,
+        /// <summary> |</summary>
         Or,
         /// <summary> {</summary>
         LeftCurlyBracket,
@@ -137,5 +135,7 @@
         StringLiteral,
         KeywordCode,
         SingleLineComment,
+        KeywordChoice,
+        EscapedColon,
     }
 }

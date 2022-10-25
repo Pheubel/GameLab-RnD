@@ -21,7 +21,10 @@ namespace Noveler.Compiler
             { "whole", TokenType.KeywordWhole },
             { "return", TokenType.KeywordReturn },
             { "import", TokenType.KeywordImport },
-            { "code", TokenType.KeywordCode }
+            { "code", TokenType.KeywordCode },
+            { "choice", TokenType.KeywordChoice },
+            { "if", TokenType.KeywordIf},
+            { "else", TokenType.KeywordElse }
         };
 
         public static readonly IReadOnlySet<string> ReservedKeywords = new HashSet<string>()

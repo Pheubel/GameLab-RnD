@@ -1,6 +1,6 @@
 ﻿using Noveler.Compiler;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Xml.Linq;
 
 namespace NovelerCompiler
 {
@@ -29,27 +29,32 @@ namespace NovelerCompiler
         public static OptionalPattern Optional(params TokenType[] patternSequnce) =>
             new OptionalPattern(patternSequnce);
 
-        public static ZeroOrManyPattern ZeroOrMany(params IPattern[] pattern) =>
-            new ZeroOrManyPattern(pattern);
+        public static OptionalPattern ZeroOrMany(params IPattern[] pattern) =>
+            new OptionalPattern(new OnceOrManyPattern(pattern));
 
-        public static ZeroOrManyPattern ZeroOrMany(params TokenType[] patternSequnce) =>
-            new ZeroOrManyPattern(patternSequnce);
+        public static OptionalPattern ZeroOrMany(params TokenType[] patternSequnce) =>
+            new OptionalPattern(new OnceOrManyPattern(patternSequnce));
 
         public static AnyOfPattern Any(params IPattern[] patternSequence) =>
             new AnyOfPattern(patternSequence);
         public static AnyOfPattern Any(params TokenType[] tokenOptions) =>
             new AnyOfPattern(tokenOptions);
 
-        public static NoneOfPattern None(params IPattern[] patterns) =>
-            new NoneOfPattern(patterns);
-
-        public static NoneOfPattern None(params TokenType[] tokenOptions) =>
-            new NoneOfPattern(tokenOptions);
+        public static NoneOfTokensPattern None(params TokenType[] tokenOptions) =>
+            new NoneOfTokensPattern(tokenOptions);
     }
 
+    [DebuggerDisplay("Grammar ({Kind})")]
     internal sealed class Grammar : IPattern
     {
+        public GrammarKind Kind { get; }
+
         IPattern[]? _patternSequence;
+
+        public Grammar(GrammarKind kind)
+        {
+            Kind = kind;
+        }
 
         [MemberNotNull(nameof(_patternSequence))]
         public void SetGrammar(params IPattern[] patternSequence)
@@ -68,7 +73,7 @@ namespace NovelerCompiler
             readTokens = 0;
 
             var sequenceSlice = sequence;
-            treeState = new ParseTreeNode(ParseTreeNode.NodeKind.Grammar);
+            treeState = new ParseTreeNode(ParseTreeNode.NodeKind.Grammar, Kind);
 
             for (int i = 0; i < _patternSequence.Length; i++)
             {
@@ -235,26 +240,6 @@ namespace NovelerCompiler
         }
     }
 
-    internal sealed class ZeroOrManyPattern : IPattern
-    {
-        readonly IPattern _pattern;
-
-        public ZeroOrManyPattern(params IPattern[] pattern)
-        {
-            _pattern = new OptionalPattern(new OnceOrManyPattern(pattern));
-        }
-
-        public ZeroOrManyPattern(params TokenType[] patternSequnce)
-        {
-            _pattern = new OptionalPattern(new OnceOrManyPattern(patternSequnce));
-        }
-
-        public bool MatchesSequence(ReadOnlySpan<Token> sequence, out int readTokens, [NotNullWhen(true)] out ParseTreeNode? treeState)
-        {
-            return _pattern.MatchesSequence(sequence, out readTokens, out treeState);
-        }
-    }
-
     internal sealed class AnyOfPattern : IPattern
     {
         readonly IPattern[] _patternSequence;
@@ -288,16 +273,11 @@ namespace NovelerCompiler
         }
     }
 
-    internal sealed class NoneOfPattern : IPattern
+    internal sealed class NoneOfTokensPattern : IPattern
     {
         readonly IPattern[] _patternSequence;
 
-        public NoneOfPattern(params IPattern[] patternSequence)
-        {
-            _patternSequence = patternSequence;
-        }
-
-        public NoneOfPattern(params TokenType[] tokenOptions)
+        public NoneOfTokensPattern(params TokenType[] tokenOptions)
         {
             _patternSequence = new IPattern[tokenOptions.Length];
 

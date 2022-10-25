@@ -378,6 +378,11 @@ namespace NovelerCompiler
                         token = new Token(TokenType.EscapedAtSign, ref context, 2);
                         context.CharacterOnLine += 2;
                     }
+                    else if (input.MatchCharacter(':'))
+                    {
+                        token = new Token(TokenType.EscapedColon, ref context, 2);
+                        context.CharacterOnLine += 2;
+                    }
                     else
                     {
                         token = new Token(TokenType.InvalidEscapedCharacter, ref context, input.ReadChar());
