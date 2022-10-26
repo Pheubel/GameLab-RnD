@@ -1,8 +1,14 @@
 {
   "profiles": {
-    "NovelerCompiler": {
+    "NovelerCompiler pc": {
       "commandName": "Project",
-      "commandLineArgs": "-i \"C:\\Users\\vratelier\\Documents\\GitHub\\GameLab-RnD\\Compiler\\Testing\\HelloWorld.nvl\" -o \"C:\\Users\\vratelier\\Documents\\GitHub\\GameLab-RnD\\Compiler\\Testing\\HelloWorld.cnvl\""
+      "commandLineArgs": "-i \".\\Compiler\\Testing\\HelloWorld.nvl\" -o \".\\Compiler\\Testing\\HelloWorld.cnvl\"",
+      "workingDirectory": "\"C:\\Users\\vratelier\\Documents\\GitHub\\GameLab-RnD\""
+    },
+    "NovelerCompiler Laptop": {
+      "commandName": "Project",
+      "commandLineArgs": "-i \".\\Compiler\\Testing\\HelloWorld.nvl\" -o \".\\Compiler\\Testing\\HelloWorld.cnvl\"",
+      "workingDirectory": "D:\\Github Repos\\GameLab-RnD"
     }
   }
 }

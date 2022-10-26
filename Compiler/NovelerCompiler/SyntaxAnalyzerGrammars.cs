@@ -805,16 +805,16 @@ namespace NovelerCompiler
                 );
 
             MultiplicativeExpressionGrammar.SetGrammar(
-                IPattern.Any(UnaryExpressionGrammar,
-                             IPattern.Exact(MultiplicativeExpressionGrammar, IPattern.Tokens(TokenType.Multiply), UnaryExpressionGrammar),
-                             IPattern.Exact(MultiplicativeExpressionGrammar, IPattern.Tokens(TokenType.Divide), UnaryExpressionGrammar),
-                             IPattern.Exact(MultiplicativeExpressionGrammar, IPattern.Tokens(TokenType.Remainder), UnaryExpressionGrammar))
+                IPattern.Any(IPattern.Exact(UnaryExpressionGrammar, IPattern.Tokens(TokenType.Multiply), UnaryExpressionGrammar),
+                             IPattern.Exact(UnaryExpressionGrammar, IPattern.Tokens(TokenType.Divide), UnaryExpressionGrammar),
+                             IPattern.Exact(UnaryExpressionGrammar, IPattern.Tokens(TokenType.Remainder), UnaryExpressionGrammar),
+                             UnaryExpressionGrammar)
                 );
 
             AdditiveExpressionGrammar.SetGrammar(
-                IPattern.Any(MultiplicativeExpressionGrammar,
-                             IPattern.Exact(AdditiveExpressionGrammar, IPattern.Tokens(TokenType.Add), UnaryExpressionGrammar),
-                             IPattern.Exact(AdditiveExpressionGrammar, IPattern.Tokens(TokenType.Subtract), UnaryExpressionGrammar))
+                IPattern.Any(IPattern.Exact(MultiplicativeExpressionGrammar, IPattern.Tokens(TokenType.Add), UnaryExpressionGrammar),
+                             IPattern.Exact(MultiplicativeExpressionGrammar, IPattern.Tokens(TokenType.Subtract), UnaryExpressionGrammar),
+                             MultiplicativeExpressionGrammar)
                 );
 
             AssignmentOperatorGrammar.SetGrammar(
@@ -875,48 +875,48 @@ namespace NovelerCompiler
                 );
 
             ShiftExpressionGrammar.SetGrammar(
-                IPattern.Any(AdditiveExpressionGrammar,
-                             IPattern.Exact(ShiftExpressionGrammar, IPattern.Tokens(TokenType.LeftShift), AdditiveExpressionGrammar),
-                             IPattern.Exact(ShiftExpressionGrammar, IPattern.Tokens(TokenType.RightShift), AdditiveExpressionGrammar))
+                IPattern.Any(IPattern.Exact(AdditiveExpressionGrammar, IPattern.Tokens(TokenType.LeftShift), AdditiveExpressionGrammar),
+                             IPattern.Exact(AdditiveExpressionGrammar, IPattern.Tokens(TokenType.RightShift), AdditiveExpressionGrammar),
+                             AdditiveExpressionGrammar)
                 );
 
             RelationalExpressionGrammmar.SetGrammar(
-                IPattern.Any(ShiftExpressionGrammar,
-                             IPattern.Exact(RelationalExpressionGrammmar, IPattern.Tokens(TokenType.LessThan), ShiftExpressionGrammar),
-                             IPattern.Exact(RelationalExpressionGrammmar, IPattern.Tokens(TokenType.GreaterThan), ShiftExpressionGrammar),
-                             IPattern.Exact(RelationalExpressionGrammmar, IPattern.Tokens(TokenType.LessThanOrEqual), ShiftExpressionGrammar),
-                             IPattern.Exact(RelationalExpressionGrammmar, IPattern.Tokens(TokenType.GreaterThanOrEqual), ShiftExpressionGrammar))
+                IPattern.Any(IPattern.Exact(ShiftExpressionGrammar, IPattern.Tokens(TokenType.LessThan), ShiftExpressionGrammar),
+                             IPattern.Exact(ShiftExpressionGrammar, IPattern.Tokens(TokenType.GreaterThan), ShiftExpressionGrammar),
+                             IPattern.Exact(ShiftExpressionGrammar, IPattern.Tokens(TokenType.LessThanOrEqual), ShiftExpressionGrammar),
+                             IPattern.Exact(ShiftExpressionGrammar, IPattern.Tokens(TokenType.GreaterThanOrEqual), ShiftExpressionGrammar),
+                             ShiftExpressionGrammar)
                 );
 
             EqualityExpressionGrammar.SetGrammar(
-                IPattern.Any(RelationalExpressionGrammmar,
-                             IPattern.Exact(EqualityExpressionGrammar, IPattern.Tokens(TokenType.EqualsTo), RelationalExpressionGrammmar),
-                             IPattern.Exact(EqualityExpressionGrammar, IPattern.Tokens(TokenType.NotEqualsTo), RelationalExpressionGrammmar))
+                IPattern.Any(IPattern.Exact(RelationalExpressionGrammmar, IPattern.Tokens(TokenType.EqualsTo), RelationalExpressionGrammmar),
+                             IPattern.Exact(RelationalExpressionGrammmar, IPattern.Tokens(TokenType.NotEqualsTo), RelationalExpressionGrammmar),
+                             RelationalExpressionGrammmar)
                 );
 
             AndExpressionGrammar.SetGrammar(
-                IPattern.Any(EqualityExpressionGrammar,
-                             IPattern.Exact(AndExpressionGrammar, IPattern.Tokens(TokenType.And), EqualityExpressionGrammar))
+                IPattern.Any(IPattern.Exact(EqualityExpressionGrammar, IPattern.Tokens(TokenType.And), EqualityExpressionGrammar),
+                             EqualityExpressionGrammar)
                 );
 
             ExclusiveOrExpressionGrammar.SetGrammar(
-                IPattern.Any(AndExpressionGrammar,
-                             IPattern.Exact(ExclusiveOrExpressionGrammar, IPattern.Tokens(TokenType.XOr), AndExpressionGrammar))
+                IPattern.Any(IPattern.Exact(AndExpressionGrammar, IPattern.Tokens(TokenType.XOr), AndExpressionGrammar),
+                             AndExpressionGrammar)
                 );
 
             InclusiveOrExpressionGrammar.SetGrammar(
-                IPattern.Any(ExclusiveOrExpressionGrammar,
-                             IPattern.Exact(InclusiveOrExpressionGrammar, IPattern.Tokens(TokenType.Or), ExclusiveOrExpressionGrammar))
+                IPattern.Any(IPattern.Exact(ExclusiveOrExpressionGrammar, IPattern.Tokens(TokenType.Or), ExclusiveOrExpressionGrammar),
+                             ExclusiveOrExpressionGrammar)
                 );
 
             ConditionalAndExpressionGrammar.SetGrammar(
-                IPattern.Any(InclusiveOrExpressionGrammar,
-                             IPattern.Exact(ConditionalAndExpressionGrammar, IPattern.Tokens(TokenType.ConditionalAnd), InclusiveOrExpressionGrammar))
+                IPattern.Any(IPattern.Exact(InclusiveOrExpressionGrammar, IPattern.Tokens(TokenType.ConditionalAnd), InclusiveOrExpressionGrammar),
+                             InclusiveOrExpressionGrammar)
                 );
 
             ConditionalOrExpressionGrammar.SetGrammar(
-                IPattern.Any(ConditionalAndExpressionGrammar,
-                             IPattern.Exact(ConditionalOrExpressionGrammar, IPattern.Tokens(TokenType.ConditionalOr), ConditionalAndExpressionGrammar))
+                IPattern.Any(IPattern.Exact(ConditionalAndExpressionGrammar, IPattern.Tokens(TokenType.ConditionalOr), ConditionalAndExpressionGrammar),
+                             ConditionalAndExpressionGrammar)
                 );
 
             BlockGrammar.SetGrammar(

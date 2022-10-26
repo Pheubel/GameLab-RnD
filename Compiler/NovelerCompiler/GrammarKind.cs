@@ -3,6 +3,7 @@
     public enum GrammarKind
     {
         NotAValidGrammar,
+        Token,
         NewLine,
         Character,
         BooleanLiteral,
