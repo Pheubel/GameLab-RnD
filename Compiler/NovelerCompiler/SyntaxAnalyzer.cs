@@ -16,7 +16,9 @@ namespace NovelerCompiler
             var tokenStreamSpan = CollectionsMarshal.AsSpan(tokenStream);
             //var result = DeclarationStatementGrammar.MatchesSequence(tokenStreamSpan, out var readCount, out ParseTreeNode? parseTree);
 
-            var result = StoryEmbeddedIfStatementGrammar.MatchesSequence(tokenStreamSpan, out var readCount, out ParseTreeNode? parseTree);
+            var result = StoryGrammar.MatchesSequence(tokenStreamSpan, out var readCount, out ParseTreeNode? parseTree);
+
+            Console.WriteLine(parseTree!.VisualizeTree());
 
             Console.WriteLine($"result: {result}\tread tokens: {readCount}");
         }
