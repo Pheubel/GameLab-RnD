@@ -3,7 +3,7 @@
     "NovelerCompiler pc": {
       "commandName": "Project",
       "commandLineArgs": "-i \".\\Compiler\\Testing\\HelloWorld.nvl\" -o \".\\Compiler\\Testing\\HelloWorld.cnvl\"",
-      "workingDirectory": "\"C:\\Users\\vratelier\\Documents\\GitHub\\GameLab-RnD\""
+      "workingDirectory": "C:\\Users\\vratelier\\Documents\\GitHub\\GameLab-RnD"
     },
     "NovelerCompiler Laptop": {
       "commandName": "Project",
