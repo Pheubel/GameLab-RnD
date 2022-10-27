@@ -725,7 +725,7 @@ namespace NovelerCompiler
                 );
 
             StoryEmbeddedChoiceStatementGrammar.SetGrammar(
-                IPattern.Tokens(TokenType.AtSign, TokenType.KeywordChoice, TokenType.LeftCurlyBracket), IPattern.OnceOrMany(StoryChoiceGrammar, StoryChoiceExpressionGrammar), IPattern.Tokens(TokenType.RightCurlyBacket)
+                IPattern.Tokens(TokenType.AtSign, TokenType.KeywordChoice), IPattern.ZeroOrMany(TokenType.NewLine), IPattern.Tokens(TokenType.LeftCurlyBracket), IPattern.ZeroOrMany(TokenType.NewLine), IPattern.OnceOrMany(StoryChoiceGrammar, StoryChoiceExpressionGrammar), IPattern.Tokens(TokenType.RightCurlyBacket)
                 );
 
             StoryChoiceExpressionGrammar.SetGrammar(

@@ -50,10 +50,10 @@ TODO: image/code of example table
 
 Whenever a variable gets encountered, an entry will be stored in the table, or an existing record will have a reference to the location in the tree added. After the syntax tree has been generated, I will be able to replace the references with a properly structured node with correct typing.
 
-### Introducing Story
+## Changing it up
 
+### Lexing
 
+### Parsing
 
-## Runtime V1
-
-## First Round of Testing
+![parse tree](./Resources/Story%20Parse%20Tree.png)
