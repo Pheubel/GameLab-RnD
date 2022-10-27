@@ -1,22 +1,18 @@
 @import "external_script.nvl" // imports functions and variables
 
-@characterHappiness : number
+@characterHappiness : number // declares a variable
 
+// create a code block to mutate variables
 @code {
     characterHappiness = 6
 }
 
+// raw text will be displayed into the story when called for
 Hello you, this is an example of embedding variables into text
 @characterHappiness
 
-// problematic with recursive descent
-@if (characterHappiness > 5) {
-    I feel great
-}
-@else {
-    I feel ok
-}
 
+// stories can have branching with choices
 what do you want?
 @choice {
     food:
