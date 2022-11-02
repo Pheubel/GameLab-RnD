@@ -1,58 +1,114 @@
 lexer grammar StoryLexerGrammar;
 
-channels{
-    COMMENTS_CHANNEL
-}
+BEGIN_STATEMENT: '@' -> pushMode(Embedded_Statement);
+ASTERISK: '*';
+SLASH: '/';
 
-TRUE     : 'true' ;
-FALSE    : 'false' ;
-ASTERISK : '*' ;
-SLASH    : '/' ;
-SCOPE_OPEN : '{';
-SCOPE_CLOSE : '}';
+fragment TYPE_DECLARER: ':' ;
+fragment STATEMENT_TERMINATOR_CHARACTER: ';';
 
-StoryEmbedSymbol : '@';
+fragment ASSIGN: '=';
+fragment ADD : '+';
+fragment SUBTRACT: '-';
+fragment MULTIPLY: '*';
+fragment DIVIDE: '/';
+fragment REMAINDER: '%';
 
+fragment BITWISE_NOT: '~';
+fragment BITWISE_OR: '|';
+fragment BITWISE_XOR: '^';
+fragment BITWISE_AND: '&';
+fragment LEFT_SHIFT: '<<';
+fragment RIGHT_SHIFT: '>>';
 
-ImportStatementBegin
-    : StoryEmbedSymbol 'import' -> pushMode(In_Embedded_Statement)
+fragment ASSIGN_ADD: ASSIGN ADD;
+fragment ASSIGN_SUBTRACT: ASSIGN SUBTRACT;
+fragment ASSIGN_MULTIPLY: ASSIGN MULTIPLY;
+fragment ASSIGN_DIVIDE: ASSIGN DIVIDE;
+fragment ASSIGN_REMAINDER: ASSIGN REMAINDER;
+
+fragment ASSIGN_BITWISE_OR: ASSIGN BITWISE_OR;
+fragment ASSIGN_BITWISE_XOR: ASSIGN BITWISE_XOR;
+fragment ASSIGN_BITWISE_AND: ASSIGN BITWISE_AND;
+fragment ASSIGN_LEFT_SHIFT: ASSIGN LEFT_SHIFT;
+fragment ASSIGN_RIGHT_SHIFT: ASSIGN RIGHT_SHIFT;
+
+fragment CONDITIONAL_AND: BITWISE_AND BITWISE_AND;
+fragment CONDITIONAL_OR: BITWISE_OR BITWISE_OR;
+fragment CONDITIONAL_NOT: '!';
+
+fragment EQUALS_TO: ASSIGN ASSIGN;
+fragment NOT_EQUALS_TO: CONDITIONAL_NOT ASSIGN;
+
+fragment LESS_THAN: '<';
+fragment GREATER_THAN: '>';
+fragment LESS_THAN_OR_EQUAL_TO: LESS_THAN ASSIGN;
+fragment GREATER_THAN_OR_EQUAL_TO: GREATER_THAN ASSIGN;
+
+fragment INCREMENT: ADD ADD;
+fragment DECREMENT: SUBTRACT SUBTRACT;
+
+fragment BOOLEAN: 'boolean';
+fragment UNSIGNED: 'unsigned';
+fragment TINY: 'tiny';
+fragment SMALL: 'small';
+fragment BIG: 'big';
+fragment WHOLE: 'whole';
+fragment NUMBER: 'number';
+
+fragment Letter_Character
+    // Category Letter, all subcategories; category Number, subcategory letter.
+    : [\p{L}\p{Nl}]
+    // Only escapes for categories L & Nl allowed.
+    | Unicode_Escape_Sequence
     ;
 
-StoryIfStatementBegin
-    : StoryEmbedSymbol 'if' -> pushMode(In_Embedded_If_Statement)
+fragment Decimal_Digit_Character
+    // Category Number, subcategory decimal digit.
+    : [\p{Nd}]
+    // Only escapes for category Nd allowed.
+    | Unicode_Escape_Sequence
     ;
 
-StoryElseStatement
-    : StoryEmbedSymbol 'else'
+fragment Unicode_Escape_Sequence
+    : '\\u' Hex_Digit Hex_Digit Hex_Digit Hex_Digit
+    | '\\U' Hex_Digit Hex_Digit Hex_Digit Hex_Digit
+            Hex_Digit Hex_Digit Hex_Digit Hex_Digit
     ;
 
-LineTerminator
-    : New_Line
-    | EOF
+fragment Hex_Digit
+    : '0'..'9' | 'A'..'F' | 'a'..'f'
     ;
 
-New_Line
-    : New_Line_Character
-    | '\u000D\u000A'    // carriage return, line feed 
+fragment Identifier_Start
+    : Letter_Character
     ;
 
-OpenEmbeddedVariableOutsideStory
-    : '{' -> pushMode(Inside_Story), pushMode(Inside_Story_Variable)
+fragment Identifier_Part
+    : Letter_Character
+    | Decimal_Digit_Character
     ;
 
-StartSentencePart
-    : Sentence_Starter_Character+ -> pushMode(Inside_Story)
+fragment Identifier_Part_Character
+    : Letter_Character
+    | Decimal_Digit_Character
+    | Connecting_Character
+    | Combining_Character
+    | Formatting_Character
     ;
 
-Identifier
-    : Identifier_Start_Character Identifier_Part_Character*
+fragment Skipable_Whitepace
+    :[ \t]
     ;
 
-Empty_Line
-    : New_Line -> skip
+fragment Combining_Character
+    // Category Mark, subcategories non-spacing and spacing combining.
+    : [\p{Mn}\p{Mc}]
+    // Only escapes for categories Mn & Mc allowed.
+    | Unicode_Escape_Sequence
     ;
 
-Comment
+fragment Comment
     : Single_Line_Comment
     | Delimited_Comment_Section
     ;
@@ -61,18 +117,10 @@ fragment Single_Line_Comment
     : '//' Input_Character*
     ;
 
-fragment New_Line_Character
-    : '\u000D'  // carriage return
-    | '\u000A'  // line feed
-    | '\u0085'  // next line
-    | '\u2028'  // line separator
-    | '\u2029'  // paragraph separator
-    ;
-
 fragment Delimited_Comment
     : '/*' Delimited_Comment_Section* ASTERISK+ '/'
     ;
-    
+
 fragment Delimited_Comment_Section
     : SLASH
     | ASTERISK* Not_Slash_Or_Asterisk
@@ -87,41 +135,17 @@ fragment Input_Character
     : ~('\u000D' | '\u000A'   | '\u0085' | '\u2028' | '\u2029')
     ;
 
-fragment Sentence_Starter_Character
-    // anything but New_Line_Character or illegal sentence tokens
-    : ~('\u000D' | '\u000A'   | '\u0085' | '\u2028' | '\u2029' | '|' | '@' | ':' | '{' | '}')
+fragment New_Line_Character
+    : '\u000D'  // carriage return
+    | '\u000A'  // line feed
+    | '\u0085'  // next line
+    | '\u2028'  // line separator
+    | '\u2029'  // paragraph separator
     ;
 
 fragment Underscore_Character
     : '_'           // underscore
     | '\\u005' [fF] // Unicode_Escape_Sequence for underscore
-    ;
-
-fragment Letter_Character
-    // Category Letter, all subcategories; category Number, subcategory letter.
-    : [\p{L}\p{Nl}]
-    // Only escapes for categories L & Nl allowed.
-    | Unicode_Escape_Sequence
-    ;
-
-fragment Identifier_Start_Character
-    : Letter_Character
-    | Underscore_Character
-    ;
-
-fragment Decimal_Digit_Character
-    // Category Number, subcategory decimal digit.
-    : [\p{Nd}]
-    // Only escapes for category Nd allowed.
-    | Unicode_Escape_Sequence
-    ;
-    
-fragment Identifier_Part_Character
-    : Letter_Character
-    | Decimal_Digit_Character
-    | Connecting_Character
-    | Combining_Character
-    | Formatting_Character
     ;
 
 fragment Connecting_Character
@@ -138,210 +162,122 @@ fragment Formatting_Character
     | Unicode_Escape_Sequence
     ;
 
-fragment Combining_Character
-    // Category Mark, subcategories non-spacing and spacing combining.
-    : [\p{Mn}\p{Mc}]
-    // Only escapes for categories Mn & Mc allowed.
-    | Unicode_Escape_Sequence
+Story_String_Start
+    : Letter_Character -> pushMode(Story)
     ;
 
-fragment Unicode_Escape_Sequence
-    : '\\u' Hex_Digit Hex_Digit Hex_Digit Hex_Digit
-    | '\\U' Hex_Digit Hex_Digit Hex_Digit Hex_Digit
-            Hex_Digit Hex_Digit Hex_Digit Hex_Digit
+Default_WS
+    : Skipable_Whitepace+ -> skip
+    ;
+
+Default_Comment
+    : Comment -> skip
+    ;
+
+mode Story;
+
+PIPE: '|';
+
+Continue_String
+    : PIPE '\n'
+    ;
+
+Story_Line
+    : Letter_Character+
+    ;
+
+End_Story_String
+    : New_Line_Character -> popMode
     ;
 
 
 
-mode In_Embedded_If_Statement;
+mode Embedded_Statement;
 
-Embedded_If_Enter_Condition: LeftParenthesis -> pushMode(In_Embedded_Statement);
-Embedded_If_Leave_Condition: RightParenthesis -> popMode;
+Embedded_Type_Declarer: TYPE_DECLARER;
 
-Conditional_Variable: Identifier;
+Embedded_Assign: ASSIGN;
+Embedded_Add: ADD;
+Embedded_Subtract: SUBTRACT;
+Embedded_Multiply: MULTIPLY;
+Embedded_Divide: DIVIDE;
+Embedded_Remainder: REMAINDER;
+
+Embedded_Bitwise_Not: BITWISE_NOT;
+Embedded_Bitwise_Or: BITWISE_OR;
+Embedded_Bitwise_Xor: BITWISE_XOR;
+Embedded_Bitwise_And: BITWISE_AND;
+Embedded_Left_Shift: LEFT_SHIFT;
+Embedded_Right_Shift: RIGHT_SHIFT;
+
+Embedded_Assign_Add: ASSIGN_ADD;
+Embedded_Assign_Subtract: ASSIGN_SUBTRACT;
+Embedded_Assign_Multiply: ASSIGN_MULTIPLY;
+Embedded_Assign_Divide: ASSIGN_DIVIDE;
+Embedded_Assign_Remainder: ASSIGN_REMAINDER;
+
+Embedded_Assign_Bitwise_Or: ASSIGN_BITWISE_OR;
+Embedded_Assign_Bitwise_Xor: ASSIGN_BITWISE_XOR;
+Embedded_Assign_Bitwise_And: ASSIGN_BITWISE_AND;
+Embedded_Assign_Left_Shift: ASSIGN_LEFT_SHIFT;
+Embedded_Assign_Right_Shift: ASSIGN_RIGHT_SHIFT;
+
+Embedded_Conditional_And: CONDITIONAL_AND;
+Embedded_Conditional_Or: CONDITIONAL_OR;
+Embedded_Conditional_Not: CONDITIONAL_NOT;
+
+Embedded_Equals_To: EQUALS_TO;
+Embedded_Not_Equals_To: NOT_EQUALS_TO;
+
+Embedded_Less_Than: LESS_THAN;
+Embedded_Greater_than: GREATER_THAN;
+Embedded_Less_Than_or_Equal_To: LESS_THAN_OR_EQUAL_TO;
+Embedded_Greater_Than_Or_Equal_To: GREATER_THAN_OR_EQUAL_TO;
+
+Embedded_Increment: INCREMENT;
+Embedded_Decrement: DECREMENT;
+
+Embedded_Boolean: BOOLEAN;
+Embedded_Unsigned: UNSIGNED;
+Embedded_Tiny: TINY;
+Embedded_Small: SMALL;
+Embedded_Big: BIG;
+Embedded_Whole: WHOLE;
+Embedded_Number: NUMBER;
+
+IMPORT: 'import';
+CODE: 'code';
+ENTER_BLOCK: '{';
 
 
 
-mode In_Embedded_Statement;
-
-COLON: ':';
-COMMA: ',';
-QUESTION_MARK: '?';
-EXCLAMATION_MARK: '!';
-PERIOD: '.';
-LEFT_ANGLE_QUOTATION_MARK: '<';
-RIGHT_ANGLE_QUOTATION_MARK: '>';
-
-PLUS: '+';
-MINUS: '-';
-REMAINDER: '%';
-MULTIPLY: ASTERISK;
-DIVIDE: SLASH;
-
-BITWISE_NOT: '~';
-BITWISE_OR: '|';
-BITWISE_XOR: '^';
-BITWISE_AND: '&';
-LEFT_SHIFT: '<<';
-RIGHT_SHIFT: '>>';
-
-CONDITIONAL_AND: '&&';
-CONDITIONAL_OR: '||';
-CONDITIONAL_NOT: EXCLAMATION_MARK;
-
-Assign: '=';
-AssignAdd: '+=';
-AssignSubtract: '-=';
-AssignMultiply: '*=';
-AssignDivide: '/=';
-
-Greater_Than: RIGHT_ANGLE_QUOTATION_MARK;
-Less_Than: LEFT_ANGLE_QUOTATION_MARK;
-Greater_Than_Or_Equal_To: '>=';
-Less_Than_Or_Equal_To: '<=';
-
-Equal_To: '==';
-Not_Equal_To: '!=';
-
-LeftParenthesis: '(';
-RightParenthesis: ')';
-LeftCurlyBracket: '{';
-RigthCurlyBracket: '}';
-LeftSquareBracket: '[';
-RightSquareBracket: ']';
-
-Boolean: 'boolean';
-
-Unsigned: 'unsigned';
-Tiny: 'tiny';
-Small: 'small';
-Big: 'big';
-Whole: 'whole';
-Number: 'number';
-
-Int8: Tiny Whole Number;
-UInt8: Unsigned Whole Number;
-Int16: Small Whole Number;
-UInt16: Unsigned Small Whole Number;
-Int32: Whole Number;
-UInt32: Unsigned Whole Number;
-Int64: Big Whole Number;
-UInt64: Unsigned Big Whole Number;
-
-Float32: Big;
-Float64: Big Number;
-
-If: 'if';
-Else: 'else';
-Return: 'return';
-
-Object_Creation_Keyword: 'new';
-Object_Self_Keyword: 'this';
-
-Increment
-    : '++'
+Embedded_WS
+    : Skipable_Whitepace+ -> skip
     ;
 
-Decrement
-    : '--'
+Embedded_Comment
+    : Single_Line_Comment ->skip
     ;
 
-AssignmentOperator
-    : Assign | AssignAdd | AssignSubtract | AssignMultiply | AssignDivide | '%=' | '&=' | '|=' | '^=' | '<<=' | '>>='
+Start_Embedded_Code_Block
+    : CODE Embedded_WS* ENTER_BLOCK -> pushMode(In_Code_Block)
     ;
 
-Embedded_Whitespace 
-    : [ \t] + -> skip
+Embedded_Identifier
+    : Identifier_Start Identifier_Part*
     ;
 
-Open_String_Literal
+Embedded_Open_String_Literal
     : '"' -> pushMode(In_String_Literal)
     ;
 
-EndEmbeddedStatement
-    :LineTerminator -> popMode
-    ;
-
-Integer_Literal
-    : Decimal_Integer_Literal
-    | Hexadecimal_Integer_Literal
-    ;
-
-Real_Literal
-    : Decimal_Digit Decorated_Decimal_Digit* '.'
-      Decimal_Digit Decorated_Decimal_Digit* Exponent_Part? Real_Type_Suffix?
-    | '.' Decimal_Digit Decorated_Decimal_Digit* Exponent_Part? Real_Type_Suffix?
-    | Decimal_Digit Decorated_Decimal_Digit* Exponent_Part Real_Type_Suffix?
-    | Decimal_Digit Decorated_Decimal_Digit* Real_Type_Suffix
-    ;
-
-Simple_Identifier
-    : Available_Identifier
-    // | Escaped_Identifier
-    ;
-
-fragment Available_Identifier
-    // excluding keywords or contextual keywords, see note below
-    : Basic_Identifier
-    ;
-
-fragment Basic_Identifier
-    : Identifier_Start_Character Identifier_Part_Character*
-    ;
-
-fragment Decimal_Integer_Literal
-    : Decimal_Digit Decorated_Decimal_Digit* Integer_Type_Suffix?
-    ;
-
-fragment Integer_Type_Suffix
-    : 'U' | 'u' | 'L' | 'l' |
-      'UL' | 'Ul' | 'uL' | 'ul' | 'LU' | 'Lu' | 'lU' | 'lu'
-    ;
-
-fragment Decorated_Decimal_Digit
-    : '_'* Decimal_Digit
-    ;
-
-fragment Decimal_Digit
-    : '0'..'9'
-    ;
-
-fragment Hexadecimal_Integer_Literal
-    : ('0x' | '0X') Decorated_Hex_Digit+ Integer_Type_Suffix?
-    ;
-
-fragment Decorated_Hex_Digit
-    : '_'* Hex_Digit
-    ;
-
-fragment Hex_Digit
-    : '0'..'9' | 'A'..'F' | 'a'..'f'
-    ;
-
-fragment Exponent_Part
-    : ('e' | 'E') Sign? Decimal_Digit Decorated_Decimal_Digit*
-    ;
-
-fragment Sign
-    : '+' | '-'
-    ;
-
-fragment Real_Type_Suffix
-    : 'F' | 'f' | 'D' | 'd'
+Exit_Statement
+    : New_Line_Character -> popMode
     ;
 
 
 
 mode In_String_Literal;
-
-String_Literal_Character
-    : ~('\u000D' | '\u000A'   | '\u0085' | '\u2028' | '\u2029' | '\\' | '"') 
-    | Escaped_String_Literal_Character
-    ;
-
-Close_String_Literal 
-    : '"' -> popMode
-    ;
 
 fragment Escaped_String_Literal_Character
     : String_Literal_Escape_Character '\\'
@@ -352,44 +288,85 @@ fragment String_Literal_Escape_Character
     : '\\'
     ;
 
-
-
-mode Inside_Story;
-
-Line_Glue: '|';
-
-Story_Whitespace
-    : [ \t]
+String_Literal_Character
+    : ~('\u000D' | '\u000A'   | '\u0085' | '\u2028' | '\u2029' | '\\' | '"')
+    | Escaped_String_Literal_Character
     ;
 
-Sentence_Part
-    : Sentence_Character (Story_NewLine+ | Story_Line_End | Sentence_Character+)
+Close_String_Literal
+    : '"' -> popMode
     ;
 
-Story_NewLine
-    : [ \t]* Line_Glue -> skip
+
+
+mode In_Code_Block;
+
+Code_Type_Declarer: TYPE_DECLARER;
+Code_Statement_Terminator_Character: STATEMENT_TERMINATOR_CHARACTER;
+
+Code_Add: ADD;
+Code_Subtract: SUBTRACT;
+Code_Multiply: MULTIPLY;
+Code_Divide: DIVIDE;
+Code_Remainder: REMAINDER;
+
+Code_Bitwise_Not: BITWISE_NOT;
+Code_Bitwise_Or: BITWISE_OR;
+Code_Bitwise_Xor: BITWISE_XOR;
+Code_Bitwise_And: BITWISE_AND;
+Code_Left_Shift: LEFT_SHIFT;
+Code_Right_Shift: RIGHT_SHIFT;
+
+Code_Assign_Add: ASSIGN_ADD;
+Code_Assign_Subtract: ASSIGN_SUBTRACT;
+Code_Assign_Multiply: ASSIGN_MULTIPLY;
+Code_Assign_Divide: ASSIGN_DIVIDE;
+Code_Assign_Remainder: ASSIGN_REMAINDER;
+
+Code_Assign_Bitwise_Or: ASSIGN_BITWISE_OR;
+Code_Assign_Bitwise_Xor: ASSIGN_BITWISE_XOR;
+Code_Assign_Bitwise_And: ASSIGN_BITWISE_AND;
+Code_Assign_Left_Shift: ASSIGN_LEFT_SHIFT;
+Code_Assign_Right_Shift: ASSIGN_RIGHT_SHIFT;
+
+Code_Conditional_And: CONDITIONAL_AND;
+Code_Conditional_Or: CONDITIONAL_OR;
+Code_Conditional_Not: CONDITIONAL_NOT;
+
+Code_Equals_To: EQUALS_TO;
+Code_Not_Equals_To: NOT_EQUALS_TO;
+
+Code_Less_Than: LESS_THAN;
+Code_Greater_than: GREATER_THAN;
+Code_Less_Than_or_Equal_To: LESS_THAN_OR_EQUAL_TO;
+Code_Greater_Than_Or_Equal_To: GREATER_THAN_OR_EQUAL_TO;
+
+Code_Increment: INCREMENT;
+Code_Decrement: DECREMENT;
+
+Code_Boolean: BOOLEAN;
+Code_Unsigned: UNSIGNED;
+Code_Tiny: TINY;
+Code_Small: SMALL;
+Code_Big: BIG;
+Code_Whole: WHOLE;
+Code_Number: NUMBER;
+
+EXIT_CODE_BLOCK: '}' -> popMode;
+
+Code_WS
+    : Skipable_Whitepace+ -> skip
     ;
 
-Story_Line_End
-    : [ \t]* LineTerminator -> skip, popMode
+Code_New_Line
+    : New_Line_Character
     ;
 
-OpenEmbeddedVariableInsideStory
-    : '{' -> pushMode(Inside_Story_Variable)
+Code_Identifier
+    : Identifier_Start Identifier_Part*
     ;
 
-fragment Sentence_Character
-    // anything but New_Line_Character or illegal sentence tokens
-    : ~('\u000D' | '\u000A'   | '\u0085' | '\u2028' | '\u2029' | '|' | '@' | ':' | '{' | '}')
+Code_Open_String_Literal
+    : '"' -> pushMode(In_String_Literal)
     ;
 
-mode Inside_Story_Variable;
-
-// ensure that we end inside of the story context
-CloseEmbeddedVariable
-    : '}' -> popMode, pushMode(Inside_Story)
-    ;
-
-Sentence_Close_Embedded_Variable
-    : CloseEmbeddedVariable (Story_NewLine+ | Story_Line_End)?
-    ;

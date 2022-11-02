@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from c:\Users\vratelier\Documents\GitHub\GameLab-RnD\Compiler\StoryGrammar.g4 by ANTLR 4.9.2
+// Generated from d:\Github Repos\GameLab-RnD\Compiler\StoryGrammar.g4 by ANTLR 4.9.2
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -48,293 +48,41 @@ public partial class StoryGrammarBaseListener : IStoryGrammarListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitStory([NotNull] StoryGrammar.StoryContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.emptySentence"/>.
+	/// Enter a parse tree produced by <see cref="StoryGrammar.story_part"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterEmptySentence([NotNull] StoryGrammar.EmptySentenceContext context) { }
+	public virtual void EnterStory_part([NotNull] StoryGrammar.Story_partContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.emptySentence"/>.
+	/// Exit a parse tree produced by <see cref="StoryGrammar.story_part"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitEmptySentence([NotNull] StoryGrammar.EmptySentenceContext context) { }
+	public virtual void ExitStory_part([NotNull] StoryGrammar.Story_partContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.import_statement"/>.
+	/// Enter a parse tree produced by <see cref="StoryGrammar.text"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterImport_statement([NotNull] StoryGrammar.Import_statementContext context) { }
+	public virtual void EnterText([NotNull] StoryGrammar.TextContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.import_statement"/>.
+	/// Exit a parse tree produced by <see cref="StoryGrammar.text"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitImport_statement([NotNull] StoryGrammar.Import_statementContext context) { }
+	public virtual void ExitText([NotNull] StoryGrammar.TextContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.stringLiteral"/>.
+	/// Enter a parse tree produced by <see cref="StoryGrammar.embedded_variable_declaration"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStringLiteral([NotNull] StoryGrammar.StringLiteralContext context) { }
+	public virtual void EnterEmbedded_variable_declaration([NotNull] StoryGrammar.Embedded_variable_declarationContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.stringLiteral"/>.
+	/// Exit a parse tree produced by <see cref="StoryGrammar.embedded_variable_declaration"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStringLiteral([NotNull] StoryGrammar.StringLiteralContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.string_literal_value"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterString_literal_value([NotNull] StoryGrammar.String_literal_valueContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.string_literal_value"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitString_literal_value([NotNull] StoryGrammar.String_literal_valueContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.storyPart"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStoryPart([NotNull] StoryGrammar.StoryPartContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.storyPart"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStoryPart([NotNull] StoryGrammar.StoryPartContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.storySentence"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStorySentence([NotNull] StoryGrammar.StorySentenceContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.storySentence"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStorySentence([NotNull] StoryGrammar.StorySentenceContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.storyUnformattedSentence"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStoryUnformattedSentence([NotNull] StoryGrammar.StoryUnformattedSentenceContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.storyUnformattedSentence"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStoryUnformattedSentence([NotNull] StoryGrammar.StoryUnformattedSentenceContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.storyFormattedSentence"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStoryFormattedSentence([NotNull] StoryGrammar.StoryFormattedSentenceContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.storyFormattedSentence"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStoryFormattedSentence([NotNull] StoryGrammar.StoryFormattedSentenceContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.storyStatement"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStoryStatement([NotNull] StoryGrammar.StoryStatementContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.storyStatement"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStoryStatement([NotNull] StoryGrammar.StoryStatementContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.storyVariableDeclaration"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStoryVariableDeclaration([NotNull] StoryGrammar.StoryVariableDeclarationContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.storyVariableDeclaration"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStoryVariableDeclaration([NotNull] StoryGrammar.StoryVariableDeclarationContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.storyIfStatement"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStoryIfStatement([NotNull] StoryGrammar.StoryIfStatementContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.storyIfStatement"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStoryIfStatement([NotNull] StoryGrammar.StoryIfStatementContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.literal"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterLiteral([NotNull] StoryGrammar.LiteralContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.literal"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitLiteral([NotNull] StoryGrammar.LiteralContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.booleanLiteral"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterBooleanLiteral([NotNull] StoryGrammar.BooleanLiteralContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.booleanLiteral"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitBooleanLiteral([NotNull] StoryGrammar.BooleanLiteralContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExpression([NotNull] StoryGrammar.ExpressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExpression([NotNull] StoryGrammar.ExpressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.assignment"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterAssignment([NotNull] StoryGrammar.AssignmentContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.assignment"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitAssignment([NotNull] StoryGrammar.AssignmentContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.booleanExpression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterBooleanExpression([NotNull] StoryGrammar.BooleanExpressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.booleanExpression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitBooleanExpression([NotNull] StoryGrammar.BooleanExpressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.expression_statement"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExpression_statement([NotNull] StoryGrammar.Expression_statementContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.expression_statement"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExpression_statement([NotNull] StoryGrammar.Expression_statementContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.statement_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStatement_expression([NotNull] StoryGrammar.Statement_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.statement_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStatement_expression([NotNull] StoryGrammar.Statement_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.method_invocation"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterMethod_invocation([NotNull] StoryGrammar.Method_invocationContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.method_invocation"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitMethod_invocation([NotNull] StoryGrammar.Method_invocationContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.invocation_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterInvocation_expression([NotNull] StoryGrammar.Invocation_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.invocation_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitInvocation_expression([NotNull] StoryGrammar.Invocation_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.if_statement"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterIf_statement([NotNull] StoryGrammar.If_statementContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.if_statement"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitIf_statement([NotNull] StoryGrammar.If_statementContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.return_statement"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterReturn_statement([NotNull] StoryGrammar.Return_statementContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.return_statement"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitReturn_statement([NotNull] StoryGrammar.Return_statementContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.statement"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStatement([NotNull] StoryGrammar.StatementContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.statement"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStatement([NotNull] StoryGrammar.StatementContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.declaration_statement"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterDeclaration_statement([NotNull] StoryGrammar.Declaration_statementContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.declaration_statement"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitDeclaration_statement([NotNull] StoryGrammar.Declaration_statementContext context) { }
+	public virtual void ExitEmbedded_variable_declaration([NotNull] StoryGrammar.Embedded_variable_declarationContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="StoryGrammar.embedded_statement"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -348,521 +96,53 @@ public partial class StoryGrammarBaseListener : IStoryGrammarListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitEmbedded_statement([NotNull] StoryGrammar.Embedded_statementContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.empty_statement"/>.
+	/// Enter a parse tree produced by <see cref="StoryGrammar.import_statement"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterEmpty_statement([NotNull] StoryGrammar.Empty_statementContext context) { }
+	public virtual void EnterImport_statement([NotNull] StoryGrammar.Import_statementContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.empty_statement"/>.
+	/// Exit a parse tree produced by <see cref="StoryGrammar.import_statement"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitEmpty_statement([NotNull] StoryGrammar.Empty_statementContext context) { }
+	public virtual void ExitImport_statement([NotNull] StoryGrammar.Import_statementContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.local_variable_declaration"/>.
+	/// Enter a parse tree produced by <see cref="StoryGrammar.story_line_termination"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterLocal_variable_declaration([NotNull] StoryGrammar.Local_variable_declarationContext context) { }
+	public virtual void EnterStory_line_termination([NotNull] StoryGrammar.Story_line_terminationContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.local_variable_declaration"/>.
+	/// Exit a parse tree produced by <see cref="StoryGrammar.story_line_termination"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitLocal_variable_declaration([NotNull] StoryGrammar.Local_variable_declarationContext context) { }
+	public virtual void ExitStory_line_termination([NotNull] StoryGrammar.Story_line_terminationContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.selection_statement"/>.
+	/// Enter a parse tree produced by <see cref="StoryGrammar.string_literal"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterSelection_statement([NotNull] StoryGrammar.Selection_statementContext context) { }
+	public virtual void EnterString_literal([NotNull] StoryGrammar.String_literalContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.selection_statement"/>.
+	/// Exit a parse tree produced by <see cref="StoryGrammar.string_literal"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitSelection_statement([NotNull] StoryGrammar.Selection_statementContext context) { }
+	public virtual void ExitString_literal([NotNull] StoryGrammar.String_literalContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.jump_statement"/>.
+	/// Enter a parse tree produced by <see cref="StoryGrammar.string_literal_content"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterJump_statement([NotNull] StoryGrammar.Jump_statementContext context) { }
+	public virtual void EnterString_literal_content([NotNull] StoryGrammar.String_literal_contentContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.jump_statement"/>.
+	/// Exit a parse tree produced by <see cref="StoryGrammar.string_literal_content"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitJump_statement([NotNull] StoryGrammar.Jump_statementContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.object_creation_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterObject_creation_expression([NotNull] StoryGrammar.Object_creation_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.object_creation_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitObject_creation_expression([NotNull] StoryGrammar.Object_creation_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.local_variable_type"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterLocal_variable_type([NotNull] StoryGrammar.Local_variable_typeContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.local_variable_type"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitLocal_variable_type([NotNull] StoryGrammar.Local_variable_typeContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.local_variable_initializer"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterLocal_variable_initializer([NotNull] StoryGrammar.Local_variable_initializerContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.local_variable_initializer"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitLocal_variable_initializer([NotNull] StoryGrammar.Local_variable_initializerContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.block"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterBlock([NotNull] StoryGrammar.BlockContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.block"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitBlock([NotNull] StoryGrammar.BlockContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.statement_list"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStatement_list([NotNull] StoryGrammar.Statement_listContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.statement_list"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStatement_list([NotNull] StoryGrammar.Statement_listContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.non_assignment_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterNon_assignment_expression([NotNull] StoryGrammar.Non_assignment_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.non_assignment_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitNon_assignment_expression([NotNull] StoryGrammar.Non_assignment_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.multiplicative_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterMultiplicative_expression([NotNull] StoryGrammar.Multiplicative_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.multiplicative_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitMultiplicative_expression([NotNull] StoryGrammar.Multiplicative_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.additive_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterAdditive_expression([NotNull] StoryGrammar.Additive_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.additive_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitAdditive_expression([NotNull] StoryGrammar.Additive_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.shift_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterShift_expression([NotNull] StoryGrammar.Shift_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.shift_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitShift_expression([NotNull] StoryGrammar.Shift_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.relational_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterRelational_expression([NotNull] StoryGrammar.Relational_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.relational_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitRelational_expression([NotNull] StoryGrammar.Relational_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.equality_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterEquality_expression([NotNull] StoryGrammar.Equality_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.equality_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitEquality_expression([NotNull] StoryGrammar.Equality_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.and_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterAnd_expression([NotNull] StoryGrammar.And_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.and_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitAnd_expression([NotNull] StoryGrammar.And_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.exclusive_or_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExclusive_or_expression([NotNull] StoryGrammar.Exclusive_or_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.exclusive_or_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExclusive_or_expression([NotNull] StoryGrammar.Exclusive_or_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.inclusive_or_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterInclusive_or_expression([NotNull] StoryGrammar.Inclusive_or_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.inclusive_or_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitInclusive_or_expression([NotNull] StoryGrammar.Inclusive_or_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.conditional_and_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterConditional_and_expression([NotNull] StoryGrammar.Conditional_and_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.conditional_and_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitConditional_and_expression([NotNull] StoryGrammar.Conditional_and_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.conditional_or_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterConditional_or_expression([NotNull] StoryGrammar.Conditional_or_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.conditional_or_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitConditional_or_expression([NotNull] StoryGrammar.Conditional_or_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.null_coalescing_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterNull_coalescing_expression([NotNull] StoryGrammar.Null_coalescing_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.null_coalescing_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitNull_coalescing_expression([NotNull] StoryGrammar.Null_coalescing_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.conditional_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterConditional_expression([NotNull] StoryGrammar.Conditional_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.conditional_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitConditional_expression([NotNull] StoryGrammar.Conditional_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.unary_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterUnary_expression([NotNull] StoryGrammar.Unary_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.unary_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitUnary_expression([NotNull] StoryGrammar.Unary_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.pre_increment_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterPre_increment_expression([NotNull] StoryGrammar.Pre_increment_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.pre_increment_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitPre_increment_expression([NotNull] StoryGrammar.Pre_increment_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.pre_decrement_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterPre_decrement_expression([NotNull] StoryGrammar.Pre_decrement_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.pre_decrement_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitPre_decrement_expression([NotNull] StoryGrammar.Pre_decrement_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.post_increment_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterPost_increment_expression([NotNull] StoryGrammar.Post_increment_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.post_increment_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitPost_increment_expression([NotNull] StoryGrammar.Post_increment_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.post_decrement_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterPost_decrement_expression([NotNull] StoryGrammar.Post_decrement_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.post_decrement_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitPost_decrement_expression([NotNull] StoryGrammar.Post_decrement_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.primary_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterPrimary_expression([NotNull] StoryGrammar.Primary_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.primary_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitPrimary_expression([NotNull] StoryGrammar.Primary_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.primary_expression_start"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterPrimary_expression_start([NotNull] StoryGrammar.Primary_expression_startContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.primary_expression_start"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitPrimary_expression_start([NotNull] StoryGrammar.Primary_expression_startContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.bracket_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterBracket_expression([NotNull] StoryGrammar.Bracket_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.bracket_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitBracket_expression([NotNull] StoryGrammar.Bracket_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.array_creation_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterArray_creation_expression([NotNull] StoryGrammar.Array_creation_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.array_creation_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitArray_creation_expression([NotNull] StoryGrammar.Array_creation_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.array_type"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterArray_type([NotNull] StoryGrammar.Array_typeContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.array_type"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitArray_type([NotNull] StoryGrammar.Array_typeContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.rank_specifier"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterRank_specifier([NotNull] StoryGrammar.Rank_specifierContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.rank_specifier"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitRank_specifier([NotNull] StoryGrammar.Rank_specifierContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.non_array_type"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterNon_array_type([NotNull] StoryGrammar.Non_array_typeContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.non_array_type"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitNon_array_type([NotNull] StoryGrammar.Non_array_typeContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.expression_list"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterExpression_list([NotNull] StoryGrammar.Expression_listContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.expression_list"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitExpression_list([NotNull] StoryGrammar.Expression_listContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.parenthesized_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterParenthesized_expression([NotNull] StoryGrammar.Parenthesized_expressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.parenthesized_expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitParenthesized_expression([NotNull] StoryGrammar.Parenthesized_expressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.member_access"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterMember_access([NotNull] StoryGrammar.Member_accessContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.member_access"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitMember_access([NotNull] StoryGrammar.Member_accessContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.simple_name"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterSimple_name([NotNull] StoryGrammar.Simple_nameContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.simple_name"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitSimple_name([NotNull] StoryGrammar.Simple_nameContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.type_argument_list"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterType_argument_list([NotNull] StoryGrammar.Type_argument_listContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.type_argument_list"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitType_argument_list([NotNull] StoryGrammar.Type_argument_listContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.type_arguments"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterType_arguments([NotNull] StoryGrammar.Type_argumentsContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.type_arguments"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitType_arguments([NotNull] StoryGrammar.Type_argumentsContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.type_argument"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterType_argument([NotNull] StoryGrammar.Type_argumentContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.type_argument"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitType_argument([NotNull] StoryGrammar.Type_argumentContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.type"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterType([NotNull] StoryGrammar.TypeContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.type"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitType([NotNull] StoryGrammar.TypeContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.type_parameter"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterType_parameter([NotNull] StoryGrammar.Type_parameterContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.type_parameter"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitType_parameter([NotNull] StoryGrammar.Type_parameterContext context) { }
+	public virtual void ExitString_literal_content([NotNull] StoryGrammar.String_literal_contentContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="StoryGrammar.identifier"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -876,185 +156,17 @@ public partial class StoryGrammarBaseListener : IStoryGrammarListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitIdentifier([NotNull] StoryGrammar.IdentifierContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.value_type"/>.
+	/// Enter a parse tree produced by <see cref="StoryGrammar.end_of_file"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterValue_type([NotNull] StoryGrammar.Value_typeContext context) { }
+	public virtual void EnterEnd_of_file([NotNull] StoryGrammar.End_of_fileContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.value_type"/>.
+	/// Exit a parse tree produced by <see cref="StoryGrammar.end_of_file"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitValue_type([NotNull] StoryGrammar.Value_typeContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.non_nullable_value_type"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterNon_nullable_value_type([NotNull] StoryGrammar.Non_nullable_value_typeContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.non_nullable_value_type"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitNon_nullable_value_type([NotNull] StoryGrammar.Non_nullable_value_typeContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.struct_type"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStruct_type([NotNull] StoryGrammar.Struct_typeContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.struct_type"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStruct_type([NotNull] StoryGrammar.Struct_typeContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.simple_type"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterSimple_type([NotNull] StoryGrammar.Simple_typeContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.simple_type"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitSimple_type([NotNull] StoryGrammar.Simple_typeContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.numeric_type"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterNumeric_type([NotNull] StoryGrammar.Numeric_typeContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.numeric_type"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitNumeric_type([NotNull] StoryGrammar.Numeric_typeContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.floating_point_type"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterFloating_point_type([NotNull] StoryGrammar.Floating_point_typeContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.floating_point_type"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitFloating_point_type([NotNull] StoryGrammar.Floating_point_typeContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.integral_type"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterIntegral_type([NotNull] StoryGrammar.Integral_typeContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.integral_type"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitIntegral_type([NotNull] StoryGrammar.Integral_typeContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.namespace_name"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterNamespace_name([NotNull] StoryGrammar.Namespace_nameContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.namespace_name"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitNamespace_name([NotNull] StoryGrammar.Namespace_nameContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.type_name"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterType_name([NotNull] StoryGrammar.Type_nameContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.type_name"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitType_name([NotNull] StoryGrammar.Type_nameContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.namespace_or_type_name"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterNamespace_or_type_name([NotNull] StoryGrammar.Namespace_or_type_nameContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.namespace_or_type_name"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitNamespace_or_type_name([NotNull] StoryGrammar.Namespace_or_type_nameContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.this_access"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterThis_access([NotNull] StoryGrammar.This_accessContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.this_access"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitThis_access([NotNull] StoryGrammar.This_accessContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.argument_list"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterArgument_list([NotNull] StoryGrammar.Argument_listContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.argument_list"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitArgument_list([NotNull] StoryGrammar.Argument_listContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.argument"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterArgument([NotNull] StoryGrammar.ArgumentContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.argument"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitArgument([NotNull] StoryGrammar.ArgumentContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.argument_name"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterArgument_name([NotNull] StoryGrammar.Argument_nameContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.argument_name"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitArgument_name([NotNull] StoryGrammar.Argument_nameContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="StoryGrammar.argument_value"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterArgument_value([NotNull] StoryGrammar.Argument_valueContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="StoryGrammar.argument_value"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitArgument_value([NotNull] StoryGrammar.Argument_valueContext context) { }
+	public virtual void ExitEnd_of_file([NotNull] StoryGrammar.End_of_fileContext context) { }
 
 	/// <inheritdoc/>
 	/// <remarks>The default implementation does nothing.</remarks>
