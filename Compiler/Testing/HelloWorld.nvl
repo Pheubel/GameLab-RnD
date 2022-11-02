@@ -11,6 +11,13 @@
 Hello you, this is an example of embedding variables into text
 @characterHappiness
 
+How you feeling?
+@if (characterHappiness > 5) {
+    super
+}
+@else {
+    meh
+}
 
 // stories can have branching with choices
 what do you want?
