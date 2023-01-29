@@ -19,7 +19,7 @@ story_part
     ;
 
 code_block
-    : CODE 
+    : CODE
     ;
 
 text
@@ -32,12 +32,16 @@ variable_declaration
 
 embedded_statement
     : BEGIN_STATEMENT variable_declaration Exit_Statement
-    | BEGIN_STATEMENT Exit_Statement
+    | BEGIN_STATEMENT embedded_code_block Exit_Statement
     | BEGIN_STATEMENT Start_Embedded_If expression
     ;
 
 embedded_code_block
-    :Start_Embedded_Code_Block Embed_Block (statement Exit_Statement)* EXIT_CODE_BLOCK
+    :Start_Embedded_Code_Block Embed_Block statements? EXIT_CODE_BLOCK
+    ;
+
+statements
+    : statement
     ;
 
 statement
