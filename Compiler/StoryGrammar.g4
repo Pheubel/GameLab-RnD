@@ -2,7 +2,11 @@ parser grammar StoryGrammar;
 options { tokenVocab=StoryLexerGrammar; }
 
 story
-    : import_statement* story_part*
+    : import_statements? story_parts?
+    ;
+
+story_parts
+    : story_part+
     ;
 
 end_of_file
@@ -14,20 +18,47 @@ story_part
     | text
     ;
 
+code_block
+    : CODE 
+    ;
+
 text
     : Story_String_Start Story_Line? story_line_termination
     ;
 
-embedded_variable_declaration
-    : BEGIN_STATEMENT identifier Embedded_Type_Declarer identifier
+variable_declaration
+    : identifier Embedded_Type_Declarer identifier
     ;
 
 embedded_statement
-    : embedded_variable_declaration
+    : BEGIN_STATEMENT variable_declaration Exit_Statement
+    | BEGIN_STATEMENT Exit_Statement
+    | BEGIN_STATEMENT Start_Embedded_If expression
+    ;
+
+embedded_code_block
+    :Start_Embedded_Code_Block Embed_Block (statement Exit_Statement)* EXIT_CODE_BLOCK
+    ;
+
+statement
+    : variable_declaration
+    ;
+
+expression
+    :
+    ;
+
+import_statements
+    : import_statement+
     ;
 
 import_statement
-    : BEGIN_STATEMENT IMPORT string_literal Exit_Statement
+    : BEGIN_STATEMENT IMPORT string_literal end_statement?
+    ;
+
+end_statement
+    : Exit_Statement
+    | end_of_file
     ;
 
 story_line_termination
@@ -36,11 +67,7 @@ story_line_termination
     ;
 
 string_literal
-    : (Embedded_Open_String_Literal | Code_Open_String_Literal) string_literal_content? Close_String_Literal
-    ;
-
-string_literal_content
-    : String_Literal_Character+
+    : (Embedded_Open_String_Literal | Code_Open_String_Literal) String_Literal_Content? Close_String_Literal
     ;
 
 identifier
@@ -100,4 +127,14 @@ whole_keyword
 number_keyword
     : Embedded_Number
     | Code_Number
+    ;
+
+if_keyword
+    : Embedded_If
+    | Code_If
+    ;
+
+else_keword
+    : Embedded_Else
+    | Code_Else
     ;

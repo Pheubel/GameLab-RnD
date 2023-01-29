@@ -7,6 +7,12 @@ SLASH: '/';
 fragment TYPE_DECLARER: ':' ;
 fragment STATEMENT_TERMINATOR_CHARACTER: ';';
 
+fragment OPEN_BLOCK: '{';
+fragment CLOSE_BLOCK: '}';
+
+fragment OPEN_EXPRESSION: '(';
+fragment CLOSE_EXPRESSION: ')';
+
 fragment ASSIGN: '=';
 fragment ADD : '+';
 fragment SUBTRACT: '-';
@@ -55,6 +61,9 @@ fragment SMALL: 'small';
 fragment BIG: 'big';
 fragment WHOLE: 'whole';
 fragment NUMBER: 'number';
+
+fragment IF: 'if';
+fragment ELSE: 'else';
 
 fragment Letter_Character
     // Category Letter, all subcategories; category Number, subcategory letter.
@@ -174,12 +183,37 @@ Default_Comment
     : Comment -> skip
     ;
 
+
+
+
+
 mode Story;
 
 PIPE: '|';
+STORY_ESCAPE: '\\';
+
+Story_White_Line
+    : New_Line_Character
+    ;
+
+Escaped_Story_Character
+    : STORY_ESCAPE Escapable_Story_Character
+    ;
+
+Escapable_Story_Character
+    : '\''
+    | '{'
+    | '}'
+    | '@'
+    | '|'
+    ;
 
 Continue_String
     : PIPE '\n'
+    ;
+
+Story_String
+    : Story_Line End_Story_String -> popMode
     ;
 
 Story_Line
@@ -187,7 +221,7 @@ Story_Line
     ;
 
 End_Story_String
-    : New_Line_Character -> popMode
+    : New_Line_Character 
     ;
 
 
@@ -245,10 +279,14 @@ Embedded_Big: BIG;
 Embedded_Whole: WHOLE;
 Embedded_Number: NUMBER;
 
+Embedded_If: IF;
+Embedded_Else: ELSE;
+
 IMPORT: 'import';
 CODE: 'code';
-ENTER_BLOCK: '{';
 
+ENTER_BLOCK: OPEN_BLOCK;
+ENTER_EXPRESSION: OPEN_EXPRESSION;
 
 
 Embedded_WS
@@ -260,7 +298,19 @@ Embedded_Comment
     ;
 
 Start_Embedded_Code_Block
-    : CODE Embedded_WS* ENTER_BLOCK -> pushMode(In_Code_Block)
+    : CODE Embedded_WS* -> pushMode(In_Code_Block), pushMode(Waiting_For_Block)
+    ;
+
+Start_Embedded_If
+    : IF Embedded_WS* ENTER_EXPRESSION -> pushMode(Story), pushMode(Waiting_For_Block), pushMode(In_Code_Block), pushMode(Waiting_For_Block)
+    ;
+
+Start_Embedded_Else_If
+    : ELSE Embedded_WS* Start_Embedded_If
+    ;
+
+Start_Embedded_Else
+    : ELSE Embedded_WS* -> pushMode(Waiting_For_Block)
     ;
 
 Embedded_Identifier
@@ -274,6 +324,14 @@ Embedded_Open_String_Literal
 Exit_Statement
     : New_Line_Character -> popMode
     ;
+
+
+
+mode Waiting_For_Block;
+
+WFB_WS: (Skipable_Whitepace | New_Line_Character)+ -> skip;
+
+Embed_Block: OPEN_BLOCK -> popMode;
 
 
 
@@ -291,6 +349,10 @@ fragment String_Literal_Escape_Character
 String_Literal_Character
     : ~('\u000D' | '\u000A'   | '\u0085' | '\u2028' | '\u2029' | '\\' | '"')
     | Escaped_String_Literal_Character
+    ;
+
+String_Literal_Content
+    : String_Literal_Character+
     ;
 
 Close_String_Literal
@@ -352,7 +414,14 @@ Code_Big: BIG;
 Code_Whole: WHOLE;
 Code_Number: NUMBER;
 
-EXIT_CODE_BLOCK: '}' -> popMode;
+Code_If: IF;
+Code_Else: ELSE;
+
+ENTER_CODE_BLOCK: OPEN_BLOCK -> pushMode(In_Code_Block);
+EXIT_CODE_BLOCK: CLOSE_BLOCK -> popMode;
+
+ENTER_CODE_EXPRESSION: OPEN_EXPRESSION -> pushMode(In_Code_Block);
+EXIT_CODE_EXPRESSION: CLOSE_EXPRESSION -> popMode;
 
 Code_WS
     : Skipable_Whitepace+ -> skip
@@ -369,4 +438,3 @@ Code_Identifier
 Code_Open_String_Literal
     : '"' -> pushMode(In_String_Literal)
     ;
-

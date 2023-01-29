@@ -1,4 +1,7 @@
-@import "external_script.nvl" // imports functions and variables
+@import "external_script_one.nvl" // imports functions and variables
+@import "external_script_two.nvl" // imports functions and variables
+@import "external_script_three.nvl" // imports functions and variables
+
 
 @characterHappiness : number // declares a variable
 
