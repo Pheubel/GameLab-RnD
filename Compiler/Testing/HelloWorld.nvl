@@ -3,3 +3,30 @@
 @import "external_script_three.nvl" // imports functions and variables
 
 
+@characterHappiness : number // declares a variable
+
+// create a code block to mutate variables
+@code {
+    // characterHappiness = 6
+}
+
+// raw text will be displayed into the story when called for
+Hello you, this is an example of embedding variables into text
+@characterHappiness
+
+How you feeling?
+@if (characterHappiness > 5) {
+    super
+}
+@else {
+    meh
+}
+
+// stories can have branching with choices
+what do you want?
+@choice {
+    food:
+        i want a hamburger.
+    money:
+        I want a small loan of a million dollars
+}
