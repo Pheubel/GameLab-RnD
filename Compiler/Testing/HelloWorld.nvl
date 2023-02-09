@@ -12,7 +12,15 @@
 
 // raw text will be displayed into the story when called for
 Hello you, this is an example of embedding variables into text
-@characterHappiness
+my big happiness value is\: {characterHappiness}
+
+// you can also glue multiple lines into one big sentence.
+this |
+is | 
+all |
+the |
+same |
+line!
 
 How you feeling?
 @if (characterHappiness > 5) {

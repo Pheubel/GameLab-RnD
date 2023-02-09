@@ -1,3 +1,4 @@
+@@ -1,440 +0,0 @@
 lexer grammar StoryLexerGrammar;
 
 BEGIN_STATEMENT: '@' -> pushMode(Embedded_Statement);

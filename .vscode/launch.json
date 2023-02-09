@@ -6,7 +6,7 @@
             "type": "antlr-debug",
             "request": "launch",
             "input": "Compiler/Testing/HelloWorld.nvl",
-            "grammar": "Compiler/StoryGrammar.g4",
+            "grammar": "Compiler/NovelerParser.g4",
             "startRule": "story",
             "printParseTree": true,
             "visualParseTree": true
