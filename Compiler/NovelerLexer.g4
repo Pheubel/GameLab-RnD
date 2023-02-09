@@ -10,8 +10,12 @@ SLASH: '/' ;
 EMBED_COMMAND: '@';
 EQUALS: '=';
 ESCAPE_CHARACTER: '\\';
+PERIOD: '.';
+QUESTION_MARK: '?';
+REMAINDER: '%';
 
 // keywords
+THIS: 'this';
 IMPORT: 'import';
 CODE: 'code';
 CHOICE: 'choice';
@@ -36,12 +40,31 @@ CLOSE_CURLY: '}';
 OPEN_BRACKET: '(';
 CLOSE_BRACKET: ')';
 
+OPEN_SQUARE_BRACKET: '[';
+CLOSE_SQUARE_BRACKET: ']';
+
 COLON: ':';
 PIPE: '|';
 SEMI_COLON: ';';
+COMMA: ',';
 
 PLUS: '+';
 MINUS: '-';
+CONDITIONAL_NOT: '!';
+CONDITIONAL_OR: '||';
+CONDITIONAL_AND: '&&';
+BITWISE_NOT: '~';
+// BITWISE_OR: '|';
+BITWISE_XOR: '^';
+BITWISE_AND: '&';
+
+Equal_To: EQUALS EQUALS;
+Not_Equal_To: CONDITIONAL_NOT EQUALS;
+
+INCREMENT: '++';
+DECREMENT: '--';
+LEFT_SHIFT: '<<';
+RIGHT_SHIFT: '>>';
 
 fragment Comment
     : Single_Line_Comment
@@ -179,20 +202,94 @@ String_Literal
     : '"' Input_Character* '"'
     ;
 
-
-
-// NEW!
-Text_Segment_Legal_Character
-    : ~('\u000D' | '\u000A'   | '\u0085' | '\u2028' | '\u2029' | '@' | '|' | '{' | '}'| '\\' | ':' | '/')
-    | Escaped_Text_Segment_Character
-    ;
-
-fragment Escaped_Text_Segment_Character
+Escaped_Text_Segment_Character
     : '\\@'
     | '{{'
     | '}}'
     | '\\|'
     | '\\\\'
-    | '\\:'
+    | '\\'COLON
     | '\\/'
+    ;
+
+Integer_Literal
+    : Decimal_Integer_Literal
+    | Hexadecimal_Integer_Literal
+    | Binary_Integer_Literal
+    ;
+
+fragment Decimal_Integer_Literal
+    : Decimal_Digit Decorated_Decimal_Digit* Integer_Type_Suffix?
+    ;
+
+fragment Decorated_Decimal_Digit
+    : '_'* Decimal_Digit
+    ;
+
+fragment Decimal_Digit
+    : '0'..'9'
+    ;
+
+fragment Integer_Type_Suffix
+    : 'U' | 'u' | 'L' | 'l' |
+      'UL' | 'Ul' | 'uL' | 'ul' | 'LU' | 'Lu' | 'lU' | 'lu'
+    ;
+
+fragment Hexadecimal_Integer_Literal
+    : ('0x' | '0X') Decorated_Hex_Digit+ Integer_Type_Suffix?
+    ;
+
+fragment Binary_Integer_Literal
+    : ('0b' | '0B') Decorated_Binary_Digit+ Integer_Type_Suffix?
+    ;
+
+fragment Decorated_Binary_Digit
+    : '_'* Binary_Digit
+    ;
+
+fragment Binary_Digit
+    : '0' | '1'
+    ;
+
+Real_Literal
+    : Decimal_Digit Decorated_Decimal_Digit* '.'
+      Decimal_Digit Decorated_Decimal_Digit* Exponent_Part? Real_Type_Suffix?
+    | '.' Decimal_Digit Decorated_Decimal_Digit* Exponent_Part? Real_Type_Suffix?
+    | Decimal_Digit Decorated_Decimal_Digit* Exponent_Part Real_Type_Suffix?
+    | Decimal_Digit Decorated_Decimal_Digit* Real_Type_Suffix
+    ;
+
+fragment Exponent_Part
+    : ('e' | 'E') Sign? Decimal_Digit Decorated_Decimal_Digit*
+    ;
+
+fragment Sign
+    : '+' | '-'
+    ;
+
+fragment Real_Type_Suffix
+    : 'F' | 'f' | 'D' | 'd'
+    ;
+
+LESS_THAN: '<';
+GREATER_THAN: '>';
+
+Less_Than
+    : LESS_THAN
+    ;
+
+Greater_Than
+    : GREATER_THAN
+    ;
+
+Less_Than_Or_Equal_To
+    : LESS_THAN EQUALS
+    ;
+
+Greater_Than_Or_Equal_To
+    : GREATER_THAN EQUALS
+    ;
+
+Text_Segment_Legal_Character
+    : ~('\u000D' | '\u000A'   | '\u0085' | '\u2028' | '\u2029' | '@' | '|' | '{' | '}'| '\\' | ':' | '/' | '0'..'9')
     ;

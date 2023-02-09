@@ -7,7 +7,7 @@
 
 // create a code block to mutate variables
 @code {
-    // characterHappiness = 6
+    characterHappiness = 6
 }
 
 // raw text will be displayed into the story when called for
@@ -23,7 +23,7 @@ same |
 line!
 
 How you feeling?
-@if (/*characterHappiness > 5*/) {
+@if (characterHappiness > 5) {
     super
 }
 @else {
