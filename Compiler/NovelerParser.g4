@@ -39,6 +39,29 @@ empty_segment
 embed_statement
     : EMBED_COMMAND variable_assignment New_Line
     | embedded_code_block
+    | choice_block
+    ;
+
+choice_block
+    : EMBED_COMMAND CHOICE New_Line* OPEN_CURLY New_Line* choice_block_choice+ CLOSE_CURLY
+    ;
+
+// TODO: add conditional and subtractable choice
+choice_block_choice
+    : standard_choice
+    | default_choice
+    ;
+
+standard_choice
+    : text_line_segment+ COLON New_Line choice_response
+    ;
+
+default_choice
+    : ASTERISK text_line_segment+ COLON New_Line choice_response
+    ;
+
+choice_response
+    : story_segment+
     ;
 
 embedded_code_block

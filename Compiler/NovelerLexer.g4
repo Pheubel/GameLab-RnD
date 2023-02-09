@@ -180,10 +180,10 @@ String_Literal
 // NEW!
 Text_Segment_Legal_Character
     : ~('\u000D' | '\u000A'   | '\u0085' | '\u2028' | '\u2029' | '@' | '|' | '{' | '}'| '\\' | ':' | '/')
-    | Escaped_Segment_Character
+    | Escaped_Text_Segment_Character
     ;
 
-fragment Escaped_Segment_Character
+fragment Escaped_Text_Segment_Character
     : '\\@'
     | '{{'
     | '}}'
