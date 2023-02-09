@@ -21,13 +21,7 @@ text_line
     ;
 
 text_line_segment
-    : keywords
-    | SEMI_COLON
-    | EQUALS
-    | PLUS
-    | MINUS
-    | OPEN_BRACKET
-    | CLOSE_BRACKET
+    : text_line_valid_tokens
     | Simple_Identifier
     | Text_Segment_Legal_Character
     | String_Literal
@@ -137,6 +131,16 @@ boolean_specifier
     ;
 
 
+// TODO: keep this up to date
+text_line_valid_tokens
+    : keywords
+    | SEMI_COLON
+    | EQUALS
+    | PLUS
+    | MINUS
+    | OPEN_BRACKET
+    | CLOSE_BRACKET
+    ;
 
 // TODO: keep up to date
 keywords
