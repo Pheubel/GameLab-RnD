@@ -8,6 +8,7 @@ channels {
 ASTERISK: '*' ;
 SLASH: '/' ;
 EMBED_COMMAND: '@';
+EQUALS: '=';
 ESCAPE_CHARACTER: '\\';
 
 // keywords
@@ -31,6 +32,9 @@ ELSE: 'else';
 
 OPEN_CURLY: '{';
 CLOSE_CURLY: '}';
+
+OPEN_BRACKET: '(';
+CLOSE_BRACKET: ')';
 
 COLON: ':';
 PIPE: '|';

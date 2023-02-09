@@ -23,7 +23,7 @@ same |
 line!
 
 How you feeling?
-@if (characterHappiness > 5) {
+@if (/*characterHappiness > 5*/) {
     super
 }
 @else {

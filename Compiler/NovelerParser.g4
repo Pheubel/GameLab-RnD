@@ -23,8 +23,14 @@ text_line
 text_line_segment
     : keywords
     | SEMI_COLON
+    | EQUALS
+    | PLUS
+    | MINUS
+    | OPEN_BRACKET
+    | CLOSE_BRACKET
     | Simple_Identifier
     | Text_Segment_Legal_Character
+    | String_Literal
     | interpolated_value
     ;
 
@@ -37,9 +43,29 @@ empty_segment
     ;
 
 embed_statement
-    : EMBED_COMMAND variable_assignment New_Line
+    : embedded_variable_declaration  
     | embedded_code_block
+    | embedded_if_statement
     | choice_block
+    ;
+
+embedded_variable_declaration
+    : EMBED_COMMAND variable_declare_assign New_Line
+    | EMBED_COMMAND variable_declare New_Line
+    ;
+
+embedded_if_statement
+    : EMBED_COMMAND if_statement_if_segment OPEN_CURLY story_segment* CLOSE_CURLY
+    | embedded_if_statement New_Line+ (EMBED_COMMAND if_statement_else_segment OPEN_CURLY story_segment* CLOSE_CURLY)+
+    ;
+
+if_statement_if_segment
+    : IF OPEN_BRACKET    CLOSE_BRACKET
+    ;
+
+if_statement_else_segment
+    : ELSE
+    | ELSE if_statement_if_segment
     ;
 
 choice_block
@@ -83,8 +109,12 @@ empty_statement
     | SEMI_COLON
     ;
 
-variable_assignment
+variable_declare
     : Simple_Identifier COLON type_specifier
+    ;
+
+variable_declare_assign
+    : variable_declare EQUALS // TODO value here
     ;
 
 type_specifier
@@ -105,6 +135,8 @@ float_specifier
 boolean_specifier
     : BOOLEAN
     ;
+
+
 
 // TODO: keep up to date
 keywords
