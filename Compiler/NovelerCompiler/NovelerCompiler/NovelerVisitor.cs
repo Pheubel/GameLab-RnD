@@ -55,9 +55,55 @@ namespace Noveler.Compiler
 
 		public override object VisitImport_statement(NovelerParser.Import_statementContext context)
 		{
-			var literal = context.String_Literal().GetText()[1..^1];
+			var importedFile = context.String_Literal().GetText()[1..^1];
 
-			return null;
+			Optional<FileInfo> importedFileInfo = default;
+
+			// attempt relative import first
+			if (_fileInfo.HasValue)
+			{
+				importedFileInfo = new FileInfo(Path.Combine(_fileInfo.Value.DirectoryName ?? string.Empty, importedFile));
+			}
+
+			// if there is no relative match, attempt absolute match
+			if (!importedFileInfo.HasValue || !importedFileInfo.Value.Exists)
+			{
+				importedFileInfo = new FileInfo(importedFile);
+			}
+
+			var info = importedFileInfo.Value;
+
+			// report errors when imported file can't be found
+			if (!info.Exists)
+			{
+				// TODO: signal failure for importing 
+
+				return default;
+			}
+
+			// only plunge into the included file once
+			if (_visitedFiles.Add(info.FullName))
+			{
+				using FileStream importedFileStream = info.OpenRead();
+
+				AntlrInputStream inputStream = new AntlrInputStream(importedFileStream);
+				NovelerLexer novelerLexer = new NovelerLexer(inputStream);
+				CommonTokenStream commonTokenStream = new CommonTokenStream(novelerLexer);
+				NovelerParser novelerParser = new NovelerParser(commonTokenStream);
+				NovelerParser.Imported_fileContext importContext = novelerParser.imported_file();
+
+				NovelerVisitor visitor = new NovelerVisitor(
+					fileInfo: info,
+					symbolTable: _symbolTable,
+					functionTable: _functionTable,
+					typeTable: _typeTable,
+					stubTable: _stubTable,
+					visitedFiles: _visitedFiles);
+
+				visitor.Visit(context);
+			}
+
+			return default;
 		}
 	}
 }
