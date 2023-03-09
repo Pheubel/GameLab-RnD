@@ -11,7 +11,7 @@ using Noveler.Compiler.Grammar;
 
 namespace Noveler.Compiler
 {
-	internal sealed class NovelerVisitor : NovelerParserBaseVisitor<object?>
+	internal sealed class NovelerVisitor : NovelerParserBaseVisitor<StorySyntaxTree?>
 	{
 		private Optional<FileInfo> _fileInfo;
 
@@ -19,6 +19,8 @@ namespace Noveler.Compiler
 		private Dictionary<string, object> _functionTable;
 		private Dictionary<string, object> _typeTable;
 		private Dictionary<string, object> _stubTable;
+
+		private List<string> _stringTable;
 
 		private HashSet<string> _visitedFiles;
 
@@ -31,6 +33,7 @@ namespace Noveler.Compiler
 			_typeTable = new();
 			_stubTable = new();
 			_visitedFiles = new();
+			_stringTable = new(128);
 		}
 
 		private NovelerVisitor(Optional<FileInfo> fileInfo,
@@ -38,7 +41,8 @@ namespace Noveler.Compiler
 							   Dictionary<string, object> functionTable,
 							   Dictionary<string, object> typeTable,
 							   Dictionary<string, object> stubTable,
-							   HashSet<string> visitedFiles)
+							   HashSet<string> visitedFiles,
+							   List<string> stringTable)
 		{
 			_fileInfo = fileInfo;
 			_symbolTable = symbolTable;
@@ -46,14 +50,21 @@ namespace Noveler.Compiler
 			_typeTable = typeTable;
 			_stubTable = stubTable;
 			_visitedFiles = visitedFiles;
+			_stringTable = stringTable;
 		}
 
 		public IReadOnlyDictionary<string, object> SymbolTable => _symbolTable;
 		public IReadOnlyDictionary<string, object> FunctionTable => _functionTable;
 		public IReadOnlyDictionary<string, object> TypeTable => _typeTable;
 		public IReadOnlyDictionary<string, object> StubTable => _stubTable;
+		public IReadOnlyList<string> StringTable => _stringTable;
 
-		public override object VisitImport_statement(NovelerParser.Import_statementContext context)
+		/// <summary>
+		/// Visits the statements importing additional files.
+		/// </summary>
+		/// <param name="context"> The parse tree.</param>
+		/// <returns> Since this does not participate in building the story tree, null is returned.</returns>
+		public override StorySyntaxTree? VisitImport_statement(NovelerParser.Import_statementContext context)
 		{
 			var importedFile = context.String_Literal().GetText()[1..^1];
 
@@ -98,12 +109,30 @@ namespace Noveler.Compiler
 					functionTable: _functionTable,
 					typeTable: _typeTable,
 					stubTable: _stubTable,
-					visitedFiles: _visitedFiles);
+					visitedFiles: _visitedFiles,
+					stringTable: _stringTable);
 
 				visitor.Visit(context);
 			}
 
 			return default;
 		}
+	}
+
+
+	// TODO: implement and move to separate files
+	internal abstract class SyntaxTree
+	{
+
+	}
+
+	internal sealed class StorySyntaxTree : SyntaxTree
+	{
+
+	}
+
+	internal sealed class FunctionSyntaxTree : SyntaxTree
+	{
+
 	}
 }
