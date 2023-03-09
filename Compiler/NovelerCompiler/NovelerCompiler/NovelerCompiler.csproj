@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<RootNamespace>Noveler.Compiler</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Antlr4.Runtime.Standard" Version="4.12.0" />
+		<PackageReference Include="Antlr4BuildTasks" Version="12.2.0" PrivateAssets="all" />
+	</ItemGroup>
+
+	<!-- Antlr grammar files-->
+	<ItemGroup>
+		<Antlr4 Include="Grammar/NovelerLexer.g4" />
+		<Antlr4 Include="Grammar/NovelerParser.g4">
+			<Listener>false</Listener>
+			<Visitor>true</Visitor>
+			<Package>Noveler.Compiler.Grammar</Package>
+			<Error>true</Error>
+		</Antlr4>
+	</ItemGroup>
+
+</Project>

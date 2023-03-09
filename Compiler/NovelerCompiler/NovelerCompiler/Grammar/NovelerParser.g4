@@ -5,6 +5,14 @@ story
     : import_statement* story_segment+
     ;
 
+imported_file
+    : import_statement* imported_content+
+    ;
+
+imported_content
+    : PLUS
+    ;
+
 import_statement
     : EMBED_COMMAND IMPORT String_Literal New_Line
     ;
@@ -210,13 +218,13 @@ assignment
     ;
 
 unary_expression
-    : primary_expression
-    | PLUS unary_expression
-    | MINUS unary_expression
-    | CONDITIONAL_NOT unary_expression
-    | BITWISE_NOT unary_expression
-    | pre_increment_expression
-    | pre_decrement_expression
+    : primary_expression                    
+    | PLUS unary_expression                 
+    | MINUS unary_expression                
+    | CONDITIONAL_NOT unary_expression      
+    | BITWISE_NOT unary_expression          
+    | pre_increment_expression              
+    | pre_decrement_expression              
     ;
 
 pre_increment_expression
