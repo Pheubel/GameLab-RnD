@@ -10,11 +10,15 @@
 	<ItemGroup>
 		<PackageReference Include="Antlr4.Runtime.Standard" Version="4.12.0" />
 		<PackageReference Include="Antlr4BuildTasks" Version="12.2.0" PrivateAssets="all" />
+		<PackageReference Include="OneOf" Version="3.0.223" />
+		<PackageReference Include="OneOf.SourceGenerator" Version="3.0.223" />
 	</ItemGroup>
 
 	<!-- Antlr grammar files-->
 	<ItemGroup>
-		<Antlr4 Include="Grammar/NovelerLexer.g4" />
+		<Antlr4 Include="Grammar/NovelerLexer.g4">
+			<Package>Noveler.Compiler.Grammar</Package>
+		</Antlr4>
 		<Antlr4 Include="Grammar/NovelerParser.g4">
 			<Listener>false</Listener>
 			<Visitor>true</Visitor>
