@@ -1,5 +1,6 @@
 ﻿using Antlr4.Runtime;
 using Noveler.Compiler.Grammar;
+using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,13 @@ namespace Noveler.Compiler
 {
 	public static class Compiler
 	{
-		public static CompileResult Compile(Stream stream)
+		public static CompileResult Compile(FileInfo fileInfo)
+		{
+			using var fs = fileInfo.OpenRead();
+			return Compile(fs, fileInfo);
+		}
+
+		public static CompileResult Compile(Stream stream, Optional<FileInfo> fileInfo = default)
 		{
 			// Set up antlr
 			AntlrInputStream inputStream = new AntlrInputStream(stream);
@@ -21,7 +28,7 @@ namespace Noveler.Compiler
 			NovelerParser.StoryContext context = novelerParser.story();
 
 			// create syntax tree
-			NovelerVisitor visitor = new NovelerVisitor();
+			NovelerVisitor visitor = new NovelerVisitor(fileInfo);
 			visitor.Visit(context);
 
 			// TODO: transformations

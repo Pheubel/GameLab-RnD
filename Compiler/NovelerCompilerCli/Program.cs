@@ -78,12 +78,8 @@ static Task<ReturnCode> HandleArguments(FileInfo? inputFile, FileInfo? outputFil
 		return Task.FromResult(ReturnCode.MissingInput);
 	}
 
-
-	CompileResult result;
-	using (var fileStream = File.OpenRead(inputFile.FullName))
-	{
-		result = Compiler.Compile(fileStream);
-	}
+	// start the compilation process
+	CompileResult result = Compiler.Compile(inputFile);
 
 	if (!result.IsSucessful)
 		return Task.FromResult(ReturnCode.CompilerError);
