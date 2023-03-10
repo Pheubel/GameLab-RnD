@@ -131,6 +131,31 @@ variable_initializer
     : expression
     ;
 
+method_declaration
+    : method_header method_body
+    ;
+
+method_header
+    : identifier OPEN_BRACKET parameter_list? CLOSE_BRACKET SEMI_COLON return_type
+    ;
+
+parameter_list
+    : parameter (COMMA parameter)*
+    ;
+
+parameter
+    : identifier COLON type
+    ;
+
+method_body
+    : code_block
+    ;
+
+return_type
+    : type
+    | NOTHING
+    ;
+
 booleanExpression
     : expression
     ;
@@ -426,4 +451,5 @@ keywords
     | IMPORT
     | CODE
     | CHOICE
+    | NOTHING
     ;

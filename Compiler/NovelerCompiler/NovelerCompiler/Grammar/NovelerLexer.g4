@@ -28,6 +28,8 @@ WHOLE: 'whole';
 NUMBER: 'number';
 BOOLEAN: 'boolean';
 
+NOTHING: 'nothing';
+
 TRUE: 'true';
 FALSE: 'false';
 
