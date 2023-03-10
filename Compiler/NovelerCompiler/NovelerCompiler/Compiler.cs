@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Noveler.Compiler
 {
@@ -27,9 +26,13 @@ namespace Noveler.Compiler
 			NovelerParser novelerParser = new NovelerParser(commonTokenStream);
 			NovelerParser.StoryContext context = novelerParser.story();
 
-			// create syntax tree
-			NovelerVisitor visitor = new NovelerVisitor(fileInfo);
-			visitor.Visit(context);
+			// first pass: plunge imports and create symbol table
+			NovelerFirstPassVisitor firstPassVisitor = new(fileInfo);
+			using FirstPassResult firstPassResult = firstPassVisitor.VisitStory(context);
+
+			// second pass:
+			NovelerSecondPassVisitor secondPassVisitor = new(firstPassResult);
+			SecondPassResult secondPassResult = secondPassVisitor.VisitStory(context);
 
 			// TODO: transformations
 
