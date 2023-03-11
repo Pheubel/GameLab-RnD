@@ -5,8 +5,8 @@
             "name": "Debug ANTLR4 grammar",
             "type": "antlr-debug",
             "request": "launch",
-            "input": "Compiler/Testing/HelloWorld.nvl",
-            "grammar": "Compiler/NovelerParser.g4",
+            "input": "Compiler/Samples/SimpleConversation.nvl",
+            "grammar": "Compiler/NovelerCompiler/NovelerCompiler/Grammar/NovelerParser.g4",
             "startRule": "story",
             "printParseTree": true,
             "visualParseTree": true
