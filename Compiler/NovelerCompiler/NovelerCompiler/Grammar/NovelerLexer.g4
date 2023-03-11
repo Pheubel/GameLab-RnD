@@ -20,6 +20,9 @@ IMPORT: 'import';
 CODE: 'code';
 CHOICE: 'choice';
 
+FUNCTION: 'function';
+RETURN: 'return';
+
 UNSIGNED: 'unsigned';
 TINY: 'tiny';
 SMALL: 'small';
@@ -29,6 +32,7 @@ NUMBER: 'number';
 BOOLEAN: 'boolean';
 
 NOTHING: 'nothing';
+
 
 TRUE: 'true';
 FALSE: 'false';

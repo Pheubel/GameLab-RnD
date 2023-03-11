@@ -19,13 +19,21 @@ import_statement
 
 story_segment
     : embed_statement
-    | text_line
+    | text_segment
     | empty_segment
     ;
 
 // TODO: find a better way to do this
+text_segment
+    : continued_text_line* text_line
+    ;
+
+continued_text_line
+    : text_line_segment+ PIPE New_Line
+    ;
+
 text_line
-    : (text_line_segment+ PIPE New_Line)* text_line_segment+ New_Line
+    : text_line_segment+ New_Line
     ;
 
 text_line_segment
@@ -41,7 +49,7 @@ escaped_text_segment_character
     ;
 
 interpolated_value
-    : OPEN_CURLY Simple_Identifier CLOSE_CURLY
+    : OPEN_CURLY expression CLOSE_CURLY
     ;
 
 empty_segment
@@ -102,12 +110,19 @@ embedded_code_block
     ;
 
 code_block
-    : OPEN_CURLY statement* CLOSE_CURLY
+    : New_Line* OPEN_CURLY  statement* CLOSE_CURLY
     ;
 
 statement
     : empty_statement
+    | variable_declaration
+    | method_declaration
+    | return_statement
     | (expression SEMI_COLON)* expression SEMI_COLON?
+    ;
+
+return_statement
+    : RETURN expression? SEMI_COLON?
     ;
 
 empty_statement
@@ -119,12 +134,17 @@ identifier
     : Simple_Identifier
     ;
 
+variable_declaration
+    : variable_declare
+    | variable_declare_assign
+    ;
+
 variable_declare
     : Simple_Identifier COLON type
     ;
 
 variable_declare_assign
-    : variable_declare EQUALS 
+    : variable_declare EQUALS expression
     ;
 
 variable_initializer
@@ -136,7 +156,7 @@ method_declaration
     ;
 
 method_header
-    : identifier OPEN_BRACKET parameter_list? CLOSE_BRACKET SEMI_COLON return_type
+    : FUNCTION identifier OPEN_BRACKET parameter_list? CLOSE_BRACKET COLON return_type
     ;
 
 parameter_list
@@ -452,4 +472,6 @@ keywords
     | CODE
     | CHOICE
     | NOTHING
+    | FUNCTION
+    | RETURN
     ;
