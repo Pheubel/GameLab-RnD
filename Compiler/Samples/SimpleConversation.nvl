@@ -4,15 +4,24 @@
 
 
 @characterHappiness : number // declares a variable
+@declareImmediate : whole number = 10 // you can also declare a variable right away
 
 // create a code block to mutate variables
 @code {
     characterHappiness = 6
+
+    function Random(a : number, b : number, c : number) : number
+    {
+        return 5
+    }
 }
 
 // raw text will be displayed into the story when called for
 Hello you, this is an example of embedding variables into text
 my big happiness value is\: {characterHappiness}
+
+// you can even execute functions in text embedding
+let me tell you a random number, {characterHappiness}.
 
 // you can also glue multiple lines into one big sentence.
 this |

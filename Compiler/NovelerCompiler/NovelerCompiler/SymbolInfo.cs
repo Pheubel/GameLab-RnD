@@ -1,26 +1,18 @@
-﻿using SymbolDefinition = OneOf.OneOf<OneOf.Types.Unknown>;
+﻿using Noveler.Compiler.SymbolTypes;
+using OneOf;
+using OneOf.Types;
 
 namespace Noveler.Compiler
 {
 	internal sealed class SymbolInfo
 	{
-		public SymbolInfo()
+		public string Name { get; }
+		public OneOf<UnknownInfo, StructureInfo, FieldInfo, FunctionInfo> Type { get; set; }
+		public string? Value { get; set; }
+
+		public SymbolInfo(string name)
 		{
-			Definition = new OneOf.Types.Unknown();
-		}
-
-		public SymbolDefinition Definition { get; private set; }
-		public bool IsDefined => !Definition.IsT0;
-
-		public bool SetDefinition(SymbolDefinition definition)
-		{
-			if (definition.IsT0)
-				throw new ArgumentException("Cannot set definition to unknown.", nameof(definition));
-
-			if (Definition.IsT0)
-				return false;
-
-			return true;
+			Name = name;
 		}
 	}
 }

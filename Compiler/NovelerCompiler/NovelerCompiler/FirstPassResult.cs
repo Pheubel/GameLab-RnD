@@ -1,5 +1,6 @@
 ﻿using Antlr4.Runtime;
 using Noveler.Compiler.Grammar;
+using Noveler.Compiler.SymbolTypes;
 using OneOf;
 using OneOf.Types;
 using System.Runtime.InteropServices;
@@ -9,13 +10,16 @@ namespace Noveler.Compiler
 	internal sealed class FirstPassResult : IDisposable
 	{
 		const int DefaultStartSizeImport = 16;
-		const int DefaultStartSizeSymbleTable = 128;
+		const int DefaultStartSizeStringTable = 128;
 
-		public Dictionary<string, SymbolInfo> SymbolTable { get; } = new(DefaultStartSizeSymbleTable);
+		public SymbolTable SymbolTable { get; } = new();
 		public IReadOnlyDictionary<string, NovelerParser.Imported_fileContext> VisitedFiles => _visitedFiles;
+		public List<string> StringTable { get; } = new(DefaultStartSizeStringTable);
+		public Dictionary<string, FunctionInfo> FunctionTable { get; } = new(128);
 
 		private readonly Dictionary<string, NovelerParser.Imported_fileContext> _visitedFiles = new(DefaultStartSizeImport);
 		private readonly List<FileStream> _openStreams = new(DefaultStartSizeImport);
+
 
 		public OneOf<NovelerParser.Imported_fileContext, Error<int>> AddOrGetImport(FileInfo importFile, out bool alreadyExists)
 		{

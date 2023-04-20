@@ -27,7 +27,7 @@ namespace Noveler.Compiler
 			NovelerParser.StoryContext context = novelerParser.story();
 
 			// first pass: plunge imports and create symbol table
-			NovelerFirstPassVisitor firstPassVisitor = new(fileInfo);
+			NovelerFirstPassVisitorTakeOne firstPassVisitor = new(fileInfo);
 			using FirstPassResult firstPassResult = firstPassVisitor.VisitStory(context);
 
 			// second pass:
