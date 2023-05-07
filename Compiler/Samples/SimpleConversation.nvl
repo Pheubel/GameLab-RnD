@@ -35,8 +35,11 @@ How you feeling?
 @if (characterHappiness > 5) {
     super
 }
-@else {
+@else if (characterHappiness > 3) {
     meh
+}
+@else {
+    bad
 }
 
 // stories can have branching with choices

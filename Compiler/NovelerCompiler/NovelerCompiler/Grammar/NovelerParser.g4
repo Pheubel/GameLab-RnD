@@ -69,17 +69,17 @@ embedded_variable_declaration
     ;
 
 embedded_if_statement
-    : EMBED_COMMAND if_statement_if_segment OPEN_CURLY story_segment* CLOSE_CURLY
-    | embedded_if_statement New_Line+ (EMBED_COMMAND if_statement_else_segment OPEN_CURLY story_segment* CLOSE_CURLY)+ New_Line
+    : EMBED_COMMAND if_statement_if_segment OPEN_CURLY story_segment* CLOSE_CURLY #embedded_if
+    //| embedded_if_statement New_Line+ EMBED_COMMAND ELSE OPEN_CURLY story_segment* CLOSE_CURLY #embedded_if_else
+    | embedded_if_statement New_Line+ (embedded_else_if_statement New_Line+)* EMBED_COMMAND ELSE OPEN_CURLY story_segment* CLOSE_CURLY New_Line #embedded_if_else
     ;
 
 if_statement_if_segment
     : IF OPEN_BRACKET booleanExpression CLOSE_BRACKET
     ;
 
-if_statement_else_segment
-    : ELSE
-    | ELSE if_statement_if_segment
+embedded_else_if_statement
+    : EMBED_COMMAND ELSE if_statement_if_segment OPEN_CURLY story_segment* CLOSE_CURLY
     ;
 
 choice_block

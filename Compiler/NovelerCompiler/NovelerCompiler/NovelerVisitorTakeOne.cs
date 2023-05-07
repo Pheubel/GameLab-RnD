@@ -13,11 +13,12 @@ using Unit = System.IntPtr;
 
 namespace Noveler.Compiler
 {
-	internal sealed class NovelerFirstPassVisitorTakeOne : NovelerParserBaseVisitor<FirstPassResult?>
+	internal sealed class NovelerVisitorTakeOne : NovelerParserBaseVisitor<FirstPassResult?>
 	{
+
 		private readonly Optional<FileInfo> _fileInfo;
 
-		public NovelerFirstPassVisitorTakeOne(Optional<FileInfo> fileInfo)
+		public NovelerVisitorTakeOne(Optional<FileInfo> fileInfo)
 		{
 			_fileInfo = fileInfo;
 		}
@@ -122,7 +123,6 @@ namespace Noveler.Compiler
 
 				var functionInfo = functionSymbol.Type.AsT3;
 
-				functionInfo.
 
 				return default;
 			}
@@ -206,7 +206,7 @@ namespace Noveler.Compiler
 
 					if (!symbolEntry.HasValue)
 					{
-						parameterList[i].TypeInfo = new UnknownInfo(parameterTypeName);
+						parameterList[i].TypeInfo = new StructureInfoReference(parameterTypeName);
 					}
 					else
 					{

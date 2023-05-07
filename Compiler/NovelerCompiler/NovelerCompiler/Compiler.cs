@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Noveler.Compiler.CodeDomainObjectModel;
 
 namespace Noveler.Compiler
 {
@@ -26,13 +27,18 @@ namespace Noveler.Compiler
 			NovelerParser novelerParser = new NovelerParser(commonTokenStream);
 			NovelerParser.StoryContext context = novelerParser.story();
 
-			// first pass: plunge imports and create symbol table
-			NovelerFirstPassVisitorTakeOne firstPassVisitor = new(fileInfo);
-			using FirstPassResult firstPassResult = firstPassVisitor.VisitStory(context);
+			//// first pass: plunge imports and create symbol table
+			//NovelerVisitorTakeOne firstPassVisitor = new(fileInfo);
+			//using FirstPassResult firstPassResult = firstPassVisitor.VisitStory(context);
 
-			// second pass:
-			NovelerSecondPassVisitor secondPassVisitor = new(firstPassResult);
-			SecondPassResult secondPassResult = secondPassVisitor.VisitStory(context);
+			//// second pass:
+			//NovelerSecondPassVisitor secondPassVisitor = new(firstPassResult);
+			//SecondPassResult secondPassResult = secondPassVisitor.VisitStory(context);
+
+			NovelerVisitor visitor = new NovelerVisitor(fileInfo.HasValue ? fileInfo.Value.FullName : string.Empty);
+			var compilationUnits = visitor.VisitStory(context) as Dictionary<string, CompilationUnit>;
+
+			;
 
 			// TODO: transformations
 
