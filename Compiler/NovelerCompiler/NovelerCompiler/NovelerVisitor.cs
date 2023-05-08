@@ -3,18 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.CodeDom;
-using System.CodeDom.Compiler;
 using Antlr4.Runtime.Misc;
 using Noveler.Compiler.CodeDomainObjectModel;
 using Antlr4.Runtime;
 using static Noveler.Compiler.Grammar.NovelerParser;
 using System.Runtime.InteropServices;
-using Microsoft.CodeAnalysis.Text;
 using Noveler.Compiler.CodeDomainObjectModel.Expressions;
 using Noveler.Compiler.CodeDomainObjectModel.Statements;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Noveler.Compiler
 {
@@ -78,15 +73,7 @@ namespace Noveler.Compiler
 						break;
 
 					case Embed_statementContext embedStatementContext:
-
-						//: embedded_variable_declaration
-						//| embedded_code_block
-						//| embedded_if_statement
-						//| choice_block
-						//;
-
 						HandleEmbeddedStatement(embedStatementContext, statements);
-
 						break;
 
 					// empty segments can be skipped
@@ -96,10 +83,6 @@ namespace Noveler.Compiler
 					default:
 						throw new Exception();
 				}
-
-				//: embed_statement
-				//| text_segment
-				//| empty_segment
 			}
 		}
 
@@ -117,8 +100,8 @@ namespace Noveler.Compiler
 					statements.Add((Statement)Visit(embeddedIfStatement));
 					break;
 
-				case Choice_blockContext choiceBlockStatement:
-					// TODO
+				case Choice_blockContext choiceBlockContext:
+					statements.Add((Statement)VisitChoice_block(choiceBlockContext));
 					break;
 
 				case Embedded_code_blockContext embedCodeBlockContext:
@@ -153,6 +136,91 @@ namespace Noveler.Compiler
 			}
 		}
 
+		public override object VisitChoice_block([NotNull] Choice_blockContext context)
+		{
+			var choiceBlockStatement = new EmbeddedChoiceBlockStatement();
+
+			foreach (var choiceContext in context.choice_block_choice())
+			{
+				var choice = VisitChoice_block_choice(choiceContext);
+
+				if (choice is EmbeddedChoiceOption option)
+				{
+					choiceBlockStatement.ChoiceOptions.Add(option);
+				}
+				else if (choice is EmbeddedDefaultChoiceOption defaultOption)
+				{
+					if (choiceBlockStatement.DefaultOption != null)
+					{
+						//TODO: properly handle this.
+						throw new Exception("A choice block can not have more than 1 default choice.");
+					}
+
+					choiceBlockStatement.DefaultOption = defaultOption;
+				}
+				else
+				{
+					throw new Exception($"Unhandled choice option: rule {choiceContext.RuleIndex}");
+				}
+			}
+
+			return choiceBlockStatement;
+		}
+
+		public override object VisitChoice_block_choice([NotNull] Choice_block_choiceContext context)
+		{
+			var choiceContext = context.GetChild<RuleContext>(0);
+
+			switch (choiceContext.Payload)
+			{
+				case Standard_choiceContext:
+				case Default_choiceContext:
+					return Visit(choiceContext.Payload);
+
+				default:
+					throw new Exception($"Unhandled choice block choice: rule {choiceContext.RuleIndex}");
+			}
+		}
+
+		public override object VisitStandard_choice([NotNull] Standard_choiceContext context)
+		{
+			var expressions = new ExpressionCollection();
+			StringBuilder sb = new();
+
+			HandleTextSegments(context.text_line_segment(), sb, expressions);
+
+			var choiceText = new TextStatement(sb.ToString(), expressions);
+			var choiceOption = new EmbeddedChoiceOption(choiceText);
+
+			HandleStorySegments(context.choice_response().story_segment(), choiceOption.OptionStatements);
+
+			return choiceOption;
+		}
+
+		public override object VisitDefault_choice([NotNull] Default_choiceContext context)
+		{
+			var expressions = new ExpressionCollection();
+			StringBuilder sb = new();
+
+			HandleTextSegments(context.text_line_segment(), sb, expressions);
+
+			var choiceText = new TextStatement(sb.ToString(), expressions);
+			var choiceOption = new EmbeddedDefaultChoiceOption(choiceText);
+
+			HandleStorySegments(context.choice_response().story_segment(), choiceOption.OptionStatements);
+
+			return choiceOption;
+		}
+
+		public override object VisitChoice_response([NotNull] Choice_responseContext context)
+		{
+			var statements = new StatementCollection();
+
+			HandleStorySegments(context.story_segment(), statements);
+
+			return statements;
+		}
+
 		public override object VisitStatement_empty([NotNull] Statement_emptyContext context)
 		{
 			return new EmptyStatement();
@@ -179,8 +247,39 @@ namespace Noveler.Compiler
 			var function = (FunctionDeclaration)VisitMethod_header(context.method_header());
 
 			//function.Statements
+			function.Statements.AddRange((StatementCollection)VisitMethod_body(context.method_body()));
 
 			return function;
+		}
+
+		public override object VisitMethod_body([NotNull] Method_bodyContext context)
+		{
+			StatementCollection statements = new();
+
+			HandleCodeBlock(context.code_block(), statements);
+
+			return statements;
+		}
+
+		public override object VisitStatement_expression([NotNull] Statement_expressionContext context)
+		{
+			StatementCollection statements = new();
+
+			var expressionContexts = context.expression();
+			foreach (var expressionContext in expressionContexts)
+			{
+				var expression = (Expression)VisitExpression(expressionContext);
+				var expressionStatement = new ExpressionStatement(expression);
+
+				statements.Add(expressionStatement);
+			}
+
+			return statements;
+		}
+
+		public override object VisitStatement_return([NotNull] Statement_returnContext context)
+		{
+			return VisitReturn_statement(context.return_statement());
 		}
 
 		public override object VisitMethod_header([NotNull] Method_headerContext context)

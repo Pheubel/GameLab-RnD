@@ -45,12 +45,18 @@ namespace Noveler.Compiler.CodeDomainObjectModel.Statements
 		public StatementCollection FalseStatements { get; } = new StatementCollection();
 	};
 
-	internal sealed record EmbeddedChoiceBlock : EmbeddedStatement
+	internal sealed record EmbeddedChoiceBlockStatement : EmbeddedStatement
 	{
 		public EmbeddedChoiceOptionCollection ChoiceOptions { get; } = new();
+		public EmbeddedDefaultChoiceOption? DefaultOption { get; set; }
 	};
 
 	internal sealed record EmbeddedChoiceOption(TextStatement OptionText) : EmbeddedStatement
+	{
+		public StatementCollection OptionStatements { get; } = new();
+	}
+
+	internal sealed record EmbeddedDefaultChoiceOption(TextStatement OptionText) : EmbeddedStatement
 	{
 		public StatementCollection OptionStatements { get; } = new();
 	}

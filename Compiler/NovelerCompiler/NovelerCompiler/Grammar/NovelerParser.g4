@@ -118,8 +118,7 @@ statement
     | variable_declaration #statement_variable_declaration
     | method_declaration #statement_method_declaration
     | return_statement #statement_return
-    | expression empty_statement #statement_single_expression
-    | (expression SEMI_COLON)+ expression empty_statement #statement_multiple_expressions
+    | (expression SEMI_COLON)* expression empty_statement #statement_expression
     ;
 
 return_statement
