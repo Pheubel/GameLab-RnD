@@ -114,11 +114,12 @@ code_block
     ;
 
 statement
-    : empty_statement
-    | variable_declaration
-    | method_declaration
-    | return_statement
-    | (expression SEMI_COLON)* expression SEMI_COLON?
+    : empty_statement #statement_empty
+    | variable_declaration #statement_variable_declaration
+    | method_declaration #statement_method_declaration
+    | return_statement #statement_return
+    | expression SEMI_COLON? #statement_single_expression
+    | (expression SEMI_COLON)+ expression SEMI_COLON? #statement_multiple_expressions
     ;
 
 return_statement

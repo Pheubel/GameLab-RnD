@@ -14,6 +14,7 @@ using System.Runtime.InteropServices;
 using Microsoft.CodeAnalysis.Text;
 using Noveler.Compiler.CodeDomainObjectModel.Expressions;
 using Noveler.Compiler.CodeDomainObjectModel.Statements;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Noveler.Compiler
 {
@@ -23,11 +24,11 @@ namespace Noveler.Compiler
 		{
 			SourcePath = sourcePath;
 			_nameSpaceScopeStack = new();
-
 		}
 
 		public string SourcePath { get; }
-		private Stack<NameSpace> _nameSpaceScopeStack;
+
+		private readonly Stack<NameSpace> _nameSpaceScopeStack;
 
 		/// <summary>
 		/// Visits the main entry point of a story.
@@ -121,12 +122,232 @@ namespace Noveler.Compiler
 					break;
 
 				case Embedded_code_blockContext embedCodeBlockContext:
-					// TODO
+					HandleCodeBlock(embedCodeBlockContext.code_block(), statements);
 					break;
 
 				default:
 					throw new Exception($"unexpected embedded statement: rule {embeddedStatement.RuleIndex}");
 			}
+		}
+
+		private void HandleCodeBlock(Code_blockContext codeBlockContext, StatementCollection statements)
+		{
+			var statementContexts = codeBlockContext.statement();
+
+			foreach (var statementContext in statementContexts)
+			{
+				var statement = Visit(statementContext);
+
+				if (statement is EmptyStatement)
+				{
+					continue;
+				}
+				else if (statement is StatementCollection statementCol)
+				{
+					statements.AddRange(statementCol);
+				}
+				else
+				{
+					statements.Add((Statement)statement);
+				}
+			}
+		}
+
+		public override object VisitStatement_empty([NotNull] Statement_emptyContext context)
+		{
+			return new EmptyStatement();
+		}
+
+		public override object VisitStatement_variable_declaration([NotNull] Statement_variable_declarationContext context)
+		{
+			return VisitVariable_declaration(context.variable_declaration());
+		}
+
+		public override object VisitStatement_method_declaration([NotNull] Statement_method_declarationContext context)
+		{
+			var currentNamespace = _nameSpaceScopeStack.Peek();
+
+			var function = (FunctionDeclaration)VisitMethod_declaration(context.method_declaration());
+
+			currentNamespace.Functions.Add(function);
+
+			return new EmptyStatement();
+		}
+
+		public override object VisitMethod_declaration([NotNull] Method_declarationContext context)
+		{
+			var function = (FunctionDeclaration)VisitMethod_header(context.method_header());
+
+			//function.Statements
+
+			return function;
+		}
+
+		public override object VisitMethod_header([NotNull] Method_headerContext context)
+		{
+			var function = new FunctionDeclaration(
+				context.identifier().GetText(),
+				(TypeReference)VisitReturn_type(context.return_type())
+				);
+
+
+			if (context.parameter_list() != null)
+			{
+				foreach (var parameterContext in context.parameter_list().parameter())
+				{
+					function.Parameters.Add((ParameterDeclarationExpression)VisitParameter(parameterContext));
+				}
+			}
+
+
+			return function;
+		}
+
+		public override object VisitParameter_list([NotNull] Parameter_listContext context)
+		{
+			ParameterDeclarationExpressionCollection parameters = new();
+
+			foreach (var parameterContext in context.parameter())
+			{
+				parameters.Add((ParameterDeclarationExpression)VisitParameter(parameterContext));
+			}
+
+			return parameters;
+		}
+
+		public override object VisitParameter([NotNull] ParameterContext context)
+		{
+			var parameter = new ParameterDeclarationExpression(
+				context.identifier().GetText(),
+				(TypeReference)VisitType(context.type())
+				);
+
+			return parameter;
+		}
+
+		public override object VisitReturn_type([NotNull] Return_typeContext context)
+		{
+			TypeReference typeReference;
+			if (context.NOTHING() != null)
+			{
+				typeReference = new TypeReference("nothing");
+			}
+			else
+			{
+				typeReference = (TypeReference)VisitType(context.type());
+			}
+			return typeReference;
+		}
+
+		public override object VisitType([NotNull] TypeContext context)
+		{
+			// TODO:
+			var typeContext = context.GetChild<RuleContext>(0);
+			TypeReference typeReference = typeContext switch
+			{
+				Value_typeContext valueTypeContext => (TypeReference)VisitValue_type(valueTypeContext),
+				Type_parameterContext typeParameterContext => new TypeReference(typeParameterContext.GetText()),
+				_ => throw new Exception($"Unexpected type: rule {typeContext.RuleIndex}"),
+			};
+
+			return typeReference;
+		}
+
+		public override object VisitValue_type([NotNull] Value_typeContext context)
+		{
+			return VisitNon_nullable_value_type(context.non_nullable_value_type());
+		}
+
+		public override object VisitNon_nullable_value_type([NotNull] Non_nullable_value_typeContext context)
+		{
+			return VisitStruct_type(context.struct_type());
+		}
+
+		public override object VisitStruct_type([NotNull] Struct_typeContext context)
+		{
+			var typeContext = context.GetChild<RuleContext>(0);
+			TypeReference typeReference = typeContext switch
+			{
+				Type_nameContext typeNameContext => new TypeReference(typeNameContext.GetText()),
+				Simple_typeContext simpleTypeContext => (TypeReference)VisitSimple_type(simpleTypeContext),
+				_ => throw new Exception($"Unexpected type: rule {typeContext.RuleIndex}"),
+			};
+			return typeReference;
+		}
+
+		public override object VisitSimple_type([NotNull] Simple_typeContext context)
+		{
+			if (context.BOOLEAN() != null)
+				return BuiltIns.TypeReferences.Boolean;
+
+			return VisitNumeric_type(context.numeric_type());
+		}
+
+		public override object VisitNumeric_type([NotNull] Numeric_typeContext context)
+		{
+			var typeContext = context.GetChild<RuleContext>(0);
+			TypeReference typeReference = typeContext switch
+			{
+				Integer_typeContext integerTypeContext => (TypeReference)VisitInteger_type(integerTypeContext),
+				Floating_point_typeContext floatingPointTypeContext => (TypeReference)VisitFloating_point_type(floatingPointTypeContext),
+				_ => throw new Exception($"Unexpected type: rule {typeContext.RuleIndex}"),
+			};
+			return typeReference;
+		}
+
+		public override object VisitInteger_type([NotNull] Integer_typeContext context)
+		{
+			if (context.UNSIGNED() != null)
+			{
+				if (context.TINY() != null)
+				{
+					return BuiltIns.TypeReferences.UInt8;
+				}
+				else if (context.SMALL() != null)
+				{
+					return BuiltIns.TypeReferences.UInt16;
+				}
+				else if (context.BIG() != null)
+				{
+					return BuiltIns.TypeReferences.UInt64;
+				}
+				else
+				{
+					return BuiltIns.TypeReferences.UInt32;
+				}
+			}
+			else
+			{
+				if (context.TINY() != null)
+				{
+					return BuiltIns.TypeReferences.Int8;
+				}
+				else if (context.SMALL() != null)
+				{
+					return BuiltIns.TypeReferences.Int16;
+				}
+				else if (context.BIG() != null)
+				{
+					return BuiltIns.TypeReferences.Int64;
+				}
+				else
+				{
+					return BuiltIns.TypeReferences.Int32;
+				}
+			}
+		}
+
+		public override object VisitFloating_point_type([NotNull] Floating_point_typeContext context)
+		{
+			if (context.BIG() != null)
+				return BuiltIns.TypeReferences.Float64;
+			else
+				return BuiltIns.TypeReferences.Float32;
+		}
+
+		public override object VisitEmpty_statement([NotNull] Empty_statementContext context)
+		{
+			return new EmptyStatement();
 		}
 
 		public override object VisitEmbedded_if([NotNull] Embedded_ifContext context)
@@ -164,28 +385,6 @@ namespace Noveler.Compiler
 
 			return condition;
 		}
-
-		//public override object VisitEmbedded_if_else([NotNull] Embedded_if_elseContext context)
-		//{
-		//	var condition = (ConditionStatement)Visit(context.embedded_if_statement());
-
-		//	HandleStorySegments(context.story_segment(), condition.FalseStatements);
-
-		//	return condition;
-		//}
-
-		//public override object VisitEmbedded_if_else_if([NotNull] Embedded_if_else_ifContext context)
-		//{
-		//	var condition = (ConditionStatement)Visit(context.embedded_if_statement());
-
-		//	//var  = context.if_statement_if_segment();
-
-
-		//	//var falseStatemtent = (ConditionStatement)Visit(context.embedded_if_statement());
-		//	//condition.FalseStatements.Add(falseStatemtent);
-
-		//	return condition;
-		//}
 
 		public override object VisitBooleanExpression([NotNull] BooleanExpressionContext context)
 		{
@@ -227,7 +426,7 @@ namespace Noveler.Compiler
 			if (declarationAssignmentContext != null)
 				return VisitVariable_declare_assign(declarationAssignmentContext);
 
-			throw new Exception($"Unexpected embedded variable declaration: rule {context.RuleIndex}");
+			throw new Exception($"Unexpected variable declaration: rule {context.RuleIndex}");
 		}
 
 		/// <summary>
@@ -239,7 +438,7 @@ namespace Noveler.Compiler
 		{
 			return new VariableDeclarationStatement(
 				VariableName: context.Simple_Identifier().GetText(),
-				TypeReference: new TypeReference(context.type().GetText())
+				TypeReference: (TypeReference)VisitType(context.type())
 				);
 		}
 

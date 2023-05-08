@@ -18,6 +18,8 @@ namespace Noveler.Compiler.CodeDomainObjectModel.Statements
 
 	internal sealed record VariableDeclarationAssignmentStatement(VariableDeclarationStatement VariableDeclaration, Expression InitializationExpression) : Statement;
 
+	internal sealed record EmptyStatement() : Statement;
+
 	internal abstract record EmbeddedStatement : Statement;
 
 	//internal sealed record EmbeddedVariableDeclaration(string VariableName) : EmbeddedStatement
