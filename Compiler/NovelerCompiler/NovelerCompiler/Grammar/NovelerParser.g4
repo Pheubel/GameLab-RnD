@@ -118,8 +118,8 @@ statement
     | variable_declaration #statement_variable_declaration
     | method_declaration #statement_method_declaration
     | return_statement #statement_return
-    | expression SEMI_COLON? #statement_single_expression
-    | (expression SEMI_COLON)+ expression SEMI_COLON? #statement_multiple_expressions
+    | expression empty_statement #statement_single_expression
+    | (expression SEMI_COLON)+ expression empty_statement #statement_multiple_expressions
     ;
 
 return_statement
@@ -290,7 +290,7 @@ post_decrement_expression
     ;
 
 primary_expression
-    : primary_expression_start bracket_expression* ((member_access | method_invocation | INCREMENT | DECREMENT | identifier) bracket_expression* )*
+    : primary_expression_start bracket_expression* ((member_access | method_invocation | INCREMENT | DECREMENT | PERIOD identifier) bracket_expression* )*
     ;
 
 primary_expression_start
