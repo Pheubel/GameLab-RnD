@@ -27,7 +27,6 @@ After handing out the questionnaire to my target group I found out that:
 * It is quite unanimous that type safety should be enforced.
 * Pascal style type declaration (`variable : type`) seems to be the favorite.
 
-TODO: link naar Pascal, Ink en Twine.
 
 Due to the small scope of the research I will use the data I got for the current prototype, but will be open to changes with a more in depth research.
 
