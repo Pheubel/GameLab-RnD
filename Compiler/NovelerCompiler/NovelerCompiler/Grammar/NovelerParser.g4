@@ -405,13 +405,14 @@ boolean_type
     : BOOLEAN
     ;
 
+// TODO: enable string literals when ready
 literal
     : booleanLiteral
     | Decimal_Integer_Literal
     | Hexadecimal_Integer_Literal
     | Binary_Integer_Literal
     | Real_Literal
-    | String_Literal
+    //| String_Literal
     ;
 
 booleanLiteral
