@@ -218,14 +218,14 @@ Escaped_Text_Segment_Character
     | '\\/'
     ;
 
-Integer_Literal
-    : Decimal_Integer_Literal
-    | Hexadecimal_Integer_Literal
-    | Binary_Integer_Literal
-    ;
+// Integer_Literal
+//     : Decimal_Integer_Literal
+//     | Hexadecimal_Integer_Literal
+//     | Binary_Integer_Literal
+//     ;
 
-fragment Decimal_Integer_Literal
-    : Decimal_Digit Decorated_Decimal_Digit* Integer_Type_Suffix?
+Decimal_Integer_Literal
+    : Decimal_Digit Decorated_Decimal_Digit* // Integer_Type_Suffix?
     ;
 
 fragment Decorated_Decimal_Digit
@@ -241,12 +241,12 @@ fragment Integer_Type_Suffix
       'UL' | 'Ul' | 'uL' | 'ul' | 'LU' | 'Lu' | 'lU' | 'lu'
     ;
 
-fragment Hexadecimal_Integer_Literal
-    : ('0x' | '0X') Decorated_Hex_Digit+ Integer_Type_Suffix?
+Hexadecimal_Integer_Literal
+    : ('0x' | '0X') Decorated_Hex_Digit+ // Integer_Type_Suffix?
     ;
 
-fragment Binary_Integer_Literal
-    : ('0b' | '0B') Decorated_Binary_Digit+ Integer_Type_Suffix?
+Binary_Integer_Literal
+    : ('0b' | '0B') Decorated_Binary_Digit+ // Integer_Type_Suffix?
     ;
 
 fragment Decorated_Binary_Digit
@@ -259,10 +259,10 @@ fragment Binary_Digit
 
 Real_Literal
     : Decimal_Digit Decorated_Decimal_Digit* '.'
-      Decimal_Digit Decorated_Decimal_Digit* Exponent_Part? Real_Type_Suffix?
-    | '.' Decimal_Digit Decorated_Decimal_Digit* Exponent_Part? Real_Type_Suffix?
-    | Decimal_Digit Decorated_Decimal_Digit* Exponent_Part Real_Type_Suffix?
-    | Decimal_Digit Decorated_Decimal_Digit* Real_Type_Suffix
+      Decimal_Digit Decorated_Decimal_Digit* Exponent_Part? //Real_Type_Suffix?
+    | '.' Decimal_Digit Decorated_Decimal_Digit* Exponent_Part? //Real_Type_Suffix?
+    | Decimal_Digit Decorated_Decimal_Digit* Exponent_Part //Real_Type_Suffix?
+    | Decimal_Digit Decorated_Decimal_Digit* //Real_Type_Suffix
     ;
 
 fragment Exponent_Part

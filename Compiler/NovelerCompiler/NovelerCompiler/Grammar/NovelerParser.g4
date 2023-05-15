@@ -57,7 +57,7 @@ empty_segment
     ;
 
 embed_statement
-    : embedded_variable_declaration  
+    : embedded_variable_declaration
     | embedded_code_block
     | embedded_if_statement
     | choice_block
@@ -263,13 +263,14 @@ assignment
     ;
 
 unary_expression
-    : primary_expression                    
-    | PLUS unary_expression                 
-    | MINUS unary_expression                
-    | CONDITIONAL_NOT unary_expression      
-    | BITWISE_NOT unary_expression          
-    | pre_increment_expression              
-    | pre_decrement_expression              
+    : cast_expression
+    | primary_expression
+    | PLUS unary_expression
+    | MINUS unary_expression
+    | CONDITIONAL_NOT unary_expression
+    | BITWISE_NOT unary_expression
+    | pre_increment_expression
+    | pre_decrement_expression
     ;
 
 pre_increment_expression
@@ -288,15 +289,19 @@ post_decrement_expression
     : primary_expression DECREMENT
     ;
 
+cast_expression
+    : OPEN_BRACKET type CLOSE_BRACKET unary_expression
+    ;
+
 primary_expression
-    : primary_expression_start bracket_expression* ((member_access | method_invocation | INCREMENT | DECREMENT | PERIOD identifier) bracket_expression* )*
+    : literal
+    | primary_expression_start bracket_expression* ((member_access | method_invocation | INCREMENT | DECREMENT) bracket_expression* )*
     ;
 
 primary_expression_start
-    : literal
-    | simple_name
+    : simple_name
     | parenthesized_expression
-    | member_access
+    // | member_access
     | this_access
     | object_creation_expression
     ;
@@ -369,12 +374,13 @@ argument_list
     ;
 
 argument
-    : argument_name? argument_value
+    //: argument_name? argument_value
+    : argument_value
     ;
 
-argument_name
-    : identifier COLON
-    ;
+// argument_name
+//     : identifier COLON
+//     ;
 
 argument_value
     : expression
@@ -401,7 +407,9 @@ boolean_type
 
 literal
     : booleanLiteral
-    | Integer_Literal
+    | Decimal_Integer_Literal
+    | Hexadecimal_Integer_Literal
+    | Binary_Integer_Literal
     | Real_Literal
     | String_Literal
     ;

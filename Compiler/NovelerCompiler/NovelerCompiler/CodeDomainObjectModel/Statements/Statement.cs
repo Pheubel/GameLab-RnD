@@ -4,16 +4,6 @@ namespace Noveler.Compiler.CodeDomainObjectModel.Statements
 {
 	internal abstract record Statement : DomainObject;
 
-	/// <summary>
-	/// Represents a assign statement for coopying one value to another.
-	/// </summary>
-	/// <example>a = 4</example>
-	internal sealed record AssignStatement : Statement
-	{
-		public Expression LeftSide { get; set; }
-		public Expression RightSide { get; set; }
-	};
-
 	internal sealed record VariableDeclarationStatement(string VariableName, TypeReference TypeReference) : Statement;
 
 	internal sealed record VariableDeclarationAssignmentStatement(VariableDeclarationStatement VariableDeclaration, Expression InitializationExpression) : Statement;
