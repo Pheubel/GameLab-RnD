@@ -18,5 +18,15 @@ namespace Noveler.Compiler.CodeDomainObjectModel.Statements
 		/// Determines if the text line should be treated as a format string.
 		/// </summary>
 		public bool IsFormattedLine => Expressions.Count > 0;
+
+		public override IReadOnlyList<DomainObject> GetChildren()
+		{
+			var children = new List<DomainObject>
+			{
+				Expressions
+			};
+
+			return children;
+		}
 	}
 }

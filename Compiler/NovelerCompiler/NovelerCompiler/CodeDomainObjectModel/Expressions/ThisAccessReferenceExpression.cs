@@ -6,5 +6,8 @@ using System.Threading.Tasks;
 
 namespace Noveler.Compiler.CodeDomainObjectModel.Expressions
 {
-	internal sealed record ThisAccessReferenceExpression : Expression;
+	internal sealed record ThisAccessReferenceExpression : Expression
+	{
+		public override IReadOnlyList<DomainObject> GetChildren() => Array.Empty<DomainObject>();
+	}
 }

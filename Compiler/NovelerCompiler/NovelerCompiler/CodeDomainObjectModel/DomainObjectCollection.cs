@@ -7,6 +7,8 @@ namespace Noveler.Compiler.CodeDomainObjectModel
 	{
 		private readonly List<T> _values = new();
 
+		public sealed override IReadOnlyList<DomainObject> GetChildren() => _values;
+
 		public T this[int index] { get => _values[index]; set => _values[index] = value; }
 
 		public int Count => _values.Count;

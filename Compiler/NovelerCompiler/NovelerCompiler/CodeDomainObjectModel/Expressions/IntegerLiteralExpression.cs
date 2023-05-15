@@ -100,5 +100,7 @@ namespace Noveler.Compiler.CodeDomainObjectModel.Expressions
 		{
 			return (sbyte)Value;
 		}
+
+		public override IReadOnlyList<DomainObject> GetChildren() => Array.Empty<DomainObject>();
 	}
 }

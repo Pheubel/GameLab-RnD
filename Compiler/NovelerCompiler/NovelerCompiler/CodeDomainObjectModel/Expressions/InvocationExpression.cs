@@ -10,5 +10,17 @@ namespace Noveler.Compiler.CodeDomainObjectModel.Expressions
 	/// Represents the invocation of a function.
 	/// </summary>
 	/// <example>a(b,c)</example>
-	internal sealed record InvocationExpression(Expression Source, ArgumentCollection Arguments) : Expression;
+	internal sealed record InvocationExpression(Expression Source, ArgumentCollection Arguments) : Expression
+	{
+		public override IReadOnlyList<DomainObject> GetChildren()
+		{
+			var children = new List<DomainObject>
+			{
+				Source,
+				Arguments
+			};
+
+			return children;
+		}
+	}
 }

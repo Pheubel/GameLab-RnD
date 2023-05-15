@@ -9,6 +9,6 @@ namespace Noveler.Compiler.CodeDomainObjectModel
 {
 	abstract record DomainObject()
 	{
-		public Dictionary<object, object> Data { get; } = new();
+		public abstract IReadOnlyList<DomainObject> GetChildren();
 	};
 }

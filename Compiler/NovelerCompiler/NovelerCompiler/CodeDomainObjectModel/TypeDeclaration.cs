@@ -20,5 +20,16 @@
 		/// The generic parameters of the type.
 		/// </summary>
 		public TypeParameterCollection TypeParameters { get; } = new();
-	};
+
+		public override IReadOnlyList<DomainObject> GetChildren()
+		{
+			var children = new List<DomainObject>
+			{
+				TypeMembers,
+				TypeParameters
+			};
+
+			return children;
+		}
+	}
 }

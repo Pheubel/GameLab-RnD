@@ -19,5 +19,7 @@ namespace Noveler.Compiler.CodeDomainObjectModel.Expressions
 
 		public bool Value { get; private init; }
 		public string ValueString { get; private init; }
+
+		public override IReadOnlyList<DomainObject> GetChildren() => Array.Empty<DomainObject>();
 	}
 }

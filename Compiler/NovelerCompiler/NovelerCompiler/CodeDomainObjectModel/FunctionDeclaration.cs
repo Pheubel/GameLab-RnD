@@ -2,7 +2,7 @@
 
 namespace Noveler.Compiler.CodeDomainObjectModel
 {
-    internal sealed record FunctionDeclaration(string Name, TypeReference ReturnType) : DomainObject
+	internal sealed record FunctionDeclaration(string Name, TypeReference ReturnType) : DomainObject
 	{
 		public FunctionDeclaration(string Name, string ReturnTypeName) : this(Name, new TypeReference(ReturnTypeName)) { }
 
@@ -11,5 +11,18 @@ namespace Noveler.Compiler.CodeDomainObjectModel
 		public ParameterDeclarationExpressionCollection Parameters { get; } = new ParameterDeclarationExpressionCollection();
 
 		public StatementCollection Statements { get; } = new StatementCollection();
-	};
+
+		public override IReadOnlyList<DomainObject> GetChildren()
+		{
+			var children = new List<DomainObject>
+			{
+				ReturnType,
+				GenericTypeParameters,
+				Parameters ,
+				Statements
+			};
+
+			return children;
+		}
+	}
 }

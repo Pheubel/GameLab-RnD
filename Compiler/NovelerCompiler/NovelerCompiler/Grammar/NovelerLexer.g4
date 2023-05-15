@@ -33,6 +33,7 @@ BOOLEAN: 'boolean';
 
 NOTHING: 'nothing';
 
+EXTERN: 'extern';
 
 TRUE: 'true';
 FALSE: 'false';

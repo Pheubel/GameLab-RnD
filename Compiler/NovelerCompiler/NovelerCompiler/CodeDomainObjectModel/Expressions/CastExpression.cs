@@ -12,5 +12,17 @@ namespace Noveler.Compiler.CodeDomainObjectModel.Expressions
 	/// <param name="TypeReference"> The type to cast to.</param>
 	/// <param name="ValueExpression"> The</param>
 	/// <example>(float)a</example>
-	internal sealed record CastExpression(TypeReference TypeReference, Expression ValueExpression) : Expression;
+	internal sealed record CastExpression(TypeReference TypeReference, Expression ValueExpression) : Expression
+	{
+		public override IReadOnlyList<DomainObject> GetChildren()
+		{
+			var children = new List<DomainObject>
+			{
+				TypeReference,
+				ValueExpression
+			};
+
+			return children;
+		}
+	}
 }

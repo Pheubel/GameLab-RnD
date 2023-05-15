@@ -9,5 +9,16 @@
 	internal sealed record ArrayCreationExpression(TypeReference ArrayType, Expression SizeExpression) : Expression
 	{
 		public ArrayCreationExpression(string ArrayTypeName, Expression SizeExpression) : this(new TypeReference(ArrayTypeName), SizeExpression) { }
-	};
+
+		public override IReadOnlyList<DomainObject> GetChildren()
+		{
+			var children = new List<DomainObject>
+			{
+				ArrayType,
+				SizeExpression
+			};
+
+			return children;
+		}
+	}
 }

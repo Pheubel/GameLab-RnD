@@ -17,5 +17,17 @@ namespace Noveler.Compiler.CodeDomainObjectModel.Statements
 		/// The statements that get executed when the condition is true.
 		/// </summary>
 		public StatementCollection FalseStatements { get; } = new StatementCollection();
+
+		public override IReadOnlyList<DomainObject> GetChildren()
+		{
+			var children = new List<DomainObject>
+			{
+				Condition,
+				TrueStatements,
+				FalseStatements
+			};
+
+			return children;
+		}
 	}
 }

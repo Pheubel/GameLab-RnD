@@ -13,5 +13,15 @@
 		/// <param name="FieldName">The field's name.</param>
 		/// <param name="FieldTypeName"> The field's type name.</param>
 		public TypeMemberField(string FieldName, string FieldTypeName) : this(FieldName, new TypeReference(FieldTypeName)) { }
-	};
+
+		public override IReadOnlyList<DomainObject> GetChildren()
+		{
+			var children = new List<DomainObject>
+			{
+				FieldType
+			};
+
+			return children;
+		}
+	}
 }

@@ -1,55 +1,7 @@
-﻿using Noveler.Compiler.CodeDomainObjectModel.Expressions;
-
-namespace Noveler.Compiler.CodeDomainObjectModel.Statements
+﻿namespace Noveler.Compiler.CodeDomainObjectModel.Statements
 {
+	/// <summary>
+	/// Represents a statement that can be executed.
+	/// </summary>
 	internal abstract record Statement : DomainObject;
-
-	internal sealed record VariableDeclarationStatement(string VariableName, TypeReference TypeReference) : Statement;
-
-	internal sealed record VariableDeclarationAssignmentStatement(VariableDeclarationStatement VariableDeclaration, Expression InitializationExpression) : Statement;
-
-	internal sealed record EmptyStatement() : Statement;
-
-	internal abstract record EmbeddedStatement : Statement;
-
-	//internal sealed record EmbeddedVariableDeclaration(string VariableName) : EmbeddedStatement
-	//{
-	//	public Expression? InitializationExpression { get; set; }
-	//};
-
-	internal sealed record EmbeddedCodeBlockStatement : EmbeddedStatement
-	{
-		public StatementCollection Statements { get; } = new();
-	};
-
-	internal sealed record EmbeddedConditionalStatement(Expression Condition) : EmbeddedStatement
-	{
-		/// <summary>
-		/// The statements that get executed when the condition is true.
-		/// </summary>
-		public StatementCollection TrueStatements { get; } = new StatementCollection();
-
-		/// <summary>
-		/// The statements that get executed when the condition is true.
-		/// </summary>
-		public StatementCollection FalseStatements { get; } = new StatementCollection();
-	};
-
-	internal sealed record EmbeddedChoiceBlockStatement : EmbeddedStatement
-	{
-		public EmbeddedChoiceOptionCollection ChoiceOptions { get; } = new();
-		public EmbeddedDefaultChoiceOption? DefaultOption { get; set; }
-	};
-
-	internal sealed record EmbeddedChoiceOption(TextStatement OptionText) : EmbeddedStatement
-	{
-		public StatementCollection OptionStatements { get; } = new();
-	}
-
-	internal sealed record EmbeddedDefaultChoiceOption(TextStatement OptionText) : EmbeddedStatement
-	{
-		public StatementCollection OptionStatements { get; } = new();
-	}
-
-	internal sealed record EmbeddedChoiceOptionCollection : DomainObjectCollection<EmbeddedChoiceOption>;
 }

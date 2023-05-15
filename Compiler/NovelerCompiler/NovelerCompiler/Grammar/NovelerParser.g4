@@ -482,4 +482,5 @@ keywords
     | NOTHING
     | FUNCTION
     | RETURN
+    | EXTERN
     ;

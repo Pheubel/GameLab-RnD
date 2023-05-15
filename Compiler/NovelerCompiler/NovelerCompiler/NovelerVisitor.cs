@@ -24,6 +24,7 @@ namespace Noveler.Compiler
 
 		public string SourcePath { get; }
 
+
 		private readonly Stack<NameSpace> _nameSpaceScopeStack;
 
 		/// <summary>
@@ -40,7 +41,9 @@ namespace Noveler.Compiler
 				throw new Exception("namespace scope stack is leaking, this is a bug.");
 			}
 
-			_nameSpaceScopeStack.Push(NameSpace.CreateGlobalNamespaceInstance());
+			var globalNamespace = NameSpace.CreateGlobalNamespaceInstance();
+			_nameSpaceScopeStack.Push(globalNamespace);
+			mainCompileUnit.NameSpaces.Add(globalNamespace);
 
 			Dictionary<string, CompilationUnit> units = new()
 			{
@@ -52,8 +55,10 @@ namespace Noveler.Compiler
 
 			var segments = context.story_segment();
 
-			StatementCollection statements = new();
-			HandleStorySegments(segments, statements);
+			var mainStoryTread = new StoryThreadDeclaration("__main__");
+			HandleStorySegments(segments, mainStoryTread.Statements);
+
+			mainCompileUnit.Threads.Add(mainStoryTread);
 
 			return units;
 		}
@@ -606,13 +611,7 @@ namespace Noveler.Compiler
 				}
 				else if (choice is EmbeddedDefaultChoiceOption defaultOption)
 				{
-					if (choiceBlockStatement.DefaultOption != null)
-					{
-						//TODO: properly handle this.
-						throw new Exception("A choice block can not have more than 1 default choice.");
-					}
-
-					choiceBlockStatement.DefaultOption = defaultOption;
+					choiceBlockStatement.DefaultOption.Add(defaultOption);
 				}
 				else
 				{
@@ -1119,6 +1118,10 @@ namespace Noveler.Compiler
 		/// <param name="units"> The collection of compilation units gathered in the compilation process.</param>
 		private void HandleImportStatements(Import_statementContext[] imports, Dictionary<string, CompilationUnit> units)
 		{
+			//TODO: fully implement imported files
+			if (imports.Length > 0)
+				throw new NotImplementedException("Importing other files is currently not supported");
+
 			// TODO: see if this can be done in parallel to speed things up
 
 			foreach (var import in imports)

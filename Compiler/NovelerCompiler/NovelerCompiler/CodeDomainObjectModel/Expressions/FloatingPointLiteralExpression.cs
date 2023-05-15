@@ -20,5 +20,7 @@
 
 		public double AsDouble() => Value;
 		public float AsFloat() => (float)Value;
+
+		public override IReadOnlyList<DomainObject> GetChildren() => Array.Empty<DomainObject>();
 	}
 }

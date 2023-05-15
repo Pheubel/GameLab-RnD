@@ -12,5 +12,17 @@ namespace Noveler.Compiler.CodeDomainObjectModel.Expressions
 	/// <param name="ObjectType"></param>
 	/// <param name="Arguments"></param>
 	/// <example>type(a,b)</example>
-	internal record ObjectCreationExpression(TypeReference ObjectType, ArgumentCollection Arguments) : Expression;
+	internal record ObjectCreationExpression(TypeReference ObjectType, ArgumentCollection Arguments) : Expression
+	{
+		public override IReadOnlyList<DomainObject> GetChildren()
+		{
+			var children = new List<DomainObject>
+			{
+				ObjectType,
+				Arguments
+			};
+
+			return children;
+		}
+	}
 }

@@ -12,5 +12,18 @@ namespace Noveler.Compiler.CodeDomainObjectModel.Expressions
 	/// <param name="Condition"> The condition expression to be tested for true or false.</param>
 	/// <param name="TrueExpression"> The expression to return if the condition was true.</param>
 	/// <param name="FalseExpression"> The expression to return if the condition was false.</param>
-	internal record TernaryExpression(Expression Condition, Expression TrueExpression, Expression FalseExpression) : Expression;
+	internal record TernaryExpression(Expression Condition, Expression TrueExpression, Expression FalseExpression) : Expression
+	{
+		public override IReadOnlyList<DomainObject> GetChildren()
+		{
+			var children = new List<DomainObject>
+			{
+				Condition,
+				TrueExpression,
+				FalseExpression
+			};
+
+			return children;
+		}
+	}
 }

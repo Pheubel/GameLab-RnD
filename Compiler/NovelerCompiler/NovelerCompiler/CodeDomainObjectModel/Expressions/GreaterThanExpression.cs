@@ -8,6 +8,17 @@
 	/// <example>a <![CDATA[>]]> b</example>
 	internal sealed record GreaterThanExpression(Expression LeftHandExpression, Expression RightHandExpression) : Expression
 	{
+		public override IReadOnlyList<DomainObject> GetChildren()
+		{
+			var children = new List<DomainObject>
+			{
+				LeftHandExpression,
+				RightHandExpression
+			};
+
+			return children;
+		}
+
 		/// <summary>
 		/// Inverts the expression to be a less than expression.
 		/// </summary>
@@ -17,7 +28,6 @@
 		{
 			return new LessThanExpression(RightHandExpression, LeftHandExpression);
 		}
-	};
-
+	}
 
 }

@@ -3,7 +3,7 @@
 namespace Noveler.Compiler.CodeDomainObjectModel
 {
 	/// <summary>
-	/// 
+	/// Represents a function.
 	/// </summary>
 	/// <param name="Name"></param>
 	/// <param name="ReturnType"></param>
@@ -16,5 +16,18 @@ namespace Noveler.Compiler.CodeDomainObjectModel
 		public ParameterDeclarationExpressionCollection Parameters { get; } = new ParameterDeclarationExpressionCollection();
 
 		public StatementCollection Statements { get; } = new StatementCollection();
-	};
+
+		public override IReadOnlyList<DomainObject> GetChildren()
+		{
+			var children = new List<DomainObject>
+			{
+				GenericTypeParameters,
+				ReturnType,
+				Parameters,
+				Statements
+			};
+
+			return children;
+		}
+	}
 }

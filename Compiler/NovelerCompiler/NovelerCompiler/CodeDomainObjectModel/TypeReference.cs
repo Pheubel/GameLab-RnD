@@ -7,9 +7,8 @@
 
 		public TypeReference(string Name) : this(Name, new()) { }
 
-
-	};
-
+		public override IReadOnlyList<DomainObject> GetChildren() => Array.Empty<DomainObject>();
+	}
 	internal static class BuiltIns
 	{
 		public static class TypeReferences

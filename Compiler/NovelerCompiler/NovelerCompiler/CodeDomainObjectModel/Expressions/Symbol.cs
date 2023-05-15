@@ -6,5 +6,8 @@ using System.Threading.Tasks;
 
 namespace Noveler.Compiler.CodeDomainObjectModel.Expressions
 {
-	internal sealed record Symbol(string SymbolName) : Expression;
+	internal sealed record Symbol(string SymbolName) : Expression
+	{
+		public override IReadOnlyList<DomainObject> GetChildren() => Array.Empty<DomainObject>();
+	}
 }

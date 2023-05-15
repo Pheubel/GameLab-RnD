@@ -1,6 +1,7 @@
-@import "external_script_one.nvl" // imports functions and variables
-@import "external_script_two.nvl" // imports functions and variables
-@import "external_script_three.nvl" // imports functions and variables
+// In the current prototype importing files does not make sense yet and there are no rules for it
+// @import "external_script_one.nvl" // imports functions and variables
+// @import "external_script_two.nvl" // imports functions and variables
+// @import "external_script_three.nvl" // imports functions and variables
 
 
 @characterHappiness : number // declares a variable
