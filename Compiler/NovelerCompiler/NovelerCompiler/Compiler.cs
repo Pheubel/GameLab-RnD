@@ -33,25 +33,26 @@ namespace Noveler.Compiler
 
 			var mainCompileUnit = compilationUnits[visitor.SourcePath];
 
+			Console.WriteLine("Namespaces:");
 			foreach (var ns in mainCompileUnit.NameSpaces)
 			{
-				Console.WriteLine(ns.Name);
-				Console.WriteLine("\tTypes:");
-				foreach (var type in ns.Types)
-				{
-					Console.WriteLine($"\t\t{type.Name}:" +
-						$"\t\t\tsize: {type.}");
-				}
+				Console.WriteLine(ns);
 			}
 
-			// TODO: complete type definitions
+			Console.WriteLine("Threads:");
+            foreach (var thread in mainCompileUnit.Threads)
+            {
+                Console.WriteLine(thread);
+            }
 
-			// TODO: syntax tree formation
+            // TODO: complete type definitions
 
-			// TODO: syntax tree to opcodes
+            // TODO: syntax tree formation
 
-			// TODO: actually return compiled result
-			return CompileResult.FromSuccess(Array.Empty<byte>());
+            // TODO: syntax tree to opcodes
+
+            // TODO: actually return compiled result
+            return CompileResult.FromSuccess(Array.Empty<byte>());
 		}
 	}
 }

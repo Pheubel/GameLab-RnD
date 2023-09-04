@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Text;
 
 namespace Noveler.Compiler.CodeDomainObjectModel
 {
@@ -69,5 +70,16 @@ namespace Noveler.Compiler.CodeDomainObjectModel
 		{
 			return _values.GetEnumerator();
 		}
-	}
+
+        public override string ToString()
+        {
+			StringBuilder sb = new();
+
+			foreach (var value in _values)
+			{
+				sb.AppendLine(value.ToString());
+			}
+            return sb.ToString();
+        }
+    }
 }

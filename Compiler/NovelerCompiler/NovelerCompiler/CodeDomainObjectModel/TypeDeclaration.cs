@@ -1,10 +1,10 @@
 ﻿namespace Noveler.Compiler.CodeDomainObjectModel
 {
-	/// <summary>
-	/// A type declaration domain object conttaining information about a type's declaration.
-	/// </summary>
-	/// <param name="Name"> The name of the type being declared.</param>
-	internal sealed record TypeDeclaration(string Name) : DomainObject
+    /// <summary>
+    /// A type declaration domain object conttaining information about a type's declaration.
+    /// </summary>
+    /// <param name="Name"> The name of the type being declared.</param>
+    internal sealed record TypeDeclaration(string Name) : DomainObject
 	{
 		/// <summary>
 		/// The type dictating how this type should be handled at runtime.
