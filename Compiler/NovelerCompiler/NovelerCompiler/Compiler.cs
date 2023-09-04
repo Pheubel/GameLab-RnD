@@ -33,7 +33,22 @@ namespace Noveler.Compiler
 
 			var mainCompileUnit = compilationUnits[visitor.SourcePath];
 
-			// TODO: transformations
+			foreach (var ns in mainCompileUnit.NameSpaces)
+			{
+				Console.WriteLine(ns.Name);
+				Console.WriteLine("\tTypes:");
+				foreach (var type in ns.Types)
+				{
+					Console.WriteLine($"\t\t{type.Name}:" +
+						$"\t\t\tsize: {type.}");
+				}
+			}
+
+			// TODO: complete type definitions
+
+			// TODO: syntax tree formation
+
+			// TODO: syntax tree to opcodes
 
 			// TODO: actually return compiled result
 			return CompileResult.FromSuccess(Array.Empty<byte>());

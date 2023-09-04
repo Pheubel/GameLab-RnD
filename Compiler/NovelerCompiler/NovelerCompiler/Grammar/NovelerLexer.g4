@@ -35,6 +35,8 @@ NOTHING: 'nothing';
 
 EXTERN: 'extern';
 
+STRUCTURE: 'structure';
+
 TRUE: 'true';
 FALSE: 'false';
 

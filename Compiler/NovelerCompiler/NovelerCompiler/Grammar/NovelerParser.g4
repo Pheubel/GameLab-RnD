@@ -117,6 +117,7 @@ statement
     : empty_statement #statement_empty
     | variable_declaration #statement_variable_declaration
     | method_declaration #statement_method_declaration
+    | structure_declaration #statement_structure_declaration
     | return_statement #statement_return
     | (expression SEMI_COLON)* expression empty_statement #statement_expression
     ;
@@ -149,6 +150,37 @@ variable_declare_assign
 
 variable_initializer
     : expression
+    ;
+
+structure_declaration
+    : structure_header structure_body
+    ;
+
+structure_header
+    : STRUCTURE identifier
+    ;
+
+structure_body
+    : structure_block
+    ;
+
+structure_block
+    : New_Line* OPEN_CURLY structure_member_declarations? CLOSE_CURLY
+    ;
+
+structure_member_declarations
+    : structure_member_declaration+
+    ;
+
+structure_member_declaration
+    : empty_statement
+    | variable_declaration
+    | method_declaration
+    | constructor_declaration
+    ;
+
+constructor_declaration
+    : identifier OPEN_BRACKET parameter_list? CLOSE_BRACKET code_block
     ;
 
 method_declaration
@@ -484,4 +516,5 @@ keywords
     | FUNCTION
     | RETURN
     | EXTERN
+    | STRUCTURE
     ;

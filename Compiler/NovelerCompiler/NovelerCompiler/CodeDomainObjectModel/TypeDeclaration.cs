@@ -12,9 +12,14 @@
 		public DeclarationType DeclarationType { get; set; }
 
 		/// <summary>
-		/// The mumbers of the type.
+		/// The fields of the type.
 		/// </summary>
-		public TypeMemberCollection TypeMembers { get; } = new();
+		public TypeMemberFieldCollection TypeFieldMembers { get; } = new();
+
+		/// <summary>
+		/// The functions of the type.
+		/// </summary>
+		public TypeMemberFunctionCollection TypeFieldFunctions { get; } = new();
 
 		/// <summary>
 		/// The generic parameters of the type.
@@ -25,11 +30,15 @@
 		{
 			var children = new List<DomainObject>
 			{
-				TypeMembers,
+				TypeFieldMembers,
+				TypeFieldFunctions,
 				TypeParameters
 			};
 
 			return children;
 		}
 	}
+
+	internal sealed record TypeMemberFieldCollection : DomainObjectCollection<TypeMemberField>;
+	internal sealed record TypeMemberFunctionCollection : DomainObjectCollection<TypeMemberFunction>;
 }

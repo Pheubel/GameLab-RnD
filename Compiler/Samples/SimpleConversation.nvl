@@ -17,6 +17,13 @@
     }
 }
 
+@code {
+    structure Character {
+        health : number
+        lives : whole number
+    }
+}
+
 // raw text will be displayed into the story when called for
 Hello you, this is an example of embedding variables into text
 my big happiness value is\: {characterHappiness}
