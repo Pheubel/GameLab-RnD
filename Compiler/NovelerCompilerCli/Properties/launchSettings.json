@@ -3,7 +3,7 @@
     "NovelerCompilerCli": {
       "commandName": "Project",
       "commandLineArgs": "-i \"Samples/SimpleConversation.nvl\" -o \"Samples/Output_SimpleConversation.cnvl\"",
-      "workingDirectory": "C:\\Users\\vratelier\\Documents\\GitHub\\GameLab-RnD\\Compiler"
+      "workingDirectory": "$(SolutionDir)/.."
     }
   }
 }

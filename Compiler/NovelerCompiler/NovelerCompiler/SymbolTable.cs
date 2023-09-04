@@ -1,6 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using OneOf;
-using OneOf.Types;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
