@@ -1,4 +1,5 @@
 ﻿using Noveler.Compiler.CodeDomainObjectModel.Statements;
+using System.Text;
 
 namespace Noveler.Compiler.CodeDomainObjectModel
 {
@@ -21,5 +22,28 @@ namespace Noveler.Compiler.CodeDomainObjectModel
 
 			return children;
 		}
-	}
+
+        public override string ToString()
+        {
+			StringBuilder sb = new();
+
+			sb.AppendLine($"Thread \"{Name}\":");
+
+			sb.AppendLine($"\tParameters ({Parameters.Count}):");
+			foreach ( var parameter in Parameters )
+			{
+                sb.AppendLine($"{parameter.Name} : {parameter.ParameterType.Name}");
+            }
+
+			int statementCount = Statements.Count;
+            sb.AppendLine($"\tStatements ({statementCount}):");
+			for (int i = 0; i < statementCount; i++)
+			{
+				sb.AppendLine($"{i + 1}:\t{Statements[i]}");
+			}
+
+
+            return sb.ToString();
+        }
+    }
 }

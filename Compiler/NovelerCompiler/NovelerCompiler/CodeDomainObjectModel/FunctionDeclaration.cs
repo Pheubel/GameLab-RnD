@@ -50,10 +50,11 @@ namespace Noveler.Compiler.CodeDomainObjectModel
             }
             sb.AppendLine();
 
-            sb.AppendLine($"\tStatements ({Statements.Count}):");
-            foreach (Statement statement in Statements)
+            int statementCount = Statements.Count;
+            sb.AppendLine($"\tStatements ({statementCount}):");
+            for (int i = 0; i < statementCount; i++)
             {
-                sb.AppendLine(statement.ToString());
+                sb.AppendLine($"{i + 1}:\t{Statements[i]}");
             }
 
             return sb.ToString();

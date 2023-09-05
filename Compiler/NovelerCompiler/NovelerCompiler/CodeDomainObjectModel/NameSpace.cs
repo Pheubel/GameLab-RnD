@@ -48,8 +48,6 @@ namespace Noveler.Compiler.CodeDomainObjectModel
                 sb.AppendLine(function.ToString());
             }
 
-            sb.AppendLine("\n");
-
             return sb.ToString();
         }
     }

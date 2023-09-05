@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using Noveler.Compiler.CodeDomainObjectModel.Expressions;
 using Noveler.Compiler.CodeDomainObjectModel.Statements;
 using Antlr4.Runtime.Tree;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Noveler.Compiler
 {
@@ -1161,15 +1162,45 @@ namespace Noveler.Compiler
 
         public override object VisitStatement_structure_declaration([NotNull] Statement_structure_declarationContext context)
         {
-            var structureDeclarationContext = context.structure_declaration();
+            return VisitStructure_declaration(context.structure_declaration());
+        }
 
-            var header = (TypeHeader)VisitStructure_header(structureDeclarationContext.structure_header());
+        public override object VisitStructure_declaration([NotNull] Structure_declarationContext context)
+        {
+            var currentNamespace = _nameSpaceScopeStack.Peek();
 
-            //TODO: handle structure  declarations
+            var header = (TypeHeader)VisitStructure_header(context.structure_header());
 
-            TypeDeclaration td = new TypeDeclaration(header.TypeName);
+            TypeDeclaration typeDeclaration = new TypeDeclaration(header.TypeName);
 
-            return base.VisitStatement_structure_declaration(context);
+            var typeMembers = (StructureMemberCollection)VisitStructure_body(context.structure_body());
+
+            // TODO:
+            foreach (var member in typeMembers)
+            {
+                switch (member)
+                {
+                    case StructureMemberField memberfield:
+                        typeDeclaration.TypeFieldMembers.Add(memberfield);
+                        break;
+
+                    case StructureMemberFunction memberFunction:
+                        typeDeclaration.TypeFieldFunctions.Add(memberFunction);
+                        break;
+
+                    case StructureConstructor constructor:
+                        // TODO: handle duplicate constructor signature?
+                        typeDeclaration.TypeConstructors.Add(constructor);
+                        break;
+
+                    default:
+                        throw new Exception($"Unhandled structure member: {member}");
+                }
+            }
+
+            currentNamespace.Types.Add(typeDeclaration);
+
+            return new EmptyStatement();
         }
 
         public override object VisitStructure_header([NotNull] Structure_headerContext context)
@@ -1179,9 +1210,35 @@ namespace Noveler.Compiler
             return new TypeHeader(typeName);
         }
 
+        public override object VisitStructure_body([NotNull] Structure_bodyContext context)
+        {
+            return VisitStructure_block(context.structure_block());
+        }
+
+        public override object VisitStructure_block([NotNull] Structure_blockContext context)
+        {
+            return VisitStructure_member_declarations(context.structure_member_declarations());
+        }
+
+        public override object VisitStructure_member_declarations([NotNull] Structure_member_declarationsContext context)
+        {
+            StructureMemberCollection typeMembers = new();
+
+            foreach (var memberDeclarationContext in context.structure_member_declaration())
+            {
+                var memberDeclaration = VisitStructure_member_declaration(memberDeclarationContext);
+
+                if (memberDeclaration is EmptyStatement)
+                    continue;
+
+                typeMembers.Add((StructureMember)memberDeclaration);
+            }
+
+            return typeMembers;
+        }
+
         public override object VisitStructure_member_declaration([NotNull] Structure_member_declarationContext context)
         {
-
             if (context.empty_statement() != null)
                 return new EmptyStatement();
 
@@ -1203,7 +1260,6 @@ namespace Noveler.Compiler
             var constructorDeclarationContext = context.constructor_declaration();
             if (constructorDeclarationContext != null)
             {
-                // TODO:
                 return VisitConstructor_declaration(constructorDeclarationContext);
             }
 
@@ -1212,8 +1268,21 @@ namespace Noveler.Compiler
 
         public override object VisitConstructor_declaration([NotNull] Constructor_declarationContext context)
         {
-            //TODO: 
-            return base.VisitConstructor_declaration(context);
+            var typeName = context.identifier().GetText();
+
+            StructureConstructor constructor = new(typeName);
+
+            HandleCodeBlock(context.code_block(), constructor.Statements);
+
+            if (context.parameter_list() != null)
+            {
+                foreach (var parameterContext in context.parameter_list().parameter())
+                {
+                    constructor.Parameters.Add((ParameterDeclarationExpression)VisitParameter(parameterContext));
+                }
+            }
+
+            return constructor;
         }
     }
 }

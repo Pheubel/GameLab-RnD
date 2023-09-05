@@ -14,12 +14,14 @@
 		/// <summary>
 		/// The fields of the type.
 		/// </summary>
-		public TypeMemberFieldCollection TypeFieldMembers { get; } = new();
+		public StructureMemberFieldCollection TypeFieldMembers { get; } = new();
 
 		/// <summary>
 		/// The functions of the type.
 		/// </summary>
-		public TypeMemberFunctionCollection TypeFieldFunctions { get; } = new();
+		public StructureMemberFunctionCollection TypeFieldFunctions { get; } = new();
+
+		public StructureConstructorCollection TypeConstructors { get; } = new();
 
 		/// <summary>
 		/// The generic parameters of the type.
@@ -39,6 +41,9 @@
 		}
 	}
 
-	internal sealed record TypeMemberFieldCollection : DomainObjectCollection<TypeMemberField>;
-	internal sealed record TypeMemberFunctionCollection : DomainObjectCollection<TypeMemberFunction>;
+	internal sealed record StructureMemberFieldCollection : DomainObjectCollection<StructureMemberField>;
+
+	internal sealed record StructureMemberFunctionCollection : DomainObjectCollection<StructureMemberFunction>;
+
+	internal sealed record StructureConstructorCollection : DomainObjectCollection<StructureConstructor>;
 }

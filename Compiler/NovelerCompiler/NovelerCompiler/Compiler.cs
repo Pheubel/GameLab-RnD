@@ -33,13 +33,13 @@ namespace Noveler.Compiler
 
 			var mainCompileUnit = compilationUnits[visitor.SourcePath];
 
-			Console.WriteLine("Namespaces:");
+			Console.WriteLine($"Namespaces ({mainCompileUnit.NameSpaces.Count}):");
 			foreach (var ns in mainCompileUnit.NameSpaces)
 			{
 				Console.WriteLine(ns);
 			}
 
-			Console.WriteLine("Threads:");
+			Console.WriteLine($"Threads ({mainCompileUnit.Threads.Count}):");
             foreach (var thread in mainCompileUnit.Threads)
             {
                 Console.WriteLine(thread);
