@@ -5,10 +5,12 @@ story
     : import_statement* story_segment+
     ;
 
+// TODO: assess if this is the way i want to add other files of code
 imported_file
     : import_statement* imported_content+
     ;
 
+// TODO: set up import stuff, but disallow global story
 imported_content
     : PLUS
     ;

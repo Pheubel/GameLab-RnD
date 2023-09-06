@@ -58,3 +58,11 @@ what do you want?
     money:
         I want a small loan of a million dollars
 }
+
+/* future goal to have threads
+### My_Thread
+this is a story thread that can be visited at any point
+-> END
+-> My_Other_Thread
+-> RETURN
+*/ 
