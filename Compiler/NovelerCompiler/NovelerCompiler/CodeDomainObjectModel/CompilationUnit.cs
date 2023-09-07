@@ -32,6 +32,33 @@ namespace Noveler.Compiler.CodeDomainObjectModel
 
 			return children;
 		}
+
+		public static CompilationUnit CreateDefaultIncludeUnit()
+		{
+			var unit = new CompilationUnit();
+
+			var globalNamespace = NameSpace.CreateGlobalNamespaceInstance();
+
+			var a = new TypeDeclaration("Int8");
+
+			globalNamespace.Types.Add(a);
+
+			unit.NameSpaces.Add(globalNamespace);
+
+			return unit;
+		}
 	}
 
+	internal sealed record TypeDefinition(string Name)
+	{
+		public bool IsFullyDefined { get; set; }
+
+		public static TypeDefinition[] CreateDefaultDefinitions()
+		{
+			return new TypeDefinition[]
+			{
+				new TypeDefinition("Int8")
+			};
+		}
+	}
 }

@@ -40,10 +40,4 @@
 			return children;
 		}
 	}
-
-	internal sealed record StructureMemberFieldCollection : DomainObjectCollection<StructureMemberField>;
-
-	internal sealed record StructureMemberFunctionCollection : DomainObjectCollection<StructureMemberFunction>;
-
-	internal sealed record StructureConstructorCollection : DomainObjectCollection<StructureConstructor>;
 }

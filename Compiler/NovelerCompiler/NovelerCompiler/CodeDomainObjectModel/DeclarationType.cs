@@ -2,8 +2,8 @@
 {
 	internal enum DeclarationType
 	{
-		ReferenceType,
 		ValueType,
+		ReferenceType,
 		EnumStates,
 		EnumFlags
 	}
