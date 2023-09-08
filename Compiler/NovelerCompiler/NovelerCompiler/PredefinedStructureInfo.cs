@@ -1,20 +1,20 @@
-﻿using Noveler.Compiler.SymbolTypes;
+﻿using Noveler.Compiler.CodeDomainObjectModel;
 
 namespace Noveler.Compiler
 {
-	internal static class PredefinedStructureInfo
+	internal static class PredefinedTypeDefinitions
 	{
-		public static readonly StructureInfo Int8 = new StructureInfo("Int8", 1);
-		public static readonly StructureInfo Int16 = new StructureInfo("Int16", 2);
-		public static readonly StructureInfo Int32 = new StructureInfo("Int32", 4);
-		public static readonly StructureInfo Int64 = new StructureInfo("Int64", 8);
+		public static readonly TypeDefinition Int8 = new TypeDefinition("Int8", 1);
+		public static readonly TypeDefinition Int16 = new TypeDefinition("Int16", 2);
+		public static readonly TypeDefinition Int32 = new TypeDefinition("Int32", 4);
+		public static readonly TypeDefinition Int64 = new TypeDefinition("Int64", 8);
 
-		public static readonly StructureInfo UInt8 = new StructureInfo("UInt8", 1);
-		public static readonly StructureInfo UInt16 = new StructureInfo("UInt16", 2);
-		public static readonly StructureInfo UInt32 = new StructureInfo("UInt32", 4);
-		public static readonly StructureInfo UInt64 = new StructureInfo("UInt64", 8);
+		public static readonly TypeDefinition UInt8 = new TypeDefinition("UInt8", 1);
+		public static readonly TypeDefinition UInt16 = new TypeDefinition("UInt16", 2);
+		public static readonly TypeDefinition UInt32 = new TypeDefinition("UInt32", 4);
+		public static readonly TypeDefinition UInt64 = new TypeDefinition("UInt64", 8);
 
-		public static readonly StructureInfo Float32 = new StructureInfo("Float32", 4);
-		public static readonly StructureInfo Float64 = new StructureInfo("Float64", 8);
+		public static readonly TypeDefinition Float32 = new TypeDefinition("Float32", 4);
+		public static readonly TypeDefinition Float64 = new TypeDefinition("Float64", 8);
 	}
 }

@@ -8,57 +8,59 @@ using Noveler.Compiler.CodeDomainObjectModel.Statements;
 
 namespace Noveler.Compiler.CodeDomainObjectModel
 {
-	internal sealed record CompilationUnit : DomainObject
-	{
-		/// <summary>
-		/// Gets the namespaces used in this compile unit.
-		/// </summary>
-		public NameSpaceCollection NameSpaces { get; } = new NameSpaceCollection();
+    internal sealed record CompilationUnit : DomainObject
+    {
+        /// <summary>
+        /// Gets the namespaces used in this compile unit.
+        /// </summary>
+        public NameSpaceCollection NameSpaces { get; } = new NameSpaceCollection();
 
-		/// <summary>
-		/// Gets the threads this compile unit.
-		/// </summary>
-		public StoryThreadDeclarationCollection Threads { get; } = new StoryThreadDeclarationCollection();
+        /// <summary>
+        /// Gets the threads this compile unit.
+        /// </summary>
+        public StoryThreadDeclarationCollection Threads { get; } = new StoryThreadDeclarationCollection();
 
-		public static readonly CompilationUnit Placeholder = new();
+        public static readonly CompilationUnit Placeholder = new();
 
-		public override IReadOnlyList<DomainObject> GetChildren()
-		{
-			var children = new List<DomainObject>
-			{
-				NameSpaces,
-				Threads
-			};
+        public override IReadOnlyList<DomainObject> GetChildren()
+        {
+            var children = new List<DomainObject>
+            {
+                NameSpaces,
+                Threads
+            };
 
-			return children;
-		}
+            return children;
+        }
 
-		public static CompilationUnit CreateDefaultIncludeUnit()
-		{
-			var unit = new CompilationUnit();
+        public static CompilationUnit CreateDefaultIncludeUnit()
+        {
+            var unit = new CompilationUnit();
 
-			var globalNamespace = NameSpace.CreateGlobalNamespaceInstance();
+            var globalNamespace = NameSpace.CreateGlobalNamespaceInstance();
 
-			var a = new TypeDeclaration("Int8");
+            var a = new TypeDeclaration("Int8");
 
-			globalNamespace.Types.Add(a);
+            globalNamespace.Types.Add(a);
 
-			unit.NameSpaces.Add(globalNamespace);
+            unit.NameSpaces.Add(globalNamespace);
 
-			return unit;
-		}
-	}
+            return unit;
+        }
+    }
 
-	internal sealed record TypeDefinition(string Name)
-	{
-		public bool IsFullyDefined { get; set; }
+    internal sealed record TypeDefinition(string Name)
+    {
+        public bool IsFullyDefined { get; set; }
+        public int SizeInBytes { get; set; }
 
-		public static TypeDefinition[] CreateDefaultDefinitions()
-		{
-			return new TypeDefinition[]
-			{
-				new TypeDefinition("Int8")
-			};
-		}
-	}
+        public TypeDefinition(string Name, int SizeInBytes)
+            : this(Name)
+        {
+            this.SizeInBytes = SizeInBytes;
+            IsFullyDefined = true;
+        }
+    }
+
+    internal sealed record TypeFieldDefinition(TypeReference FieldType, string FieldName, int OffsetInBytes);
 }
