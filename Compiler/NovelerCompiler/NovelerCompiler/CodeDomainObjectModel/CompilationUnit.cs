@@ -1,4 +1,6 @@
-﻿namespace Noveler.Compiler.CodeDomainObjectModel
+﻿using Noveler.Compiler.CodeDomainObjectModel;
+
+namespace Noveler.Compiler.CodeDomainObjectModel
 {
     internal sealed record CompilationUnit : DomainObject
     {
@@ -12,6 +14,8 @@
         /// </summary>
         public StoryThreadDeclarationCollection Threads { get; } = new StoryThreadDeclarationCollection();
 
+        public UsingNamespaceCollection UsingNamespaces { get; } = new();
+
         public static readonly CompilationUnit Placeholder = new();
 
         public override IReadOnlyList<DomainObject> GetChildren()
@@ -23,6 +27,16 @@
             };
 
             return children;
+        }
+    }
+
+internal sealed record UsingNamespaceCollection : DomainObjectCollection<UsingNamespace>;
+
+    internal sealed record UsingNamespace(string NamespaceName) : DomainObject
+    {
+        public override IReadOnlyList<DomainObject> GetChildren()
+        {
+            return Array.Empty<DomainObject>();
         }
     }
 }

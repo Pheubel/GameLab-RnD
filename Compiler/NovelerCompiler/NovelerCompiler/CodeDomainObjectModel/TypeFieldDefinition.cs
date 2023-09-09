@@ -1,16 +1,26 @@
 ﻿using Noveler.Compiler.CodeDomainObjectModel.Expressions;
+using System.Text;
+using System.Xml.Linq;
 
 namespace Noveler.Compiler.CodeDomainObjectModel
 {
-    internal sealed record TypeFieldDefinition(TypeReference FieldType, string FieldName, int OffsetInBytes)
+    internal sealed record TypeFieldDefinition(string FieldName, TypeDefinition FieldType, int OffsetInBytes, Expression? InitializationExpression)
     {
-        public Expression? InitializationExpression { get; }
         public bool HasInitializer => InitializationExpression != null;
 
-        public TypeFieldDefinition(TypeReference FieldType, string FieldName, int OffsetInBytes, Expression InitializationExpression) :
-            this(FieldType, FieldName, OffsetInBytes)
+        public string GetFullyQualifiedName()
         {
-            this.InitializationExpression = InitializationExpression;
+            StringBuilder sb = new();
+            GetFullyQualifiedName(sb);
+
+            return sb.ToString();
+        }
+
+        public void GetFullyQualifiedName(StringBuilder stringBuilder)
+        {
+            // this is tail recursable, but is this the best it can be?
+            stringBuilder.Insert(0, $"::{FieldName}");
+            FieldType.GetFullyQualifiedName(stringBuilder);
         }
     };
 }

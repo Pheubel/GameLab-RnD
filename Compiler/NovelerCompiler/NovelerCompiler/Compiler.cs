@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Noveler.Compiler.CodeDomainObjectModel;
+using System.Runtime.InteropServices;
+using Noveler.Compiler.CodeDomainObjectModel.Statements;
 
 namespace Noveler.Compiler
 {
@@ -33,55 +35,96 @@ namespace Noveler.Compiler
 
             var mainCompileUnit = compilationUnits[visitor.SourcePath];
 
-            Console.WriteLine($"Namespaces ({mainCompileUnit.NameSpaces.Count}):");
-            foreach (var ns in mainCompileUnit.NameSpaces)
-            {
-                Console.WriteLine(ns);
-            }
-
-            Console.WriteLine($"Threads ({mainCompileUnit.Threads.Count}):");
-            foreach (var thread in mainCompileUnit.Threads)
-            {
-                Console.WriteLine(thread);
-            }
-
-            Dictionary<string, NameSpace> namespaceDeclarations = new();
-
             // TODO: fix up type references to appropriate types in appropriate namespaces
 
             Dictionary<string, NamespaceDefinition> namespaceDefinitions = new();
 
-            var globalNamespaceDefinition = new NamespaceDefinition("__global__");
+            var globalNamespaceDefinition = new NamespaceDefinition("__global__", null);
 
-            globalNamespaceDefinition.TypeDefinitions.Add(PredefinedTypeDefinitions.Int8.Name, PredefinedTypeDefinitions.Int8);
-            globalNamespaceDefinition.TypeDefinitions.Add(PredefinedTypeDefinitions.Int16.Name, PredefinedTypeDefinitions.Int16);
-            globalNamespaceDefinition.TypeDefinitions.Add(PredefinedTypeDefinitions.Int32.Name, PredefinedTypeDefinitions.Int32);
-            globalNamespaceDefinition.TypeDefinitions.Add(PredefinedTypeDefinitions.Int64.Name, PredefinedTypeDefinitions.Int64);
+            TypeDefinition Int8 = new TypeDefinition("Int8", globalNamespaceDefinition, 1);
+            TypeDefinition Int16 = new TypeDefinition("Int16", globalNamespaceDefinition, 2);
+            TypeDefinition Int32 = new TypeDefinition("Int32", globalNamespaceDefinition, 4);
+            TypeDefinition Int64 = new TypeDefinition("Int64", globalNamespaceDefinition, 8);
 
-            globalNamespaceDefinition.TypeDefinitions.Add(PredefinedTypeDefinitions.UInt8.Name, PredefinedTypeDefinitions.UInt8);
-            globalNamespaceDefinition.TypeDefinitions.Add(PredefinedTypeDefinitions.UInt16.Name, PredefinedTypeDefinitions.UInt16);
-            globalNamespaceDefinition.TypeDefinitions.Add(PredefinedTypeDefinitions.UInt32.Name, PredefinedTypeDefinitions.UInt32);
-            globalNamespaceDefinition.TypeDefinitions.Add(PredefinedTypeDefinitions.UInt64.Name, PredefinedTypeDefinitions.UInt64);
+            TypeDefinition UInt8 = new TypeDefinition("UInt8", globalNamespaceDefinition, 1);
+            TypeDefinition UInt16 = new TypeDefinition("UInt16", globalNamespaceDefinition, 2);
+            TypeDefinition UInt32 = new TypeDefinition("UInt32", globalNamespaceDefinition, 4);
+            TypeDefinition UInt64 = new TypeDefinition("UInt64", globalNamespaceDefinition, 8);
 
-            globalNamespaceDefinition.TypeDefinitions.Add(PredefinedTypeDefinitions.Float32.Name, PredefinedTypeDefinitions.Float32);
-            globalNamespaceDefinition.TypeDefinitions.Add(PredefinedTypeDefinitions.Float64.Name, PredefinedTypeDefinitions.Float64);
+            TypeDefinition Float32 = new TypeDefinition("Float32", globalNamespaceDefinition, 4);
+            TypeDefinition Float64 = new TypeDefinition("Float64", globalNamespaceDefinition, 8);
+
+            globalNamespaceDefinition.TypeDefinitions.Add(Int8.Name, Int8);
+            globalNamespaceDefinition.TypeDefinitions.Add(Int16.Name, Int16);
+            globalNamespaceDefinition.TypeDefinitions.Add(Int32.Name, Int32);
+            globalNamespaceDefinition.TypeDefinitions.Add(Int64.Name, Int64);
+
+            globalNamespaceDefinition.TypeDefinitions.Add(UInt8.Name, UInt8);
+            globalNamespaceDefinition.TypeDefinitions.Add(UInt16.Name, UInt16);
+            globalNamespaceDefinition.TypeDefinitions.Add(UInt32.Name, UInt32);
+            globalNamespaceDefinition.TypeDefinitions.Add(UInt64.Name, UInt64);
+
+            globalNamespaceDefinition.TypeDefinitions.Add(Float32.Name, Float32);
+            globalNamespaceDefinition.TypeDefinitions.Add(Float64.Name, Float64);
 
             namespaceDefinitions.Add(globalNamespaceDefinition.Name, globalNamespaceDefinition);
+
+            List<TypeDefinition> foundTypes = new(32);
+
+            foreach (var unit in compilationUnits.Values)
+            {
+                foreach (var @namespace in unit.NameSpaces)
+                {
+                    ref NamespaceDefinition? namespaceDefinitionEntry = ref CollectionsMarshal.GetValueRefOrAddDefault(namespaceDefinitions, @namespace.Name, out bool namespaceExists);
+
+                    // if the namespace is new, create a new namespace instance
+                    if (!namespaceExists)
+                    {
+                        namespaceDefinitionEntry = new NamespaceDefinition(@namespace.Name);
+                    }
+
+                    foreach (var typeDeclaration in @namespace.Types)
+                    {
+                        ref TypeDefinition? typeDefinitionEntry = ref CollectionsMarshal.GetValueRefOrAddDefault(namespaceDefinitionEntry!.TypeDefinitions, typeDeclaration.Name, out bool typeExists);
+
+                        if (typeExists)
+                        {
+                            throw new Exception($"Type \"{typeDeclaration.Name}\" has already been declared inside this namespace.");
+                        }
+
+                        typeDefinitionEntry = new TypeDefinition(typeDeclaration.Name, namespaceDefinitionEntry, unit, typeDeclaration);
+                        foundTypes.Add(typeDefinitionEntry);
+
+                        //TODO: make sure this is finished
+                    }
+
+                    // TODO: do function declarations
+                }
+            }
 
             // TODO: define all namespaces before here
 
             Stack<TypeDefinition> unfinishedTypeDependencyStack = new();
 
             // TODO: complete type definitions
-            foreach (var namespaceDefinition in namespaceDefinitions.Values)
+            foreach (TypeDefinition typeDefinition in foundTypes)
             {
-                foreach (TypeDefinition typeDefinition in namespaceDefinition.TypeDefinitions.Values)
-                {
-                    CompleteTypeDefinition(typeDefinition);
+                CompleteTypeDefinition(typeDefinition);
 
-                    if (unfinishedTypeDependencyStack.Count != 0)
-                        throw new Exception("expected stack to be empty");
-                }
+                if (unfinishedTypeDependencyStack.Count != 0)
+                    throw new Exception("expected stack to be empty");
+            }
+
+            TypeDefinition GetReferencedType(StructureMemberField fieldDeclaration)
+            {
+                var referenceTypeName = fieldDeclaration.FieldDeclarationStatement.TypeReference.Name;
+                var referenceNamespaceName = "__global__"; // TODO: this as well
+
+                if (!namespaceDefinitions.TryGetValue(referenceNamespaceName, out var referenceNamespace))
+                    throw new Exception("Namespace not found.");
+
+                if (!referenceNamespace.TypeDefinitions.TryGetValue(referenceTypeName, out var referenceTypeDefinition))
+                    throw new Exception("Type not found.");
             }
 
             void CompleteTypeDefinition(TypeDefinition typeDefinition)
@@ -96,32 +139,32 @@ namespace Noveler.Compiler
 
                 unfinishedTypeDependencyStack.Push(typeDefinition);
 
-                for (int i = 0; i < typeDefinition.TypeFieldDefinitions.Length; i++)
+                // original declaration should not be null for non built in types
+                foreach (var fieldDeclaration in typeDefinition.OriginalDeclaration!.TypeFieldMembers)
                 {
-                    var typeField = typeDefinition.TypeFieldDefinitions[i];
+                    var referencedTypeDefinition = GetReferencedType(fieldDeclaration);
 
-                    // TODO: have type inclusion ambiguity solved before here
-                    var referenceTypeName = typeField.FieldType.Name;
-                    var referenceNamespaceName = "__global__"; // TODO: this as well
+                    CompleteTypeDefinition(referencedTypeDefinition);
 
-                    if (!namespaceDefinitions.TryGetValue(referenceNamespaceName, out var referenceNamespace))
-                        throw new Exception("Namespace not found.");
-
-                    if (!referenceNamespace.TypeDefinitions.TryGetValue(referenceTypeName, out var referenceTypeDefinition))
-                        throw new Exception("Type not found.");
-
-                    CompleteTypeDefinition(referenceTypeDefinition);
-
-                    // dependency type should be complete now.
+                    var referenceTypeDefinition = new TypeFieldDefinition(
+                            FieldName: fieldDeclaration.FieldDeclarationStatement.VariableName,
+                            FieldType: referencedTypeDefinition,
+                            OffsetInBytes: typeDefinition.SizeInBytes,
+                            InitializationExpression: fieldDeclaration.FieldDeclarationStatement.HasInitializationExpression
+                                ? ((VariableDeclarationAssignmentStatement)fieldDeclaration.FieldDeclarationStatement).InitializationExpression
+                                : null
+                            );
 
                     // TODO: is custom offsets something desired?
                     // TODO: does this work? make better :^)
-                    typeDefinition.TypeFieldDefinitions[i] = typeField with
+                    if (!typeDefinition.TypeFieldDefinitions.TryAdd(
+                        key: fieldDeclaration.FieldDeclarationStatement.VariableName,
+                        value: referenceTypeDefinition))
                     {
-                        OffsetInBytes = typeDefinition.SizeInBytes
-                    };
-                    typeDefinition.SizeInBytes += referenceTypeDefinition.SizeInBytes;
+                        throw new Exception("field already exists.");
+                    }
 
+                    typeDefinition.SizeInBytes += referencedTypeDefinition.SizeInBytes;
                 }
 
                 typeDefinition.IsFullyDefined = true;
@@ -136,10 +179,5 @@ namespace Noveler.Compiler
             // TODO: actually return compiled result
             return CompileResult.FromSuccess(Array.Empty<byte>());
         }
-    }
-
-    internal sealed record NamespaceDefinition(string Name)
-    {
-        public Dictionary<string, TypeDefinition> TypeDefinitions = new();
     }
 }
