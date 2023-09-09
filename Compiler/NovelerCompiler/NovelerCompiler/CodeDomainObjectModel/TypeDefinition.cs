@@ -26,7 +26,7 @@ namespace Noveler.Compiler.CodeDomainObjectModel
         public void GetFullyQualifiedName(StringBuilder stringBuilder)
         {
             // this is tail recursable, but is this the best it can be?
-            stringBuilder.Append($".{Name}");
+            stringBuilder.Insert(0, $".{Name}");
             Namespace.GetFullyQualifiedName(stringBuilder);
         }
     }

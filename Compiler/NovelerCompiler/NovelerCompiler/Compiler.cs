@@ -80,7 +80,8 @@ namespace Noveler.Compiler
                     // if the namespace is new, create a new namespace instance
                     if (!namespaceExists)
                     {
-                        namespaceDefinitionEntry = new NamespaceDefinition(@namespace.Name);
+                        // TODO: handle parent namespace definition for new instances (currently using placeholder)
+                        namespaceDefinitionEntry = new NamespaceDefinition(@namespace.Name, globalNamespaceDefinition);
                     }
 
                     foreach (var typeDeclaration in @namespace.Types)
@@ -117,14 +118,20 @@ namespace Noveler.Compiler
 
             TypeDefinition GetReferencedType(StructureMemberField fieldDeclaration)
             {
+                // TODO: fix this up to support namespaces (outside the global namespace)
+
                 var referenceTypeName = fieldDeclaration.FieldDeclarationStatement.TypeReference.Name;
-                var referenceNamespaceName = "__global__"; // TODO: this as well
+                var referenceNamespaceName = "__global__"; 
 
                 if (!namespaceDefinitions.TryGetValue(referenceNamespaceName, out var referenceNamespace))
                     throw new Exception("Namespace not found.");
 
                 if (!referenceNamespace.TypeDefinitions.TryGetValue(referenceTypeName, out var referenceTypeDefinition))
                     throw new Exception("Type not found.");
+
+                // TODO: also make sure that exactly 1 definition has been found, otherwise report error.
+
+                return referenceTypeDefinition;
             }
 
             void CompleteTypeDefinition(TypeDefinition typeDefinition)
