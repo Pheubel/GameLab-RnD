@@ -15,6 +15,14 @@
     {
         return 5
     }
+
+    /* TODO: add namespaces to separate code (and maybe threads?)
+    namespace Foo.Bar {
+        structure Fizz {
+            buzz : small number
+        }
+    }
+    */
 }
 
 @code {
