@@ -5,6 +5,7 @@ namespace Noveler.Compiler.CodeDomainObjectModel
     internal sealed record TypeDefinition(string Name, NamespaceDefinition Namespace, CompilationUnit? OriginalCompilationUnit, TypeDeclaration? OriginalDeclaration)
     {
         public Dictionary<string, TypeFieldDefinition> TypeFieldDefinitions { get; } = new();
+        public Dictionary<string, FunctionDefinition> TypeFunctionDefinitions { get; } = new();
         public bool IsFullyDefined { get; set; }
         public int SizeInBytes { get; set; }
 

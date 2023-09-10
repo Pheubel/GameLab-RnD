@@ -19,7 +19,7 @@
 		/// <summary>
 		/// The functions of the type.
 		/// </summary>
-		public StructureMemberFunctionCollection TypeFieldFunctions { get; } = new();
+		public StructureMemberFunctionCollection TypeMemberFunctions { get; } = new();
 
 		public StructureConstructorCollection TypeConstructors { get; } = new();
 
@@ -33,7 +33,7 @@
 			var children = new List<DomainObject>
 			{
 				TypeFieldMembers,
-				TypeFieldFunctions,
+				TypeMemberFunctions,
 				TypeParameters
 			};
 

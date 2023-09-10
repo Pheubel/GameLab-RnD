@@ -1185,7 +1185,7 @@ namespace Noveler.Compiler
                         break;
 
                     case StructureMemberFunction memberFunction:
-                        typeDeclaration.TypeFieldFunctions.Add(memberFunction);
+                        typeDeclaration.TypeMemberFunctions.Add(memberFunction);
                         break;
 
                     case StructureConstructor constructor:

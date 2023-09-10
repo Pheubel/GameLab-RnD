@@ -70,6 +70,7 @@ namespace Noveler.Compiler
             namespaceDefinitions.Add(globalNamespaceDefinition.Name, globalNamespaceDefinition);
 
             List<TypeDefinition> foundTypes = new(32);
+            List<FunctionDefinition> foundFunctions = new(32);
 
             foreach (var unit in compilationUnits.Values)
             {
@@ -97,6 +98,25 @@ namespace Noveler.Compiler
                         foundTypes.Add(typeDefinitionEntry);
 
                         //TODO: make sure this is finished
+
+                        foreach (var typeFunctionDeclaration in typeDeclaration.TypeMemberFunctions)
+                        {
+                            var typeFunctionDefinition = new FunctionDefinition(
+                                Name: typeFunctionDeclaration.FunctionDeclaration.Name,
+                                Namespace: namespaceDefinitionEntry,
+                                typeDefinitionEntry,
+                                unit,
+                                typeFunctionDeclaration.FunctionDeclaration
+                                );
+
+                            foundFunctions.Add(typeFunctionDefinition);
+                            // delay adding the function declaration to the type's function dictionary
+                        }
+
+                        foreach (var constructor in typeDeclaration.TypeConstructors)
+                        {
+                            // TODO: handle this.
+                        }
                     }
 
                     // TODO: do function declarations
@@ -121,7 +141,7 @@ namespace Noveler.Compiler
                 // TODO: fix this up to support namespaces (outside the global namespace)
 
                 var referenceTypeName = fieldDeclaration.FieldDeclarationStatement.TypeReference.Name;
-                var referenceNamespaceName = "__global__"; 
+                var referenceNamespaceName = "__global__";
 
                 if (!namespaceDefinitions.TryGetValue(referenceNamespaceName, out var referenceNamespace))
                     throw new Exception("Namespace not found.");
