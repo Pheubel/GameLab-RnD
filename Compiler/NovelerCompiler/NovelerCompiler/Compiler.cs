@@ -246,6 +246,8 @@ namespace Noveler.Compiler
 
                 functionDefinition.ReturnType = GetReferencedType(functionDefinition.OriginalDeclaration.ReturnType);
 
+                CreateSyntaxTree(functionDefinition);
+
                 functionDefinition.IsFullyDefined = true;
             }
 
@@ -255,6 +257,11 @@ namespace Noveler.Compiler
 
             // TODO: actually return compiled result
             return CompileResult.FromSuccess(Array.Empty<byte>());
+        }
+
+        private static void CreateSyntaxTree(FunctionDefinition functionDefinition)
+        {
+            throw new NotImplementedException();
         }
     }
 }
