@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 const string NovelExtension = ".nvl";
-const string CompiledNovelExtension = ".cnvl";
+//const string CompiledNovelExtension = ".cnvl";
 
 var fileOption = new Option<FileInfo?>(
 	name: "--input",

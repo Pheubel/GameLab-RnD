@@ -740,9 +740,10 @@ namespace Noveler.Compiler
 
         public override object VisitMethod_header([NotNull] Method_headerContext context)
         {
+            var returnTypeContext = context.return_type();
             var function = new FunctionDeclaration(
                 context.identifier().GetText(),
-                (TypeReference)VisitReturn_type(context.return_type())
+                returnTypeContext != null ? (TypeReference)VisitReturn_type(returnTypeContext) : new TypeReference("Unit")
                 );
 
 

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Noveler.Compiler.CodeDomainObjectModel;
 using System.Runtime.InteropServices;
 using Noveler.Compiler.CodeDomainObjectModel.Statements;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Noveler.Compiler
 {
@@ -54,6 +55,8 @@ namespace Noveler.Compiler
             TypeDefinition Float32 = new TypeDefinition("Float32", globalNamespaceDefinition, 4);
             TypeDefinition Float64 = new TypeDefinition("Float64", globalNamespaceDefinition, 8);
 
+            TypeDefinition Unit = new TypeDefinition("Unit", globalNamespaceDefinition, 0);
+
             globalNamespaceDefinition.TypeDefinitions.Add(Int8.Name, Int8);
             globalNamespaceDefinition.TypeDefinitions.Add(Int16.Name, Int16);
             globalNamespaceDefinition.TypeDefinitions.Add(Int32.Name, Int32);
@@ -67,6 +70,8 @@ namespace Noveler.Compiler
             globalNamespaceDefinition.TypeDefinitions.Add(Float32.Name, Float32);
             globalNamespaceDefinition.TypeDefinitions.Add(Float64.Name, Float64);
 
+            globalNamespaceDefinition.TypeDefinitions.Add(Unit.Name, Unit);
+
             namespaceDefinitions.Add(globalNamespaceDefinition.Name, globalNamespaceDefinition);
 
             List<TypeDefinition> foundTypes = new(32);
@@ -74,9 +79,10 @@ namespace Noveler.Compiler
 
             foreach (var unit in compilationUnits.Values)
             {
-                foreach (var @namespace in unit.NameSpaces)
+                foreach (NameSpace @namespace in unit.NameSpaces)
                 {
-                    ref NamespaceDefinition? namespaceDefinitionEntry = ref CollectionsMarshal.GetValueRefOrAddDefault(namespaceDefinitions, @namespace.Name, out bool namespaceExists);
+                    // forgive the null entry, as it will be assigned after it's existance has been checked.   
+                    ref NamespaceDefinition namespaceDefinitionEntry = ref CollectionsMarshal.GetValueRefOrAddDefault(namespaceDefinitions, @namespace.Name, out bool namespaceExists)!;
 
                     // if the namespace is new, create a new namespace instance
                     if (!namespaceExists)
@@ -87,7 +93,7 @@ namespace Noveler.Compiler
 
                     foreach (var typeDeclaration in @namespace.Types)
                     {
-                        ref TypeDefinition? typeDefinitionEntry = ref CollectionsMarshal.GetValueRefOrAddDefault(namespaceDefinitionEntry!.TypeDefinitions, typeDeclaration.Name, out bool typeExists);
+                        ref TypeDefinition? typeDefinitionEntry = ref CollectionsMarshal.GetValueRefOrAddDefault(namespaceDefinitionEntry.TypeDefinitions, typeDeclaration.Name, out bool typeExists);
 
                         if (typeExists)
                         {
@@ -104,9 +110,9 @@ namespace Noveler.Compiler
                             var typeFunctionDefinition = new FunctionDefinition(
                                 Name: typeFunctionDeclaration.FunctionDeclaration.Name,
                                 Namespace: namespaceDefinitionEntry,
-                                typeDefinitionEntry,
-                                unit,
-                                typeFunctionDeclaration.FunctionDeclaration
+                                ParentType: typeDefinitionEntry,
+                                OriginalCompilationUnit: unit,
+                                OriginalDeclaration: typeFunctionDeclaration.FunctionDeclaration
                                 );
 
                             foundFunctions.Add(typeFunctionDefinition);
@@ -120,6 +126,18 @@ namespace Noveler.Compiler
                     }
 
                     // TODO: do function declarations
+                    foreach (var functionDeclaration in @namespace.Functions)
+                    {
+                        var functionDefinition = new FunctionDefinition(
+                             Name: functionDeclaration.Name,
+                                Namespace: namespaceDefinitionEntry!,
+                                ParentType: null,
+                                OriginalCompilationUnit: unit,
+                                OriginalDeclaration: functionDeclaration
+                            );
+
+                        foundFunctions.Add(functionDefinition);
+                    }
                 }
             }
 
@@ -127,7 +145,7 @@ namespace Noveler.Compiler
 
             Stack<TypeDefinition> unfinishedTypeDependencyStack = new();
 
-            // TODO: complete type definitions
+            // completes the prepared types that are user made
             foreach (TypeDefinition typeDefinition in foundTypes)
             {
                 CompleteTypeDefinition(typeDefinition);
@@ -136,11 +154,17 @@ namespace Noveler.Compiler
                     throw new Exception("expected stack to be empty");
             }
 
-            TypeDefinition GetReferencedType(StructureMemberField fieldDeclaration)
+            // completes the functions that are user made
+            foreach (FunctionDefinition functionDefinition in foundFunctions)
             {
-                // TODO: fix this up to support namespaces (outside the global namespace)
+                CompleteFunctionDefinition(functionDefinition);
+            }
 
-                var referenceTypeName = fieldDeclaration.FieldDeclarationStatement.TypeReference.Name;
+            TypeDefinition GetReferencedType(TypeReference typeReference)
+            {
+                // TODO: fix this up to support namespaces (outside the global namespace), add namespaces to look through as argument? 
+
+                var referenceTypeName = typeReference.Name;
                 var referenceNamespaceName = "__global__";
 
                 if (!namespaceDefinitions.TryGetValue(referenceNamespaceName, out var referenceNamespace))
@@ -169,7 +193,7 @@ namespace Noveler.Compiler
                 // original declaration should not be null for non built in types
                 foreach (var fieldDeclaration in typeDefinition.OriginalDeclaration!.TypeFieldMembers)
                 {
-                    var referencedTypeDefinition = GetReferencedType(fieldDeclaration);
+                    var referencedTypeDefinition = GetReferencedType(fieldDeclaration.FieldDeclarationStatement.TypeReference);
 
                     CompleteTypeDefinition(referencedTypeDefinition);
 
@@ -197,6 +221,22 @@ namespace Noveler.Compiler
                 typeDefinition.IsFullyDefined = true;
                 if (unfinishedTypeDependencyStack.Pop() != typeDefinition)
                     throw new Exception("Popped type definition did not match popped type.");
+            }
+
+            void CompleteFunctionDefinition(FunctionDefinition functionDefinition)
+            {
+                foreach (var parameter in functionDefinition.OriginalDeclaration.Parameters)
+                {
+                    var functionArgumentType = GetReferencedType(parameter.ParameterType);
+                    FunctionArgumentDefinition functionArgument = new(parameter.Name, functionArgumentType);
+
+                    if (!functionDefinition.FunctionArguments.TryAdd(parameter.Name, functionArgument))
+                        throw new Exception("Duplicate function argument name");
+                }
+
+                functionDefinition.ReturnType = GetReferencedType(functionDefinition.OriginalDeclaration.ReturnType);
+
+                functionDefinition.IsFullyDefined = true;
             }
 
             // TODO: syntax tree formation

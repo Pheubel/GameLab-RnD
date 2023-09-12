@@ -190,7 +190,7 @@ method_declaration
     ;
 
 method_header
-    : FUNCTION identifier OPEN_BRACKET parameter_list? CLOSE_BRACKET COLON return_type
+    : FUNCTION identifier OPEN_BRACKET parameter_list? CLOSE_BRACKET (COLON return_type)?
     ;
 
 parameter_list

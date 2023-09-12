@@ -16,6 +16,11 @@
         return 5
     }
 
+    function IncreaseHealth(character : Character)
+    {
+        character.heath++
+    }
+
     /* TODO: add namespaces to separate code (and maybe threads?)
     namespace Foo.Bar {
         structure Fizz {

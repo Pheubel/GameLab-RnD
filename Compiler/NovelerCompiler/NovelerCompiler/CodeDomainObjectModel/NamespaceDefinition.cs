@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Noveler.Compiler.CodeDomainObjectModel
 {
-    internal sealed record NamespaceDefinition(string Name, NamespaceDefinition? ParentNamespace)
+    internal sealed record NamespaceDefinition(string Name, NamespaceDefinition? ParentNamespace) : IQualifyable
     {
         [MemberNotNullWhen(true, nameof(ParentNamespace))]
         public bool HasParentNamespace => ParentNamespace != null;
@@ -27,6 +27,18 @@ namespace Noveler.Compiler.CodeDomainObjectModel
             {
                 stringBuilder.Insert(0, '.');
                 ParentNamespace.GetFullyQualifiedName(stringBuilder);
+            }
+        }
+
+        public void GetFullyQualifiedName(StringBuilder stringBuilder, int index)
+        {
+            // this is tail recursable, but is this the best it can be?
+            stringBuilder.Insert(index, Name);
+
+            if (HasParentNamespace)
+            {
+                stringBuilder.Insert(index, '.');
+                ParentNamespace.GetFullyQualifiedName(stringBuilder, index);
             }
         }
     }
