@@ -93,6 +93,14 @@ namespace Noveler.Compiler
 
                     foreach (var typeDeclaration in @namespace.Types)
                     {
+                        if(typeDeclaration.IsGenericType)
+                        {
+                            // TODO: come up with a plan for handling generic types.
+                            // possible what to do: gather all generic types and references to types, then form new ones and add the generated ones.
+                            // also do the same for fuctions.
+                            continue;
+                        }
+
                         ref TypeDefinition? typeDefinitionEntry = ref CollectionsMarshal.GetValueRefOrAddDefault(namespaceDefinitionEntry.TypeDefinitions, typeDeclaration.Name, out bool typeExists);
 
                         if (typeExists)
@@ -142,6 +150,8 @@ namespace Noveler.Compiler
             }
 
             // TODO: define all namespaces before here
+
+            // TODO: maybe have all generic types and functions ready before here?
 
             Stack<TypeDefinition> unfinishedTypeDependencyStack = new();
 

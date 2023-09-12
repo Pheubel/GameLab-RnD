@@ -5,6 +5,8 @@ namespace Noveler.Compiler.CodeDomainObjectModel
 {
     internal sealed record FunctionDeclaration(string Name, TypeReference ReturnType) : DomainObject
     {
+        public bool IsGenericFunction => GenericTypeParameters.Count > 0;
+
         public FunctionDeclaration(string Name, string ReturnTypeName) : this(Name, new TypeReference(ReturnTypeName)) { }
 
         public TypeParameterCollection GenericTypeParameters { get; } = new TypeParameterCollection();

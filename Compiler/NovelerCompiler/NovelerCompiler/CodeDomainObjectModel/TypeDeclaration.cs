@@ -6,10 +6,12 @@
     /// <param name="Name"> The name of the type being declared.</param>
     internal sealed record TypeDeclaration(string Name) : DomainObject
 	{
-		/// <summary>
-		/// The type dictating how this type should be handled at runtime.
-		/// </summary>
-		public DeclarationType DeclarationType { get; set; }
+		public bool IsGenericType => TypeParameters.Count > 0;
+
+        /// <summary>
+        /// The type dictating how this type should be handled at runtime.
+        /// </summary>
+        public DeclarationType DeclarationType { get; set; }
 
 		/// <summary>
 		/// The fields of the type.
