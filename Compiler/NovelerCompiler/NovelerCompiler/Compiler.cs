@@ -42,20 +42,20 @@ namespace Noveler.Compiler
 
             var globalNamespaceDefinition = new NamespaceDefinition("__global__", null);
 
-            TypeDefinition Int8 = new TypeDefinition("Int8", globalNamespaceDefinition, 1);
-            TypeDefinition Int16 = new TypeDefinition("Int16", globalNamespaceDefinition, 2);
-            TypeDefinition Int32 = new TypeDefinition("Int32", globalNamespaceDefinition, 4);
-            TypeDefinition Int64 = new TypeDefinition("Int64", globalNamespaceDefinition, 8);
+            TypeDefinition Int8 = new TypeDefinition("Int8", globalNamespaceDefinition, 1) { StructureType = StructureType.Int8 };
+            TypeDefinition Int16 = new TypeDefinition("Int16", globalNamespaceDefinition, 2) { StructureType = StructureType.Int16 };
+            TypeDefinition Int32 = new TypeDefinition("Int32", globalNamespaceDefinition, 4) { StructureType = StructureType.Int32 };
+            TypeDefinition Int64 = new TypeDefinition("Int64", globalNamespaceDefinition, 8) { StructureType = StructureType.Int64 };
 
-            TypeDefinition UInt8 = new TypeDefinition("UInt8", globalNamespaceDefinition, 1);
-            TypeDefinition UInt16 = new TypeDefinition("UInt16", globalNamespaceDefinition, 2);
-            TypeDefinition UInt32 = new TypeDefinition("UInt32", globalNamespaceDefinition, 4);
-            TypeDefinition UInt64 = new TypeDefinition("UInt64", globalNamespaceDefinition, 8);
+            TypeDefinition UInt8 = new TypeDefinition("UInt8", globalNamespaceDefinition, 1) { StructureType = StructureType.UInt8 };
+            TypeDefinition UInt16 = new TypeDefinition("UInt16", globalNamespaceDefinition, 2) { StructureType = StructureType.UInt8 };
+            TypeDefinition UInt32 = new TypeDefinition("UInt32", globalNamespaceDefinition, 4) { StructureType = StructureType.UInt8 };
+            TypeDefinition UInt64 = new TypeDefinition("UInt64", globalNamespaceDefinition, 8) { StructureType = StructureType.UInt8 };
 
-            TypeDefinition Float32 = new TypeDefinition("Float32", globalNamespaceDefinition, 4);
-            TypeDefinition Float64 = new TypeDefinition("Float64", globalNamespaceDefinition, 8);
+            TypeDefinition Float32 = new TypeDefinition("Float32", globalNamespaceDefinition, 4) { StructureType = StructureType.Float32 };
+            TypeDefinition Float64 = new TypeDefinition("Float64", globalNamespaceDefinition, 8) { StructureType = StructureType.Float64 };
 
-            TypeDefinition Unit = new TypeDefinition("Unit", globalNamespaceDefinition, 0);
+            TypeDefinition Unit = new TypeDefinition("Unit", globalNamespaceDefinition, 0) { StructureType = StructureType.Unit };
 
             globalNamespaceDefinition.TypeDefinitions.Add(Int8.Name, Int8);
             globalNamespaceDefinition.TypeDefinitions.Add(Int16.Name, Int16);
@@ -93,7 +93,7 @@ namespace Noveler.Compiler
 
                     foreach (var typeDeclaration in @namespace.Types)
                     {
-                        if(typeDeclaration.IsGenericType)
+                        if (typeDeclaration.IsGenericType)
                         {
                             // TODO: come up with a plan for handling generic types.
                             // possible what to do: gather all generic types and references to types, then form new ones and add the generated ones.
@@ -261,7 +261,9 @@ namespace Noveler.Compiler
 
         private static void CreateSyntaxTree(FunctionDefinition functionDefinition)
         {
-            throw new NotImplementedException();
+            var statements = functionDefinition.OriginalDeclaration.Statements;
+
+
         }
     }
 }

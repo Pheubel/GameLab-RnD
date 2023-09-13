@@ -2,6 +2,8 @@
 {
     internal sealed record FunctionArgumentDefinition(string Name, TypeDefinition ArgumentType)
     {
-        public int ArgumentIndex { get; set; }
+        int _argumentIndex;
+     
+        public ref int ArgumentIndex { get => ref _argumentIndex; }
     };
 }

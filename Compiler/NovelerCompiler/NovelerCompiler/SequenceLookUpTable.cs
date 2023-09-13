@@ -19,20 +19,24 @@ namespace Noveler.Compiler
 
         public int Count => _list.Count;
 
-        public void Add(string key, T item)
+        public int Add(string key, T item)
         {
-            if (!TryAdd(key, item))
+            if (!TryAdd(key, item, out int index))
                 throw new ArgumentException($"Item with key \"{key}\" already exists.");
+
+            return index;
         }
 
-        public bool TryAdd(string key, T item)
+        public bool TryAdd(string key, T item, out int index)
         {
             if (_dictionary.TryAdd(key, item))
             {
+                index = _list.Count;
                 _list.Add(item);
                 return true;
             }
-            
+
+            index = -1;
             return false;
         }
 
@@ -68,6 +72,14 @@ namespace Noveler.Compiler
 
             item = _list[index];
             return true;
+        }
+
+        public int GetIndex(string key)
+        {
+            if (!_dictionary.TryGetValue(key, out var item))
+                return -1;
+
+            return _list.IndexOf(item);
         }
 
         public T this[string key]
