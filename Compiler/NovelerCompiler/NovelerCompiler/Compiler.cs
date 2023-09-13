@@ -240,7 +240,7 @@ namespace Noveler.Compiler
                     var functionArgumentType = GetReferencedType(parameter.ParameterType);
                     FunctionArgumentDefinition functionArgument = new(parameter.Name, functionArgumentType);
 
-                    if (!functionDefinition.FunctionArguments.TryAdd(parameter.Name, functionArgument))
+                    if (!functionDefinition.FunctionArguments.TryAdd(parameter.Name, functionArgument, out functionArgument.ArgumentIndex))
                         throw new Exception("Duplicate function argument name");
                 }
 
