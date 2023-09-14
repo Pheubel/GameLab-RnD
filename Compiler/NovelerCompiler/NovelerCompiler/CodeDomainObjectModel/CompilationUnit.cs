@@ -16,6 +16,8 @@ namespace Noveler.Compiler.CodeDomainObjectModel
 
         public UsingNamespaceCollection UsingNamespaces { get; } = new();
 
+        public SymbolTable SymbolTable { get; } = new();
+
         public static readonly CompilationUnit Placeholder = new();
 
         public override IReadOnlyList<DomainObject> GetChildren()

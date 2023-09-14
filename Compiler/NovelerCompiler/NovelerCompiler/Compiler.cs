@@ -244,14 +244,19 @@ namespace Noveler.Compiler
                         throw new Exception("Duplicate function argument name");
                 }
 
-                functionDefinition.ReturnType = GetReferencedType(functionDefinition.OriginalDeclaration.ReturnType);
-
-                CreateSyntaxTree(functionDefinition);
+                functionDefinition.ReturnType = GetReferencedType(functionDefinition.OriginalDeclaration.ReturnType);                
 
                 functionDefinition.IsFullyDefined = true;
             }
 
+            // TODO: create symbol table to look up variables for scopes
+
             // TODO: syntax tree formation
+
+            void CreateSyntaxTree()
+            {
+                
+            }
 
             // TODO: syntax tree to opcodes
 
@@ -259,11 +264,6 @@ namespace Noveler.Compiler
             return CompileResult.FromSuccess(Array.Empty<byte>());
         }
 
-        private static void CreateSyntaxTree(FunctionDefinition functionDefinition)
-        {
-            var statements = functionDefinition.OriginalDeclaration.Statements;
 
-
-        }
     }
 }
