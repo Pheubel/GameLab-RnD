@@ -4,7 +4,7 @@
     /// A type declaration domain object conttaining information about a type's declaration.
     /// </summary>
     /// <param name="Name"> The name of the type being declared.</param>
-    internal sealed record TypeDeclaration(string Name) : DomainObject
+    internal sealed record TypeDeclaration(string Name, SymbolScope SymbolScope) : DomainObject
 	{
 		public bool IsGenericType => TypeParameters.Count > 0;
 

@@ -2,10 +2,8 @@
 
 namespace Noveler.Compiler.CodeDomainObjectModel
 {
-    internal sealed record NameSpace(string Name) : DomainObject
+    internal sealed record NameSpace(string Name, SymbolScope SymbolScope) : DomainObject
     {
-        public static NameSpace CreateGlobalNamespaceInstance() => new NameSpace("__global__");
-
         public override IReadOnlyList<DomainObject> GetChildren()
         {
             var children = new List<DomainObject>

@@ -18,7 +18,7 @@ namespace Noveler.Compiler.CodeDomainObjectModel
         Float64,
     }
 
-    internal sealed record TypeDefinition(string Name, NamespaceDefinition Namespace, CompilationUnit? OriginalCompilationUnit, TypeDeclaration? OriginalDeclaration) : IQualifyable
+    internal sealed record TypeDefinition(string Name, NamespaceDefinition Namespace, CompilationUnit? OriginalCompilationUnit, SymbolScope? SymbolScope, TypeDeclaration? OriginalDeclaration) : IQualifyable
     {
         public Dictionary<string, TypeFieldDefinition> TypeFieldDefinitions { get; } = new();
         public Dictionary<string, FunctionDefinition> TypeFunctionDefinitions { get; } = new();
@@ -29,7 +29,7 @@ namespace Noveler.Compiler.CodeDomainObjectModel
         public StructureType StructureType { get; init; } = StructureType.UserType; 
 
         public TypeDefinition(string Name, NamespaceDefinition Namespace, int SizeInBytes) :
-            this(Name, Namespace, null, null)
+            this(Name, Namespace, null, null, null)
         {
             this.SizeInBytes = SizeInBytes;
             IsFullyDefined = true;

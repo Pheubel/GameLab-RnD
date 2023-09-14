@@ -42,35 +42,7 @@ namespace Noveler.Compiler
 
             var globalNamespaceDefinition = new NamespaceDefinition("__global__", null);
 
-            TypeDefinition Int8 = new TypeDefinition("Int8", globalNamespaceDefinition, 1) { StructureType = StructureType.Int8 };
-            TypeDefinition Int16 = new TypeDefinition("Int16", globalNamespaceDefinition, 2) { StructureType = StructureType.Int16 };
-            TypeDefinition Int32 = new TypeDefinition("Int32", globalNamespaceDefinition, 4) { StructureType = StructureType.Int32 };
-            TypeDefinition Int64 = new TypeDefinition("Int64", globalNamespaceDefinition, 8) { StructureType = StructureType.Int64 };
-
-            TypeDefinition UInt8 = new TypeDefinition("UInt8", globalNamespaceDefinition, 1) { StructureType = StructureType.UInt8 };
-            TypeDefinition UInt16 = new TypeDefinition("UInt16", globalNamespaceDefinition, 2) { StructureType = StructureType.UInt8 };
-            TypeDefinition UInt32 = new TypeDefinition("UInt32", globalNamespaceDefinition, 4) { StructureType = StructureType.UInt8 };
-            TypeDefinition UInt64 = new TypeDefinition("UInt64", globalNamespaceDefinition, 8) { StructureType = StructureType.UInt8 };
-
-            TypeDefinition Float32 = new TypeDefinition("Float32", globalNamespaceDefinition, 4) { StructureType = StructureType.Float32 };
-            TypeDefinition Float64 = new TypeDefinition("Float64", globalNamespaceDefinition, 8) { StructureType = StructureType.Float64 };
-
-            TypeDefinition Unit = new TypeDefinition("Unit", globalNamespaceDefinition, 0) { StructureType = StructureType.Unit };
-
-            globalNamespaceDefinition.TypeDefinitions.Add(Int8.Name, Int8);
-            globalNamespaceDefinition.TypeDefinitions.Add(Int16.Name, Int16);
-            globalNamespaceDefinition.TypeDefinitions.Add(Int32.Name, Int32);
-            globalNamespaceDefinition.TypeDefinitions.Add(Int64.Name, Int64);
-
-            globalNamespaceDefinition.TypeDefinitions.Add(UInt8.Name, UInt8);
-            globalNamespaceDefinition.TypeDefinitions.Add(UInt16.Name, UInt16);
-            globalNamespaceDefinition.TypeDefinitions.Add(UInt32.Name, UInt32);
-            globalNamespaceDefinition.TypeDefinitions.Add(UInt64.Name, UInt64);
-
-            globalNamespaceDefinition.TypeDefinitions.Add(Float32.Name, Float32);
-            globalNamespaceDefinition.TypeDefinitions.Add(Float64.Name, Float64);
-
-            globalNamespaceDefinition.TypeDefinitions.Add(Unit.Name, Unit);
+            AddBuiltInDefinitions(globalNamespaceDefinition);
 
             namespaceDefinitions.Add(globalNamespaceDefinition.Name, globalNamespaceDefinition);
 
@@ -108,7 +80,14 @@ namespace Noveler.Compiler
                             throw new Exception($"Type \"{typeDeclaration.Name}\" has already been declared inside this namespace.");
                         }
 
-                        typeDefinitionEntry = new TypeDefinition(typeDeclaration.Name, namespaceDefinitionEntry, unit, typeDeclaration);
+                        typeDefinitionEntry = new TypeDefinition(typeDeclaration.Name, namespaceDefinitionEntry, unit, typeDeclaration.SymbolScope, typeDeclaration);
+
+                        if (!@namespace.SymbolScope.TryInsert(typeDefinitionEntry.Name, new SymbolInfo<TypeDefinition>(typeDefinitionEntry.Name, typeDefinitionEntry)))
+                        {
+                            // TODO: symbol already exists in the current scope, handle this
+                            throw new Exception($"Symbol \"{typeDefinitionEntry.Name}\" already exists in this scope.");
+                        }
+
                         foundTypes.Add(typeDefinitionEntry);
 
                         //TODO: make sure this is finished
@@ -120,8 +99,15 @@ namespace Noveler.Compiler
                                 Namespace: namespaceDefinitionEntry,
                                 ParentType: typeDefinitionEntry,
                                 OriginalCompilationUnit: unit,
+                                SymbolScope: typeFunctionDeclaration.FunctionDeclaration.SymbolScope,
                                 OriginalDeclaration: typeFunctionDeclaration.FunctionDeclaration
                                 );
+
+                            if (!typeDefinitionEntry.SymbolScope!.TryInsert(typeFunctionDefinition.Name, new SymbolInfo<FunctionDefinition>(typeFunctionDefinition.Name, typeFunctionDefinition)))
+                            {
+                                // TODO: symbol already exists in the current scope, handle this
+                                throw new Exception($"Symbol \"{typeFunctionDefinition.Name}\" already exists in this scope.");
+                            }
 
                             foundFunctions.Add(typeFunctionDefinition);
                             // delay adding the function declaration to the type's function dictionary
@@ -141,8 +127,15 @@ namespace Noveler.Compiler
                                 Namespace: namespaceDefinitionEntry!,
                                 ParentType: null,
                                 OriginalCompilationUnit: unit,
+                                SymbolScope: functionDeclaration.SymbolScope,
                                 OriginalDeclaration: functionDeclaration
                             );
+
+                        if (!@namespace.SymbolScope.TryInsert(functionDefinition.Name, new SymbolInfo<FunctionDefinition>(functionDeclaration.Name, functionDefinition)))
+                        {
+                            // TODO: symbol already exists in the current scope, handle this
+                            throw new Exception($"Symbol \"{functionDefinition.Name}\" already exists in this scope.");
+                        }
 
                         foundFunctions.Add(functionDefinition);
                     }
@@ -225,6 +218,12 @@ namespace Noveler.Compiler
                         throw new Exception("field already exists.");
                     }
 
+                    if (!typeDefinition.SymbolScope!.TryInsert(referenceTypeDefinition.FieldName, new SymbolInfo<TypeFieldDefinition>(referenceTypeDefinition.FieldName, referenceTypeDefinition)))
+                    {
+                        // TODO: symbol already exists in the current scope, handle this
+                        throw new Exception($"Symbol \"{referenceTypeDefinition.FieldName}\" already exists in this scope.");
+                    }
+
                     typeDefinition.SizeInBytes += referencedTypeDefinition.SizeInBytes;
                 }
 
@@ -242,9 +241,15 @@ namespace Noveler.Compiler
 
                     if (!functionDefinition.FunctionArguments.TryAdd(parameter.Name, functionArgument, out functionArgument.ArgumentIndex))
                         throw new Exception("Duplicate function argument name");
+
+                    if(!functionDefinition.SymbolScope.TryInsert(functionArgument.Name, new SymbolInfo<FunctionArgumentDefinition>(parameter.Name, functionArgument)))
+                    {
+                        // TODO: symbol already exists in the current scope, handle this
+                        throw new Exception($"Symbol \"{functionArgument.Name}\" already exists in this scope.");
+                    }
                 }
 
-                functionDefinition.ReturnType = GetReferencedType(functionDefinition.OriginalDeclaration.ReturnType);                
+                functionDefinition.ReturnType = GetReferencedType(functionDefinition.OriginalDeclaration.ReturnType);
 
                 functionDefinition.IsFullyDefined = true;
             }
@@ -255,7 +260,7 @@ namespace Noveler.Compiler
 
             void CreateSyntaxTree()
             {
-                
+
             }
 
             // TODO: syntax tree to opcodes
@@ -264,6 +269,37 @@ namespace Noveler.Compiler
             return CompileResult.FromSuccess(Array.Empty<byte>());
         }
 
+        private static void AddBuiltInDefinitions(NamespaceDefinition globalNamespaceDefinition)
+        {
+            TypeDefinition Int8 = new TypeDefinition("Int8", globalNamespaceDefinition, 1) { StructureType = StructureType.Int8 };
+            TypeDefinition Int16 = new TypeDefinition("Int16", globalNamespaceDefinition, 2) { StructureType = StructureType.Int16 };
+            TypeDefinition Int32 = new TypeDefinition("Int32", globalNamespaceDefinition, 4) { StructureType = StructureType.Int32 };
+            TypeDefinition Int64 = new TypeDefinition("Int64", globalNamespaceDefinition, 8) { StructureType = StructureType.Int64 };
 
+            TypeDefinition UInt8 = new TypeDefinition("UInt8", globalNamespaceDefinition, 1) { StructureType = StructureType.UInt8 };
+            TypeDefinition UInt16 = new TypeDefinition("UInt16", globalNamespaceDefinition, 2) { StructureType = StructureType.UInt8 };
+            TypeDefinition UInt32 = new TypeDefinition("UInt32", globalNamespaceDefinition, 4) { StructureType = StructureType.UInt8 };
+            TypeDefinition UInt64 = new TypeDefinition("UInt64", globalNamespaceDefinition, 8) { StructureType = StructureType.UInt8 };
+
+            TypeDefinition Float32 = new TypeDefinition("Float32", globalNamespaceDefinition, 4) { StructureType = StructureType.Float32 };
+            TypeDefinition Float64 = new TypeDefinition("Float64", globalNamespaceDefinition, 8) { StructureType = StructureType.Float64 };
+
+            TypeDefinition Unit = new TypeDefinition("Unit", globalNamespaceDefinition, 0) { StructureType = StructureType.Unit };
+
+            globalNamespaceDefinition.TypeDefinitions.Add(Int8.Name, Int8);
+            globalNamespaceDefinition.TypeDefinitions.Add(Int16.Name, Int16);
+            globalNamespaceDefinition.TypeDefinitions.Add(Int32.Name, Int32);
+            globalNamespaceDefinition.TypeDefinitions.Add(Int64.Name, Int64);
+
+            globalNamespaceDefinition.TypeDefinitions.Add(UInt8.Name, UInt8);
+            globalNamespaceDefinition.TypeDefinitions.Add(UInt16.Name, UInt16);
+            globalNamespaceDefinition.TypeDefinitions.Add(UInt32.Name, UInt32);
+            globalNamespaceDefinition.TypeDefinitions.Add(UInt64.Name, UInt64);
+
+            globalNamespaceDefinition.TypeDefinitions.Add(Float32.Name, Float32);
+            globalNamespaceDefinition.TypeDefinitions.Add(Float64.Name, Float64);
+
+            globalNamespaceDefinition.TypeDefinitions.Add(Unit.Name, Unit);
+        }
     }
 }

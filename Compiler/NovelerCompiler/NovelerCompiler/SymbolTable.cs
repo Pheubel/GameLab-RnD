@@ -5,16 +5,9 @@ using System.Diagnostics.SymbolStore;
 
 namespace Noveler.Compiler
 {
-    abstract class SymbolInfo
-    {
-        public required string Name { get; internal set; }
-    }
+    abstract record SymbolInfo(string Name);
 
-    sealed class SymbolInfo<T> : SymbolInfo
-        where T : notnull
-    {
-        public required T Info { get; internal set; }
-    }
+    sealed record SymbolInfo<T>(string Name, T Info) : SymbolInfo(Name) where T : notnull;
 
     /// <summary>
     /// Class for keeping track of the symbols referenced in the current scope
@@ -25,8 +18,6 @@ namespace Noveler.Compiler
         public SymbolTable()
         {
             _symbolScopes = new();
-
-            EnterScope();
         }
 
         public int CurrentScopeLevel => _symbolScopes.Count - 1;
@@ -40,9 +31,9 @@ namespace Noveler.Compiler
             return scope;
         }
 
-        public void ExitScope()
+        public bool ExitScope()
         {
-            _symbolScopes.Pop();
+            return _symbolScopes.TryPop(out _);
         }
 
         public bool TryInsert(string symbolName, SymbolInfo symbolInfo)
@@ -50,10 +41,10 @@ namespace Noveler.Compiler
             return _symbolScopes.TryPeek(out SymbolScope? scope) && scope.TryInsert(symbolName, symbolInfo);
         }
 
-        public bool TryLookupSymbol(string symbolName, [NotNullWhen(true)] out SymbolInfo? symbol)
+        public bool TryLookupSymbol(string symbolName, [NotNullWhen(true)] ref SymbolInfo? symbol)
         {
             symbol = default;
-            return _symbolScopes.TryPeek(out SymbolScope? scope) && scope.TryLookUp(symbolName, out symbol);
+            return _symbolScopes.TryPeek(out SymbolScope? scope) && scope.TryLookUp(symbolName, ref symbol!);
         }
     }
 }

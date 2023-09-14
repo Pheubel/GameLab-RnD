@@ -21,10 +21,11 @@ namespace Noveler.Compiler
         {
             SourcePath = sourcePath;
             _nameSpaceScopeStack = new();
+            SymbolTable = new();
         }
 
         public string SourcePath { get; }
-
+        public SymbolTable SymbolTable { get; }
 
         private readonly Stack<NameSpace> _nameSpaceScopeStack;
 
@@ -42,7 +43,9 @@ namespace Noveler.Compiler
                 throw new Exception("namespace scope stack is leaking, this is a bug.");
             }
 
-            var globalNamespace = NameSpace.CreateGlobalNamespaceInstance();
+            var globalScope = SymbolTable.EnterScope();
+
+            var globalNamespace = new NameSpace("__global__", globalScope);
             _nameSpaceScopeStack.Push(globalNamespace);
             mainCompileUnit.NameSpaces.Add(globalNamespace);
 
@@ -56,7 +59,7 @@ namespace Noveler.Compiler
 
             var segments = context.story_segment();
 
-            var mainStoryTread = new StoryThreadDeclaration("__main__");
+            var mainStoryTread = new StoryThreadDeclaration("__main__", globalScope);
             HandleStorySegments(segments, mainStoryTread.Statements);
 
             mainCompileUnit.Threads.Add(mainStoryTread);
@@ -700,21 +703,25 @@ namespace Noveler.Compiler
 
         public override object VisitMethod_declaration([NotNull] Method_declarationContext context)
         {
+            SymbolTable.EnterScope();
             var function = (FunctionDeclaration)VisitMethod_header(context.method_header());
 
-            //function.Statements
-            function.Statements.AddRange((StatementCollection)VisitMethod_body(context.method_body()));
+            SymbolTable.EnterScope();
+            function.FunctionBodyDeclaration = (FunctionBodyDeclaration)VisitMethod_body(context.method_body());
+
+            SymbolTable.ExitScope();
+            SymbolTable.ExitScope();
 
             return function;
         }
 
         public override object VisitMethod_body([NotNull] Method_bodyContext context)
         {
-            StatementCollection statements = new();
+            FunctionBodyDeclaration functionBodyDeclaration = new(SymbolTable.CurrentScope!);
 
-            HandleCodeBlock(context.code_block(), statements);
+            HandleCodeBlock(context.code_block(), functionBodyDeclaration.Statements);
 
-            return statements;
+            return functionBodyDeclaration;
         }
 
         public override object VisitStatement_expression([NotNull] Statement_expressionContext context)
@@ -743,9 +750,9 @@ namespace Noveler.Compiler
             var returnTypeContext = context.return_type();
             var function = new FunctionDeclaration(
                 context.identifier().GetText(),
-                returnTypeContext != null ? (TypeReference)VisitReturn_type(returnTypeContext) : new TypeReference("Unit")
+                returnTypeContext != null ? (TypeReference)VisitReturn_type(returnTypeContext) : new TypeReference("Unit"),
+                SymbolTable.CurrentScope!
                 );
-
 
             if (context.parameter_list() != null)
             {
@@ -754,7 +761,6 @@ namespace Noveler.Compiler
                     function.Parameters.Add((ParameterDeclarationExpression)VisitParameter(parameterContext));
                 }
             }
-
 
             return function;
         }
@@ -797,7 +803,7 @@ namespace Noveler.Compiler
 
         public override object VisitType([NotNull] TypeContext context)
         {
-            // TODO:
+            // TODO: past me, what did i have to do?
             var typeContext = context.GetChild<RuleContext>(0);
             TypeReference typeReference = typeContext switch
             {
@@ -1026,10 +1032,13 @@ namespace Noveler.Compiler
                 throw new Exception("namespace scope stack is leaking, this is a bug.");
             }
 
-            _nameSpaceScopeStack.Push(NameSpace.CreateGlobalNamespaceInstance());
+            var globalScope = SymbolTable.EnterScope();
+
+            var globalNamespace = new NameSpace("__global__", globalScope);
+            _nameSpaceScopeStack.Push(globalNamespace);
 
 
-            // TODO
+            // TODO: actually implement this so that you can create threads and code, but not add to the main thread
             return new CompilationUnit();
         }
 
@@ -1170,13 +1179,14 @@ namespace Noveler.Compiler
         {
             var currentNamespace = _nameSpaceScopeStack.Peek();
 
+            var typeScope = SymbolTable.EnterScope();
             var header = (TypeHeader)VisitStructure_header(context.structure_header());
 
-            TypeDeclaration typeDeclaration = new TypeDeclaration(header.TypeName);
+            TypeDeclaration typeDeclaration = new TypeDeclaration(header.TypeName, typeScope);
 
             var typeMembers = (StructureMemberCollection)VisitStructure_body(context.structure_body());
 
-            // TODO:
+            // TODO: make srue all structure memberes are handled
             foreach (var member in typeMembers)
             {
                 switch (member)
@@ -1198,6 +1208,8 @@ namespace Noveler.Compiler
                         throw new Exception($"Unhandled structure member: {member}");
                 }
             }
+
+            SymbolTable.ExitScope();
 
             currentNamespace.Types.Add(typeDeclaration);
 

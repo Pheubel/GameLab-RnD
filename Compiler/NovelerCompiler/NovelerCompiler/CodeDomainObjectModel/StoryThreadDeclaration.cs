@@ -7,7 +7,7 @@ namespace Noveler.Compiler.CodeDomainObjectModel
 	/// Represents a thread in a story that you can go to at any point.
 	/// </summary>
 	/// <param name="Name"> The name of the thread.</param>
-	internal sealed record StoryThreadDeclaration(string Name) : DomainObject
+	internal sealed record StoryThreadDeclaration(string Name, SymbolScope SymbolScope) : DomainObject
 	{
 		public ParameterDeclarationExpressionCollection Parameters { get; } = new ParameterDeclarationExpressionCollection();
 		public StatementCollection Statements { get; } = new();

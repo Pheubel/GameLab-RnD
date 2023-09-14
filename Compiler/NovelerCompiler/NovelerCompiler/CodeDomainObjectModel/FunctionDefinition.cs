@@ -9,6 +9,7 @@ namespace Noveler.Compiler.CodeDomainObjectModel
         NamespaceDefinition Namespace,
         TypeDefinition? ParentType,
         CompilationUnit? OriginalCompilationUnit,
+        SymbolScope SymbolScope,
         FunctionDeclaration OriginalDeclaration) : IQualifyable
     {
         // TODO: figure this out properly, could use a list or custom type
