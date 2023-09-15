@@ -2,21 +2,6 @@
 
 namespace Noveler.Compiler.CodeDomainObjectModel
 {
-    enum StructureType
-    {
-        UserType,
-        Unit,
-        Int8,
-        Int16,
-        Int32,
-        Int64,
-        UInt8,
-        UInt16,
-        UInt32,
-        UInt64,
-        Float32,
-        Float64,
-    }
 
     internal sealed record TypeDefinition(string Name, NamespaceDefinition Namespace, CompilationUnit? OriginalCompilationUnit, SymbolScope? SymbolScope, TypeDeclaration? OriginalDeclaration) : IQualifyable
     {
@@ -24,13 +9,15 @@ namespace Noveler.Compiler.CodeDomainObjectModel
         public Dictionary<string, FunctionDefinition> TypeFunctionDefinitions { get; } = new();
         public bool IsFullyDefined { get; set; }
         public int SizeInBytes { get; set; }
+        public NaturalAlignment Alignment { get; set; }
         
         // by default, assume the type is a user type.
         public StructureType StructureType { get; init; } = StructureType.UserType; 
 
-        public TypeDefinition(string Name, NamespaceDefinition Namespace, int SizeInBytes) :
+        public TypeDefinition(string Name, NamespaceDefinition Namespace, int SizeInBytes, NaturalAlignment Alignment) :
             this(Name, Namespace, null, null, null)
         {
+            this.Alignment = Alignment;
             this.SizeInBytes = SizeInBytes;
             IsFullyDefined = true;
         }

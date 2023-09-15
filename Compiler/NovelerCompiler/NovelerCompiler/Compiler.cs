@@ -193,6 +193,8 @@ namespace Noveler.Compiler
 
                 unfinishedTypeDependencyStack.Push(typeDefinition);
 
+                var highestTypeAllignment = NaturalAlignment.Byte;
+
                 // original declaration should not be null for non built in types
                 foreach (var fieldDeclaration in typeDefinition.OriginalDeclaration!.TypeFieldMembers)
                 {
@@ -200,10 +202,20 @@ namespace Noveler.Compiler
 
                     CompleteTypeDefinition(referencedTypeDefinition);
 
-                    var referenceTypeDefinition = new TypeFieldDefinition(
+                    if ((int)highestTypeAllignment < (int)referencedTypeDefinition.Alignment)
+                        highestTypeAllignment = referencedTypeDefinition.Alignment;
+
+                    int alignmentValue = 1 << (int)referencedTypeDefinition.Alignment;
+                    int mask = alignmentValue - 1;
+                    int spill = typeDefinition.SizeInBytes & mask;
+                    int padding = alignmentValue - spill;
+
+                    int offset = typeDefinition.SizeInBytes + padding;
+
+                    var typeFieldDefinition = new TypeFieldDefinition(
                             FieldName: fieldDeclaration.FieldDeclarationStatement.VariableName,
                             FieldType: referencedTypeDefinition,
-                            OffsetInBytes: typeDefinition.SizeInBytes,
+                            OffsetInBytes: offset,
                             InitializationExpression: fieldDeclaration.FieldDeclarationStatement.HasInitializationExpression
                                 ? ((VariableDeclarationAssignmentStatement)fieldDeclaration.FieldDeclarationStatement).InitializationExpression
                                 : null
@@ -213,20 +225,21 @@ namespace Noveler.Compiler
                     // TODO: does this work? make better :^)
                     if (!typeDefinition.TypeFieldDefinitions.TryAdd(
                         key: fieldDeclaration.FieldDeclarationStatement.VariableName,
-                        value: referenceTypeDefinition))
+                        value: typeFieldDefinition))
                     {
                         throw new Exception("field already exists.");
                     }
 
-                    if (!typeDefinition.SymbolScope!.TryInsert(referenceTypeDefinition.FieldName, new SymbolInfo<TypeFieldDefinition>(referenceTypeDefinition.FieldName, referenceTypeDefinition)))
+                    if (!typeDefinition.SymbolScope!.TryInsert(typeFieldDefinition.FieldName, new SymbolInfo<TypeFieldDefinition>(typeFieldDefinition.FieldName, typeFieldDefinition)))
                     {
                         // TODO: symbol already exists in the current scope, handle this
-                        throw new Exception($"Symbol \"{referenceTypeDefinition.FieldName}\" already exists in this scope.");
+                        throw new Exception($"Symbol \"{typeFieldDefinition.FieldName}\" already exists in this scope.");
                     }
 
                     typeDefinition.SizeInBytes += referencedTypeDefinition.SizeInBytes;
                 }
 
+                typeDefinition.Alignment = highestTypeAllignment;
                 typeDefinition.IsFullyDefined = true;
                 if (unfinishedTypeDependencyStack.Pop() != typeDefinition)
                     throw new Exception("Popped type definition did not match popped type.");
@@ -242,7 +255,7 @@ namespace Noveler.Compiler
                     if (!functionDefinition.FunctionArguments.TryAdd(parameter.Name, functionArgument, out functionArgument.ArgumentIndex))
                         throw new Exception("Duplicate function argument name");
 
-                    if(!functionDefinition.SymbolScope.TryInsert(functionArgument.Name, new SymbolInfo<FunctionArgumentDefinition>(parameter.Name, functionArgument)))
+                    if (!functionDefinition.SymbolScope.TryInsert(functionArgument.Name, new SymbolInfo<FunctionArgumentDefinition>(parameter.Name, functionArgument)))
                     {
                         // TODO: symbol already exists in the current scope, handle this
                         throw new Exception($"Symbol \"{functionArgument.Name}\" already exists in this scope.");
@@ -271,20 +284,20 @@ namespace Noveler.Compiler
 
         private static void AddBuiltInDefinitions(NamespaceDefinition globalNamespaceDefinition)
         {
-            TypeDefinition Int8 = new TypeDefinition("Int8", globalNamespaceDefinition, 1) { StructureType = StructureType.Int8 };
-            TypeDefinition Int16 = new TypeDefinition("Int16", globalNamespaceDefinition, 2) { StructureType = StructureType.Int16 };
-            TypeDefinition Int32 = new TypeDefinition("Int32", globalNamespaceDefinition, 4) { StructureType = StructureType.Int32 };
-            TypeDefinition Int64 = new TypeDefinition("Int64", globalNamespaceDefinition, 8) { StructureType = StructureType.Int64 };
+            TypeDefinition Int8 = new TypeDefinition("Int8", globalNamespaceDefinition, 1, NaturalAlignment.Byte) { StructureType = StructureType.Int8 };
+            TypeDefinition Int16 = new TypeDefinition("Int16", globalNamespaceDefinition, 2, NaturalAlignment.Short) { StructureType = StructureType.Int16 };
+            TypeDefinition Int32 = new TypeDefinition("Int32", globalNamespaceDefinition, 4, NaturalAlignment.Int) { StructureType = StructureType.Int32 };
+            TypeDefinition Int64 = new TypeDefinition("Int64", globalNamespaceDefinition, 8, NaturalAlignment.Long) { StructureType = StructureType.Int64 };
 
-            TypeDefinition UInt8 = new TypeDefinition("UInt8", globalNamespaceDefinition, 1) { StructureType = StructureType.UInt8 };
-            TypeDefinition UInt16 = new TypeDefinition("UInt16", globalNamespaceDefinition, 2) { StructureType = StructureType.UInt8 };
-            TypeDefinition UInt32 = new TypeDefinition("UInt32", globalNamespaceDefinition, 4) { StructureType = StructureType.UInt8 };
-            TypeDefinition UInt64 = new TypeDefinition("UInt64", globalNamespaceDefinition, 8) { StructureType = StructureType.UInt8 };
+            TypeDefinition UInt8 = new TypeDefinition("UInt8", globalNamespaceDefinition, 1, NaturalAlignment.Byte) { StructureType = StructureType.UInt8 };
+            TypeDefinition UInt16 = new TypeDefinition("UInt16", globalNamespaceDefinition, 2, NaturalAlignment.Short) { StructureType = StructureType.UInt8 };
+            TypeDefinition UInt32 = new TypeDefinition("UInt32", globalNamespaceDefinition, 4, NaturalAlignment.Int) { StructureType = StructureType.UInt8 };
+            TypeDefinition UInt64 = new TypeDefinition("UInt64", globalNamespaceDefinition, 8, NaturalAlignment.Long) { StructureType = StructureType.UInt8 };
 
-            TypeDefinition Float32 = new TypeDefinition("Float32", globalNamespaceDefinition, 4) { StructureType = StructureType.Float32 };
-            TypeDefinition Float64 = new TypeDefinition("Float64", globalNamespaceDefinition, 8) { StructureType = StructureType.Float64 };
+            TypeDefinition Float32 = new TypeDefinition("Float32", globalNamespaceDefinition, 4, NaturalAlignment.Int) { StructureType = StructureType.Float32 };
+            TypeDefinition Float64 = new TypeDefinition("Float64", globalNamespaceDefinition, 8, NaturalAlignment.Long) { StructureType = StructureType.Float64 };
 
-            TypeDefinition Unit = new TypeDefinition("Unit", globalNamespaceDefinition, 0) { StructureType = StructureType.Unit };
+            TypeDefinition Unit = new TypeDefinition("Unit", globalNamespaceDefinition, 0, NaturalAlignment.Byte) { StructureType = StructureType.Unit };
 
             globalNamespaceDefinition.TypeDefinitions.Add(Int8.Name, Int8);
             globalNamespaceDefinition.TypeDefinitions.Add(Int16.Name, Int16);
