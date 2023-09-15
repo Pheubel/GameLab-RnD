@@ -10,6 +10,7 @@ using Noveler.Compiler.CodeDomainObjectModel;
 using System.Runtime.InteropServices;
 using Noveler.Compiler.CodeDomainObjectModel.Statements;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Build.Utilities;
 
 namespace Noveler.Compiler
 {
@@ -207,8 +208,10 @@ namespace Noveler.Compiler
 
                     int alignmentValue = 1 << (int)referencedTypeDefinition.Alignment;
                     int mask = alignmentValue - 1;
-                    int spill = typeDefinition.SizeInBytes & mask;
-                    int padding = alignmentValue - spill;
+                    // int spill = typeDefinition.SizeInBytes & mask;
+                    // int padding = (alignmentValue - spill) % alignmentValue;
+
+                    int padding  = (~typeDefinition.SizeInBytes + 1) & mask;
 
                     int offset = typeDefinition.SizeInBytes + padding;
 
@@ -221,11 +224,12 @@ namespace Noveler.Compiler
                                 : null
                             );
 
-                    // TODO: is custom offsets something desired?
+                    // TODO: is custom offsets something desired? if so, all fields need to have an offset set and needs different branch
                     // TODO: does this work? make better :^)
                     if (!typeDefinition.TypeFieldDefinitions.TryAdd(
                         key: fieldDeclaration.FieldDeclarationStatement.VariableName,
-                        value: typeFieldDefinition))
+                        item: typeFieldDefinition,
+                        index: out _))
                     {
                         throw new Exception("field already exists.");
                     }
@@ -236,8 +240,18 @@ namespace Noveler.Compiler
                         throw new Exception($"Symbol \"{typeFieldDefinition.FieldName}\" already exists in this scope.");
                     }
 
-                    typeDefinition.SizeInBytes += referencedTypeDefinition.SizeInBytes;
+                    typeDefinition.SizeInBytes = offset + referencedTypeDefinition.SizeInBytes;
                 }
+
+                // do padding at the end of the structure
+                var typeAlignmentValue = 1 << (int)highestTypeAllignment;
+                var typeMask = typeAlignmentValue - 1;
+                // int typeSpill = typeDefinition.SizeInBytes & typeMask;
+                // int typePadding = (typeAlignmentValue - typeSpill) % typeAlignmentValue;
+
+                int typePadding = (~typeDefinition.SizeInBytes + 1) & typeMask;
+
+                typeDefinition.SizeInBytes += typePadding;
 
                 typeDefinition.Alignment = highestTypeAllignment;
                 typeDefinition.IsFullyDefined = true;
