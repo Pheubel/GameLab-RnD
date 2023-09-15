@@ -285,8 +285,10 @@ namespace Noveler.Compiler
 
             // TODO: syntax tree formation
 
-            void CreateSyntaxTree()
+            // am i actually making a syntax tree? i already have a lot of info from the function declaration statements
+            void CreateSyntaxTree(FunctionDefinition functionDefinition)
             {
+                var functionBodyScope = functionDefinition.SymbolScope.CreateChildScope();
 
             }
 
