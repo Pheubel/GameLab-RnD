@@ -2,7 +2,7 @@
 
 namespace Noveler.Compiler.SyntaxTree
 {
-    internal readonly struct Int64ConstantValue : IConstantValue<long>
+    internal class Int64ConstantValue : IConstantValueNode<long>
     {
         public Int64ConstantValue(long value, TypeDefinition type)
         {

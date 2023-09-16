@@ -2,7 +2,7 @@
 
 namespace Noveler.Compiler.SyntaxTree
 {
-    internal readonly struct Int8ConstantValue : IConstantValue<sbyte>
+    internal class Int8ConstantValue : IConstantValueNode<sbyte>
     {
         public Int8ConstantValue(sbyte value, TypeDefinition type)
         {

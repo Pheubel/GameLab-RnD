@@ -2,7 +2,7 @@
 
 namespace Noveler.Compiler.SyntaxTree
 {
-    internal readonly struct Float64ConstantValue : IConstantValue<double>
+    internal readonly struct Float64ConstantValue : IConstantValueNode<double>
     {
         public Float64ConstantValue(double value, TypeDefinition type)
         {

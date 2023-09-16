@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic.FileIO;
+using Noveler.Compiler.CodeDomainObjectModel.Statements;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
@@ -19,8 +20,9 @@ namespace Noveler.Compiler.CodeDomainObjectModel
         [MemberNotNullWhen(true, nameof(ParentType))]
         public bool IsStructureMethod => ParentType != null;
 
-        [MemberNotNullWhen(true, nameof(ReturnType))]
+        [MemberNotNullWhen(true, nameof(ReturnType), nameof(SyntaxTree))]
         public bool IsFullyDefined { get; set; }
+        public StatementCollection? SyntaxTree { get; internal set; }
 
         public string GetFullyQualifiedName()
         {

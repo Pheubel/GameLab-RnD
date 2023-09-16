@@ -2,7 +2,7 @@
 
 namespace Noveler.Compiler.SyntaxTree
 {
-    internal readonly struct UInt64ConstantValue : IConstantValue<ulong>
+    internal class UInt64ConstantValue : IConstantValueNode<ulong>
     {
         public UInt64ConstantValue(ulong value, TypeDefinition type)
         {

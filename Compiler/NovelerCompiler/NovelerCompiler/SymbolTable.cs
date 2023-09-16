@@ -1,4 +1,5 @@
-﻿using Noveler.Compiler.CodeDomainObjectModel.Expressions;
+﻿using Noveler.Compiler.CodeDomainObjectModel;
+using Noveler.Compiler.CodeDomainObjectModel.Expressions;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.SymbolStore;
@@ -7,7 +8,11 @@ namespace Noveler.Compiler
 {
     abstract record SymbolInfo(string Name);
 
-    sealed record SymbolInfo<T>(string Name, T Info) : SymbolInfo(Name) where T : notnull;
+    abstract record SymbolInfo<T>(string Name, T Info) : SymbolInfo(Name) where T : notnull;
+
+    sealed record TypeSymbolInfo(string Name, TypeDefinition Info) : SymbolInfo<TypeDefinition>(Name, Info);
+
+    sealed record FunctionSymbolInfo(string Name, TypeDefinition Info) : SymbolInfo<TypeDefinition>(Name, Info);
 
     /// <summary>
     /// Class for keeping track of the symbols referenced in the current scope

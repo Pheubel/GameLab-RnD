@@ -2,7 +2,7 @@
 
 namespace Noveler.Compiler.SyntaxTree
 {
-    internal readonly struct UInt32ConstantValue : IConstantValue<uint>
+    internal class UInt32ConstantValue : IConstantValueNode<uint>
     {
         public UInt32ConstantValue(uint value, TypeDefinition type)
         {

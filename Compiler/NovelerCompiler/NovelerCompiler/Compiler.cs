@@ -14,6 +14,11 @@ using Microsoft.Build.Utilities;
 
 namespace Noveler.Compiler
 {
+    internal class DefinitionCollection
+    {
+        public Dictionary<string, NamespaceDefinition> NamespaceDefinitions = new();
+    }
+
     public static class Compiler
     {
         public static CompileResult Compile(FileInfo fileInfo)
@@ -39,13 +44,13 @@ namespace Noveler.Compiler
 
             // TODO: fix up type references to appropriate types in appropriate namespaces
 
-            Dictionary<string, NamespaceDefinition> namespaceDefinitions = new();
+            DefinitionCollection definitionCollection = new();
 
             var globalNamespaceDefinition = new NamespaceDefinition("__global__", null);
 
             AddBuiltInDefinitions(globalNamespaceDefinition);
 
-            namespaceDefinitions.Add(globalNamespaceDefinition.Name, globalNamespaceDefinition);
+            definitionCollection.NamespaceDefinitions.Add(globalNamespaceDefinition.Name, globalNamespaceDefinition);
 
             List<TypeDefinition> foundTypes = new(32);
             List<FunctionDefinition> foundFunctions = new(32);
@@ -55,7 +60,7 @@ namespace Noveler.Compiler
                 foreach (NameSpace @namespace in unit.NameSpaces)
                 {
                     // forgive the null entry, as it will be assigned after it's existance has been checked.   
-                    ref NamespaceDefinition namespaceDefinitionEntry = ref CollectionsMarshal.GetValueRefOrAddDefault(namespaceDefinitions, @namespace.Name, out bool namespaceExists)!;
+                    ref NamespaceDefinition namespaceDefinitionEntry = ref CollectionsMarshal.GetValueRefOrAddDefault(definitionCollection.NamespaceDefinitions, @namespace.Name, out bool namespaceExists)!;
 
                     // if the namespace is new, create a new namespace instance
                     if (!namespaceExists)
@@ -83,7 +88,7 @@ namespace Noveler.Compiler
 
                         typeDefinitionEntry = new TypeDefinition(typeDeclaration.Name, namespaceDefinitionEntry, unit, typeDeclaration.SymbolScope, typeDeclaration);
 
-                        if (!@namespace.SymbolScope.TryInsert(typeDefinitionEntry.Name, new SymbolInfo<TypeDefinition>(typeDefinitionEntry.Name, typeDefinitionEntry)))
+                        if (!@namespace.SymbolScope.TryInsert(typeDefinitionEntry.Name, new TypeSymbolInfo(typeDefinitionEntry.Name, typeDefinitionEntry)))
                         {
                             // TODO: symbol already exists in the current scope, handle this
                             throw new Exception($"Symbol \"{typeDefinitionEntry.Name}\" already exists in this scope.");
@@ -104,7 +109,7 @@ namespace Noveler.Compiler
                                 OriginalDeclaration: typeFunctionDeclaration.FunctionDeclaration
                                 );
 
-                            if (!typeDefinitionEntry.SymbolScope!.TryInsert(typeFunctionDefinition.Name, new SymbolInfo<FunctionDefinition>(typeFunctionDefinition.Name, typeFunctionDefinition)))
+                            if (!typeDefinitionEntry.SymbolScope!.TryInsert(typeFunctionDefinition.Name, new FunctionSymbolInfo(typeFunctionDefinition.Name, typeFunctionDefinition)))
                             {
                                 // TODO: symbol already exists in the current scope, handle this
                                 throw new Exception($"Symbol \"{typeFunctionDefinition.Name}\" already exists in this scope.");
@@ -132,7 +137,7 @@ namespace Noveler.Compiler
                                 OriginalDeclaration: functionDeclaration
                             );
 
-                        if (!@namespace.SymbolScope.TryInsert(functionDefinition.Name, new SymbolInfo<FunctionDefinition>(functionDeclaration.Name, functionDefinition)))
+                        if (!@namespace.SymbolScope.TryInsert(functionDefinition.Name, new FunctionSymbolInfo(functionDeclaration.Name, functionDefinition)))
                         {
                             // TODO: symbol already exists in the current scope, handle this
                             throw new Exception($"Symbol \"{functionDefinition.Name}\" already exists in this scope.");
@@ -171,7 +176,7 @@ namespace Noveler.Compiler
                 var referenceTypeName = typeReference.Name;
                 var referenceNamespaceName = "__global__";
 
-                if (!namespaceDefinitions.TryGetValue(referenceNamespaceName, out var referenceNamespace))
+                if (!definitionCollection.NamespaceDefinitions.TryGetValue(referenceNamespaceName, out var referenceNamespace))
                     throw new Exception("Namespace not found.");
 
                 if (!referenceNamespace.TypeDefinitions.TryGetValue(referenceTypeName, out var referenceTypeDefinition))
@@ -234,7 +239,7 @@ namespace Noveler.Compiler
                         throw new Exception("field already exists.");
                     }
 
-                    if (!typeDefinition.SymbolScope!.TryInsert(typeFieldDefinition.FieldName, new SymbolInfo<TypeFieldDefinition>(typeFieldDefinition.FieldName, typeFieldDefinition)))
+                    if (!typeDefinition.SymbolScope!.TryInsert(typeFieldDefinition.FieldName, new TypeFieldSymbolInfo(typeFieldDefinition.FieldName, typeFieldDefinition)))
                     {
                         // TODO: symbol already exists in the current scope, handle this
                         throw new Exception($"Symbol \"{typeFieldDefinition.FieldName}\" already exists in this scope.");
@@ -269,7 +274,7 @@ namespace Noveler.Compiler
                     if (!functionDefinition.FunctionArguments.TryAdd(parameter.Name, functionArgument, out functionArgument.ArgumentIndex))
                         throw new Exception("Duplicate function argument name");
 
-                    if (!functionDefinition.SymbolScope.TryInsert(functionArgument.Name, new SymbolInfo<FunctionArgumentDefinition>(parameter.Name, functionArgument)))
+                    if (!functionDefinition.SymbolScope.TryInsert(functionArgument.Name, new FunctionArgumentSymbolInfo(parameter.Name, functionArgument)))
                     {
                         // TODO: symbol already exists in the current scope, handle this
                         throw new Exception($"Symbol \"{functionArgument.Name}\" already exists in this scope.");
@@ -286,10 +291,16 @@ namespace Noveler.Compiler
             // TODO: syntax tree formation
 
             // am i actually making a syntax tree? i already have a lot of info from the function declaration statements
-            void CreateSyntaxTree(FunctionDefinition functionDefinition)
+            void CreateFold(FunctionDefinition functionDefinition)
             {
                 var functionBodyScope = functionDefinition.SymbolScope.CreateChildScope();
 
+                var statements = functionDefinition.OriginalDeclaration.FunctionBodyDeclaration.Statements;
+
+                foreach (Statement statement in statements)
+                {
+                    statement.CreateSyntaxTreeNode(definitionCollection, functionBodyScope)
+                }
             }
 
             // TODO: syntax tree to opcodes
