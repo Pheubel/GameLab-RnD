@@ -12,5 +12,12 @@ namespace Noveler.Compiler.SyntaxTree
 
         public ulong Value { get; }
         public TypeDefinition Type { get; }
+
+        public void EmitCode(List<byte> output)
+        {
+            Span<byte> buffer = stackalloc byte[sizeof(ulong)];
+            BitConverter.TryWriteBytes(buffer, Value);
+            ListUtil.AddRange(output, buffer);
+        }
     }
 }

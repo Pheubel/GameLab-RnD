@@ -14,11 +14,6 @@ using Microsoft.Build.Utilities;
 
 namespace Noveler.Compiler
 {
-    internal class DefinitionCollection
-    {
-        public Dictionary<string, NamespaceDefinition> NamespaceDefinitions = new();
-    }
-
     public static class Compiler
     {
         public static CompileResult Compile(FileInfo fileInfo)
@@ -44,13 +39,13 @@ namespace Noveler.Compiler
 
             // TODO: fix up type references to appropriate types in appropriate namespaces
 
-            DefinitionCollection definitionCollection = new();
+            CompilationContext compilationContext = new();
 
             var globalNamespaceDefinition = new NamespaceDefinition("__global__", null);
 
-            AddBuiltInDefinitions(globalNamespaceDefinition);
+            AddBuiltInDefinitions(globalNamespaceDefinition, compilationContext.OpTable);
 
-            definitionCollection.NamespaceDefinitions.Add(globalNamespaceDefinition.Name, globalNamespaceDefinition);
+            compilationContext.NamespaceDefinitions.Add(globalNamespaceDefinition.Name, globalNamespaceDefinition);
 
             List<TypeDefinition> foundTypes = new(32);
             List<FunctionDefinition> foundFunctions = new(32);
@@ -60,7 +55,7 @@ namespace Noveler.Compiler
                 foreach (NameSpace @namespace in unit.NameSpaces)
                 {
                     // forgive the null entry, as it will be assigned after it's existance has been checked.   
-                    ref NamespaceDefinition namespaceDefinitionEntry = ref CollectionsMarshal.GetValueRefOrAddDefault(definitionCollection.NamespaceDefinitions, @namespace.Name, out bool namespaceExists)!;
+                    ref NamespaceDefinition namespaceDefinitionEntry = ref CollectionsMarshal.GetValueRefOrAddDefault(compilationContext.NamespaceDefinitions, @namespace.Name, out bool namespaceExists)!;
 
                     // if the namespace is new, create a new namespace instance
                     if (!namespaceExists)
@@ -128,6 +123,7 @@ namespace Noveler.Compiler
                     // TODO: do function declarations
                     foreach (var functionDeclaration in @namespace.Functions)
                     {
+                        // TODO: handle operator functions
                         var functionDefinition = new FunctionDefinition(
                              Name: functionDeclaration.Name,
                                 Namespace: namespaceDefinitionEntry!,
@@ -176,7 +172,7 @@ namespace Noveler.Compiler
                 var referenceTypeName = typeReference.Name;
                 var referenceNamespaceName = "__global__";
 
-                if (!definitionCollection.NamespaceDefinitions.TryGetValue(referenceNamespaceName, out var referenceNamespace))
+                if (!compilationContext.NamespaceDefinitions.TryGetValue(referenceNamespaceName, out var referenceNamespace))
                     throw new Exception("Namespace not found.");
 
                 if (!referenceNamespace.TypeDefinitions.TryGetValue(referenceTypeName, out var referenceTypeDefinition))
@@ -283,33 +279,23 @@ namespace Noveler.Compiler
 
                 functionDefinition.ReturnType = GetReferencedType(functionDefinition.OriginalDeclaration.ReturnType);
 
+                // TODO: do something with the folded tree
+                functionDefinition.SyntaxTree = CreateFoldedTree(functionDefinition);
+
                 functionDefinition.IsFullyDefined = true;
             }
 
-            // TODO: create symbol table to look up variables for scopes
 
-            // TODO: syntax tree formation
-
-            // am i actually making a syntax tree? i already have a lot of info from the function declaration statements
-            void CreateFold(FunctionDefinition functionDefinition)
-            {
-                var functionBodyScope = functionDefinition.SymbolScope.CreateChildScope();
-
-                var statements = functionDefinition.OriginalDeclaration.FunctionBodyDeclaration.Statements;
-
-                foreach (Statement statement in statements)
-                {
-                    statement.CreateSyntaxTreeNode(definitionCollection, functionBodyScope)
-                }
-            }
 
             // TODO: syntax tree to opcodes
+
+            
 
             // TODO: actually return compiled result
             return CompileResult.FromSuccess(Array.Empty<byte>());
         }
 
-        private static void AddBuiltInDefinitions(NamespaceDefinition globalNamespaceDefinition)
+        private static void AddBuiltInDefinitions(NamespaceDefinition globalNamespaceDefinition, Dictionary<string, FunctionDefinition> opTable)
         {
             TypeDefinition Int8 = new TypeDefinition("Int8", globalNamespaceDefinition, 1, NaturalAlignment.Byte) { StructureType = StructureType.Int8 };
             TypeDefinition Int16 = new TypeDefinition("Int16", globalNamespaceDefinition, 2, NaturalAlignment.Short) { StructureType = StructureType.Int16 };
@@ -340,6 +326,91 @@ namespace Noveler.Compiler
             globalNamespaceDefinition.TypeDefinitions.Add(Float64.Name, Float64);
 
             globalNamespaceDefinition.TypeDefinitions.Add(Unit.Name, Unit);
+
+
+            var incrementInt32 = new Operation(Operator.Increment, Int32, Int32, (output, operation) =>
+            {
+                output.
+            });
         }
+
+        class Operation
+        {
+            Operator Operator { get; }
+            TypeDefinition Target { get; }
+            TypeDefinition Result { get; }
+            TypeDefinition[] Arguments { get; }
+
+            Action<List<byte>, Operation>? EmitInstructions { get; set; }
+            public bool IsFullyDefined { get; set; }
+
+            public Operation(Operator Operator, TypeDefinition Target, TypeDefinition Result, params TypeDefinition[] Arguments)
+            {
+                this.Operator = Operator;
+                this.Target = Target;
+                this.Result = Result;
+                this.Arguments = Arguments;
+            }
+
+            public Operation(Operator Operator, TypeDefinition Target, TypeDefinition Result, Action<List<byte>, Operation> EmitInstructions, params TypeDefinition[] Arguments) :
+                this (Operator, Target, Result, Arguments)  
+            {
+                this.EmitInstructions = EmitInstructions;
+                IsFullyDefined = true;
+            }
+
+            public override bool Equals(object? obj)
+            {
+                if (obj is not Operation other)
+                    return false;
+
+                return this.Operator == other.Operator &&
+                    this.Target == other.Target &&
+                    this.Result == other.Result &&
+                    ArgumentsEquals(this.Arguments, other.Arguments);
+            }
+
+            private static bool ArgumentsEquals(TypeDefinition[] left, TypeDefinition[] right)
+            {
+                if(left.Length != right.Length) return false;
+
+                for (int i = 0; i < left.Length; i++)
+                {
+                    if (left[i] != right[i])
+                        return false;
+                }
+
+                return true;
+            }
+        }
+        enum Operator
+        {
+            Plus,
+            Minus,
+            Increment
+        }
+
+        // am i actually making a syntax tree? i already have a lot of info from the function declaration statements
+        static StatementCollection CreateFoldedTree(FunctionDefinition functionDefinition)
+        {
+            // create a copy of the statements and fold the constants
+            // also add symbols to the symbol table
+
+
+            // TODO: create symbol table to look up variables for scopes
+
+            // TODO: syntax tree formation
+
+
+            //TODO: actually do that.
+            return functionDefinition.OriginalDeclaration.FunctionBodyDeclaration.Statements with { };
+        }
+    }
+
+    internal class CompilationContext
+    {
+        public Dictionary<string, NamespaceDefinition> NamespaceDefinitions = new();
+        public List<byte> Output { get; } = new();
+        public Dictionary<string, FunctionDefinition> OpTable = new();
     }
 }

@@ -12,5 +12,10 @@ namespace Noveler.Compiler.SyntaxTree
 
         public sbyte Value { get; }
         public TypeDefinition Type { get; }
+
+        public void EmitCode(List<byte> output)
+        {
+            output.Add((byte)Value);
+        }
     }
 }

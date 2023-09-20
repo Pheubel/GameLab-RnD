@@ -8,11 +8,15 @@ namespace Noveler.Compiler
 {
     abstract record SymbolInfo(string Name);
 
-    abstract record SymbolInfo<T>(string Name, T Info) : SymbolInfo(Name) where T : notnull;
+    sealed record TypeSymbolInfo(string Name, TypeDefinition Info) : SymbolInfo(Name);
 
-    sealed record TypeSymbolInfo(string Name, TypeDefinition Info) : SymbolInfo<TypeDefinition>(Name, Info);
+    sealed record FunctionSymbolInfo(string Name, FunctionDefinition Info) : SymbolInfo(Name);
 
-    sealed record FunctionSymbolInfo(string Name, TypeDefinition Info) : SymbolInfo<TypeDefinition>(Name, Info);
+    sealed record FunctionArgumentSymbolInfo(string Name, FunctionArgumentDefinition Info) : SymbolInfo(Name);
+
+    sealed record TypeFieldSymbolInfo(string Name, TypeFieldDefinition Info) : SymbolInfo(Name);
+
+    sealed record VariableSymbolInfo(string Name, TypeDefinition Info) : SymbolInfo(Name);
 
     /// <summary>
     /// Class for keeping track of the symbols referenced in the current scope

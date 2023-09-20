@@ -21,6 +21,35 @@
         character.heath++
     }
 
+    function DoALot(foo : whole number) : whole number {
+        foo++
+        characterHappiness += characterHappiness
+        return foo * 2 * declareImmediate
+
+        /*
+        frame
+        -----
+        return val (4 bytes)
+        -----
+        args
+        foo (4 bytes)
+        -----
+        stack offset (4 + 4 = 8)
+        -----
+        push rbp (frame pointer)
+        inc foo | inc rbp + 4 | inc stack - 4
+        load eax, characterHappiness
+        add eax, characterHappiness
+        mov characterHappiness, eax
+        mul foo, 2 | mul frame + 4, 2 | mul stack - 4, 2
+        mul eax, declareImmediate (should be position indipendent ie. global)
+        mov return val, eax | mov frame, eax | move stack - 8 , eax
+        pop rbp
+
+        stack gets rewound until the return value is left
+        */
+    }
+
     structure PoorlyPacked { // (2 + 6) + 8 + (4 + 4) = 24
         a : small whole number
         b : big whole number

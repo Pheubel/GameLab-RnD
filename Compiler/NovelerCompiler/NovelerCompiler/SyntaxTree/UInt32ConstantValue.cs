@@ -12,4 +12,12 @@ namespace Noveler.Compiler.SyntaxTree
 
         public uint Value { get; }
         public TypeDefinition Type { get; }
-    }}
+
+        public void EmitCode(List<byte> output)
+        {
+            Span<byte> buffer = stackalloc byte[sizeof(uint)];
+            BitConverter.TryWriteBytes(buffer, Value);
+            ListUtil.AddRange(output, buffer);
+        }
+    }
+}

@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Noveler.Compiler.SyntaxTree
 {
-    internal class StatementSequence
+    internal class StatementSequence : ISyntaxTreeNode
     {
+        public bool IsLeaf => throw new NotImplementedException();
     }
 }

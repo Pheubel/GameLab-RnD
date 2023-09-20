@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Noveler.Compiler.SyntaxTree
 {
-    internal class SubtractNode
+    internal class SubtractNode : IBiOperationNode
     {
+        public required ISyntaxTreeNode LeftSide { get; set; }
+
+        public required ISyntaxTreeNode RightSide { get; set; }
     }
 }

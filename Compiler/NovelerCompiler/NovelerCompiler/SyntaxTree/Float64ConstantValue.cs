@@ -12,5 +12,12 @@ namespace Noveler.Compiler.SyntaxTree
 
         public double Value { get; }
         public TypeDefinition Type { get; }
+
+        public void EmitCode(List<byte> output)
+        {
+            Span<byte> buffer = stackalloc byte[sizeof(double)];
+            BitConverter.TryWriteBytes(buffer, Value);
+            ListUtil.AddRange(output, buffer);
+        }
     }
 }

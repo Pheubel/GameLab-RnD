@@ -1,8 +1,9 @@
 ﻿using System.Reflection.Metadata;
+using System.Runtime.InteropServices;
 
 namespace Noveler.Compiler.SyntaxTree
 {
-    internal readonly struct Float32ConstantValue : IConstantValueNode<float>
+    internal class Float32ConstantValue : IConstantValueNode<float>
     {
         public Float32ConstantValue(float value, TypeDefinition type)
         {
@@ -12,4 +13,12 @@ namespace Noveler.Compiler.SyntaxTree
 
         public float Value { get; }
         public TypeDefinition Type { get; }
-    }}
+
+        public void EmitCode(List<byte> output)
+        {
+            Span<byte> buffer = stackalloc byte[sizeof(float)];
+            BitConverter.TryWriteBytes(buffer,Value);
+            ListUtil.AddRange(output, buffer);
+        }
+    }
+}
